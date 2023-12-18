@@ -1,0 +1,143 @@
+% !TEX program = pdflatex
+% !BIB program = biber
+
+\documentclass{article}
+
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{cleveref}       % smart cross-referencing
+\usepackage{lipsum}         % Can be removed after putting your text content
+\usepackage{graphicx}
+% \usepackage[numeric]{natbib}
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\bibliography{references}  
+\DeclareFieldFormat{url}{}
+\DeclareFieldFormat{urldate}{}
+\usepackage{doi}
+
+\title{Guaranteed Parallel Co-clustering on Big Matrices}
+
+% Here you can change the date presented in the paper title
+%\date{September 9, 1985}
+% Or remove it
+%\date{}
+
+\newif\ifuniqueAffiliation
+% Uncomment to use multiple affiliations variant of author block 
+\uniqueAffiliationtrue
+
+\ifuniqueAffiliation % Standard variant of author block
+\author{ 
+	% \href{https://orcid.org/0000-0000-0000-0000}{\includegraphics[scale=0.06]{orcid.pdf}\hspace{1mm}David S.~Hippocampus}\thanks{Use footnote for providing further
+	% 	information about author (webpage, alternative
+	% 	address)---\emph{not} for acknowledging funding agencies.} \\
+	% Department of Computer Science\\
+	% Cranberry-Lemon University\\
+	% Pittsburgh, PA 15213 \\
+	% \texttt{hippo@cs.cranberry-lemon.edu} \\
+	% %% examples of more authors
+	% \And
+	% \href{https://orcid.org/0000-0000-0000-0000}{\includegraphics[scale=0.06]{orcid.pdf}\hspace{1mm}Elias D.~Striatum} \\
+	% Department of Electrical Engineering\\
+	% Mount-Sheikh University\\
+	% Santa Narimana, Levand \\
+	% \texttt{stariate@ee.mount-sheikh.edu} \\
+	% \AND
+	% Coauthor \\
+	% Affiliation \\
+	% Address \\
+	% \texttt{email} \\
+	% \And
+	% Coauthor \\
+	% Affiliation \\
+	% Address \\
+	% \texttt{email} \\
+	% \And
+	% Coauthor \\
+	% Affiliation \\
+	% Address \\
+	% \texttt{email} \\
+}
+\else
+% Multiple affiliations variant of author block
+\usepackage{authblk}
+\renewcommand\Authfont{\bfseries}
+\setlength{\affilsep}{0em}
+% box is needed for correct spacing with authblk
+\newbox{\orcid}\sbox{\orcid}{\includegraphics[scale=0.06]{orcid.pdf}} 
+\author[1]{%
+	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}David S.~Hippocampus\thanks{\texttt{hippo@cs.cranberry-lemon.edu}}}%
+}
+\author[1,2]{%
+	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}Elias D.~Striatum\thanks{\texttt{stariate@ee.mount-sheikh.edu}}}%
+}
+\affil[1]{Department of Computer Science, Cranberry-Lemon University, Pittsburgh, PA 15213}
+\affil[2]{Department of Electrical Engineering, Mount-Sheikh University, Santa Narimana, Levand}
+\fi
+
+% Uncomment to override  the `A preprint' in the header
+%\renewcommand{\headeright}{Technical Report}
+%\renewcommand{\undertitle}{Technical Report}
+\renewcommand{\shorttitle}{\textit{arXiv} Template}
+
+% new command
+%% define \cite{} to represent ~\autocite{}
+\renewcommand{\cite}[1]{~\autocite{#1}}
+
+%%% Add PDF metadata to help others organize their library
+%%% Once the PDF is generated, you can check the metadata with
+%%% ```pdfinfo template.pdf```
+\hypersetup{
+pdftitle={A template for the arxiv style},
+pdfsubject={q-bio.NC, q-bio.QM},
+pdfauthor={David S.~Hippocampus, Elias D.~Striatum},
+pdfkeywords={First keyword, Second keyword, More},
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+	\lipsum[1]
+\end{abstract}
+
+
+% keywords can be removed
+\keywords{First keyword \and Second keyword \and More}
+
+
+\section{Introduction}
+\lipsum[2]
+\lipsum[3]
+
+\input{related_work.tex}
+\input{method.tex}
+
+\begin{table}[b]
+	\caption{Sample table title}
+	\centering
+	\begin{tabular}{lll}
+		\toprule
+		\multicolumn{2}{c}{Part}                   \\
+		\cmidrule(r){1-2}
+		Name     & Description     & Size ($\mu$m) \\
+		\midrule
+		Dendrite & Input terminal  & $\sim$100     \\
+		Axon     & Output terminal & $\sim$10      \\
+		Soma     & Cell body       & up to $10^6$  \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:table}
+\end{table}
+
+\printbibliography
+
+\end{document}
