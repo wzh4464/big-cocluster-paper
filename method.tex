@@ -5,7 +5,7 @@
  % Created Date: Monday December 18th 2023
  % Author: Zihan
  % -----
- % Last Modified: Monday, 18th December 2023 4:59:28 pm
+ % Last Modified: Wednesday, 20th December 2023 2:51:18 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -15,6 +15,140 @@
 
 \section{Method}
 
-\subsection{Problem formulation}
+\subsection{Overview}
 
-\subsubsection{Notations}
+Clustering is very popular and useful in multiple areas. However, co-clustering is more and more important.
+Given two sets of objects $\mathcal{X} = \{x_1, x_2, \dots, x_n\}$ and $\mathcal{Y} = \{y_1, y_2, \dots, y_m\}$, a co-clustering algorithm simultaneously partitions $\mathcal{X}$ and $\mathcal{Y}$ into $k$ and $l$ clusters, respectively. The result is a $k \times l$ matrix $Z$ where $Z_{ij}$ is the cluster assignment of $x_i$ and $y_j$.
+This is equivalent to finding a block structure of the matrix $Z$, i.e., finding $k \times l$ submatrices of $Z$ such that the elements within each submatrix are similar to each other and elements from different submatrices are dissimilar to each other.
+
+\subsection{Co-cluster}
+
+
+\subsection{Analysis}
+
+\subsubsection{Notation}
+\begin{itemize}
+    \item $A \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $C = \{C_k\}_{k=1}^K$);
+    \item $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
+    \item thus block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
+          % \item $(i,j) \in \mathbb{N}/Q_m \times \mathbb{N}/Q_n$ is the index of a block;
+          % sub-co-cluster $k$ 的落到block $(i,j)$ 的size 是 $M_i^{(k)} \times N_i^{(k)}$;
+    \item the size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ that falls into block $B_{(i,j)}$ is $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
+    \item $T_m$ is the minimum number of rows, $T_n$ is the minimum number of columns.
+\end{itemize}
+
+\subsubsection{Probability}
+% P(Mi<Tm, Ni<Tn for all i in partition j | Qm, Qn, Ms, Ns)
+Consider co-cluster $C_k$,
+% P(M_{(i,j)}^{(k)} = i)
+\begin{align*}
+    P(M_{(i,j)}^{(k)} = \alpha) & = \frac{\binom{M^{(k)}}{\alpha} \binom{M-M^{(k)}}{\phi_i-\alpha}}{\binom{M}{\phi_i}} \\
+    % p[x_] := Binomial[Mk, a] * Binomial[M-Mk, P-a] / Binomial[M, P]
+    P(N_{(i,j)}^{(k)} = \beta)  & = \frac{\binom{N^{(k)}}{\beta} \binom{N-N^{(k)}}{\psi_j-\beta}}{\binom{N}{\psi_j}}
+    % q[y_] := Binomial[Nk, b] * Binomial[N-Nk, Q-b] / Binomial[N, Q]
+\end{align*}
+The tail probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
+\begin{align*}
+    P(M_{(i,j)}^{(k)} < T_m) & = \sum_{\alpha=1}^{T_m-1} P(M_{(i,j)}^{(k)} = \alpha) \\
+                             & \le \exp(-2 (s_i^{(k)})^2 \phi_i)
+\end{align*}
+where $s_i^{(k)} = \cfrac{M^{(k)}}{M}-\cfrac{T_m-1}{\phi_i}$, and
+\begin{align*}
+    % &\le \sum_{\alpha=1}^{T_m-1} \frac{\binom{M^{(k)}}{\alpha} \binom{M-M^{(k)}}{\phi_i-\alpha}}{\binom{M}{\phi_i}} \\
+    P(N_{(i,j)}^{(k)} < T_n) & = \sum_{\beta=1}^{T_n-1} P(N_{(i,j)}^{(k)} = \beta) \\
+                             & \le \exp (-2 (t_j^{(k)})^2 \psi_j)
+\end{align*}
+where $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
+
+The joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
+\begin{align*}
+    P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
+    % pq[x_, y_] := Sum[p[a] * q[b], {a, 1, x-1}, {b, 1, y-1}]
+                                                    & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
+\end{align*}
+If $\phi_i = p$ and $\psi_j = q$ for all $i$ and $j$, then
+
+Suppose event $\omega_k$ is that co-cluster $C_k$ can't be find in any block $B_{(i,j)}$, then
+\begin{align*}
+    P(\omega_k) & = \prod_{i=1}^m \prod_{j=1}^n P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n)                          \\
+                & \le \prod_{i=1}^m \prod_{j=1}^n \exp\{-2 \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \} \\
+                & = \exp\{-2 \sum_{i=1}^m \sum_{j=1}^n \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \}     \\
+\end{align*}
+
+If $\phi_i = \phi$ and $\psi_j = \psi$ for all $i$ and $j$, then
+\begin{align*}
+    s_i^{(k)} & = s^{(k)} = \frac{M^{(k)}}{M}-\frac{T_m-1}{\phi} \\
+    t_j^{(k)} & = t^{(k)} = \frac{N^{(k)}}{N}-\frac{T_n-1}{\psi}
+\end{align*}
+
+\begin{align*}
+    P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \\
+\end{align*}
+
+
+And if we do $T_p$ times of random sampling, the Probability of detecting the co-cluster is
+\begin{align*}
+    P & = 1 - P(\omega_k)^{T_p}                                                        \\
+      & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \\
+\end{align*}
+according to which, we can set $m, n, \phi, \psi, T_m, T_n$ and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
+
+\subsubsection{Nosiy case}
+\subsubsubsection{Assumption}
+Assume each noise $n_{ij}$ complies with a normal distribution $N(0, \sigma^2)$, i.i.d. for all $i$ and $j$. Suppose $\exists \lambda > 0$, such that
+$$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
+
+\subsubsubsection{Score}
+The score of a submatrix $A_{I,J}$ is defined as
+\begin{align}
+    S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\
+    S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle \right) \\
+    S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{I,j_1}, x_{I,j_2}\rangle \right)
+\end{align}
+where $x_{i,J}$ is the $i$-th row of $A_{I,J}$. Here we define the inner product of two vectors $x$ and $y$ as
+$$\langle x, y \rangle = \exp(-\frac{||x - y||_1^2}{2\alpha||x||_1||y||_1})$$
+
+Suppose $A$ is a hidden co-cluster matrix, and $E$ is the noise matrix. Then the observed matrix is $B = A + E$. Consider co-cluster $B_{I,J}$, denote $1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle$ as $s_{row}(i_1, i_2, J)$, then
+\begin{align*}
+    \mathbb{E}(s_{row}(i_1, i_2, J)) & = 1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \mathbb{E}(\langle x_{i_1,J}, x_{i_2,J}\rangle)                                    \\
+                                     & = 1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \exp(-\frac{||x_{i_1,J} - x_{i_2,J}||_1^2}{2\alpha||x_{i_1,J}||_1||x_{i_2,J}||_1}) \\
+                                     & \ge 1 - \exp(-\frac{2}{\alpha \min(||x_{i_1,J}||_1, ||x_{i_2,J}||_1)})                                                                  \\
+                                     & \ge 1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})                                                                             \\
+    \sigma^2(s_{row}(i_1, i_2, J))   & = \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \sigma^2(\langle x_{i_1,J}, x_{i_2,J}\rangle)                                          \\
+                                     & = \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \exp(-\frac{||x_{i_1,J} - x_{i_2,J}||_1^2}{2\alpha||x_{i_1,J}||_1||x_{i_2,J}||_1})     \\
+                                     & \le \sigma^2 \exp(-\frac{2}{\alpha \min(||x_{i_1,J}||_1, ||x_{i_2,J}||_1)})                                                             \\
+                                     & \le \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})                                                                        \\
+\end{align*}
+
+Thus the expected value of $S_{row}(I,J)$ satisfies
+\begin{align*}
+    \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
+    \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})          \\
+\end{align*}
+
+Similarly, we can get
+\begin{align*}
+    \mathbb{E}(S_{col}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
+    \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})          \\
+\end{align*}
+
+Then since $x^2 \le x$ for $x \in (0,1)$, we have
+\begin{align*}
+    \mathbb{E}(S(I,J)) & \ge 1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})             \\
+    \sigma^2(S(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \\
+\end{align*}
+
+According to the Chernoff bound, we have
+\begin{align*}
+    P(S(I,J) \le \mathbb{E}(S(I,J)) - \epsilon)
+     & \ge \exp(-\frac{\epsilon^2}{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda})}) \\
+\end{align*}
+
+Thus if we set $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}) \log(1/\delta)}$, then
+
+\begin{align*}
+    P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta \\
+\end{align*}
+
+Combine with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
+
