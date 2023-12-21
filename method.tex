@@ -2,10 +2,10 @@
 
 %%%
  % File: /latex/big-cocluster-paper/method.tex
- % Created Date: Monday December 18th 2023
+ % Created Date: Monday, December 18th 2023
  % Author: Zihan
  % -----
- % Last Modified: Wednesday, 20th December 2023 2:51:18 am
+ % Last Modified: Thursday, 21st December 2023 11:09:11 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -15,14 +15,25 @@
 
 \section{Method}
 
+In this section, we first introduce the problem of coclustering on large-scale data. Then we propose our method to solve this problem.
+
 \subsection{Overview}
 
+Our method concentrates on coclustering on large-scale data. The main idea is to divide the data into blocks, do coclustering on each block, and then ensemble the results. The algorithm is shown in Algorithm \ref{alg:method}.
+
+\begin{algorithm}[!t]
+    \caption {Parallel Co-clustering Method}\label{alg:method}
+    \begin{algorithmic}[1]
+        \REQUIRE {Source data $\mathcal{X}^s$, Source labels ${\bf y}$, Target data $\mathcal{X}^t$, Batch-size $b_s$, Maximum iteration $T_{max}$, Update iteration $T_{up}$, Learning rate $\lambda$, Parameter $\lambda_1$ and $\lambda_2$;}
+        \ENSURE {Learned network $\bm{\Theta}$, Target prediction $\hat{\bf y}^t$;}\\
+        \STATE 
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{Co-cluster}
 Clustering is very popular and useful in multiple areas. However, co-clustering is more and more important.
 Given two sets of objects $\mathcal{X} = \{x_1, x_2, \dots, x_n\}$ and $\mathcal{Y} = \{y_1, y_2, \dots, y_m\}$, a co-clustering algorithm simultaneously partitions $\mathcal{X}$ and $\mathcal{Y}$ into $k$ and $l$ clusters, respectively. The result is a $k \times l$ matrix $Z$ where $Z_{ij}$ is the cluster assignment of $x_i$ and $y_j$.
 This is equivalent to finding a block structure of the matrix $Z$, i.e., finding $k \times l$ submatrices of $Z$ such that the elements within each submatrix are similar to each other and elements from different submatrices are dissimilar to each other.
-
-\subsection{Co-cluster}
-
 
 \subsection{Analysis}
 
@@ -150,5 +161,5 @@ Thus if we set $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}
     P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta \\
 \end{align*}
 
-Combine with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
+Combined with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
