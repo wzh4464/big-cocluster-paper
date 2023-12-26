@@ -3,7 +3,7 @@
  % Created Date: Tuesday, December 26th, 2023
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 26th December 2023 9:22:47 pm
+ % Last Modified: Tuesday, 26th December 2023 10:12:55 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -13,12 +13,52 @@
 
 \section{Introduction}
 
-In this academic paper, we introduce an innovative approach to address the prevalent challenges in co-clustering, a technique pivotal for uncovering meaningful patterns in bi-dimensional data. Co-clustering, also known as biclustering, involves simultaneously clustering rows and columns of a matrix, typically to identify submatrices with particular characteristics.
+In this academic paper, we introduce an innovative approach to address the prevalent challenges in the field of co-clustering, a critical technique for revealing meaningful patterns in bi-dimensional data. Co-clustering, also known as biclustering, involves the simultaneous clustering of rows and columns in a matrix, identifying submatrices with distinct characteristics. This methodology is vital in a variety of domains, including text data analysis, computer vision, and information retrieval.
 
-The challenges inherent in conventional co-clustering methods are multifaceted. Firstly, there is no guarantee of identifying all the co-clusters within the data, which can lead to incomplete or biased interpretations. Secondly, these methods often consume excessive computational time, posing a significant barrier in processing large datasets. Thirdly, they are characterized by high memory usage, further complicating their applicability to extensive datasets.
+The significance of co-clustering lies in its ability to provide a comprehensive analysis of data by considering two dimensions concurrently. In text analysis, it enables the grouping of documents and words, uncovering thematic structures that single-dimensional clustering may overlook. In the realm of computer vision, co-clustering assists in categorizing pixels and features, thereby facilitating more effective image segmentation and object recognition. In information retrieval systems, it enhances the sorting and categorization of large datasets, improving search algorithm accuracy and user experience.
 
-To overcome these limitations, we propose a novel methodology that involves initially partitioning the matrix. This step aims to break down the larger problem into more manageable sub-problems, potentially alleviating the computational burden. Following this, we employ an ensemble approach to co-cluster the identified submatrices. This strategy not only promises a reduction in computational time and memory usage but also enhances the likelihood of uncovering all possible co-clusters.
+Despite its wide-ranging applications, conventional co-clustering methods encounter significant challenges. First, there is no assurance of identifying all co-clusters within a dataset, potentially leading to incomplete or biased interpretations. Second, these methods often require substantial computational time, posing a barrier when processing large datasets. Third, they are characterized by high memory usage, limiting their applicability to extensive datasets.
 
-A unique aspect of our method is the introduction of a probabilistic framework to determine the number of times the matrix should be partitioned. This aspect is grounded in the principle of achieving a predefined probability of discovering all co-clusters, thereby striking a balance between computational efficiency and completeness of the results.
+To overcome these limitations, our proposed methodology innovatively combines matrix partitioning with an ensemble approach for co-clustering. Initially, the data matrix is partitioned into smaller submatrices, simplifying the complexity of the problem and facilitating more manageable computation. This step is crucial in enhancing the potential to uncover all co-clusters. Subsequently, we apply an ensemble method to co-cluster these submatrices, efficiently processing high-dimensional data typical in various applications.
 
-Overall, our approach addresses the key challenges in co-clustering by offering a more efficient, less resource-intensive method while enhancing the comprehensiveness of the co-clustering results. This paper will delve into the specifics of our methodology, its implementation, and the empirical evidence supporting its efficacy in various co-clustering scenarios.
+A unique aspect of our approach is the introduction of a probabilistic framework to determine the optimal frequency of matrix partitioning. This framework aims to achieve a balance between computational efficiency and the comprehensive discovery of co-clusters. By doing so, it addresses the core challenges of conventional co-clustering methods, namely the uncertainty in identifying all co-clusters, excessive computational time, and high memory usage.
+
+In contrast to existing constrained clustering methods, our approach offers several advantages. It autonomously generates constraints, eliminating the need for manual annotations, which is more practical for large-scale applications. Furthermore, we optimize an information-theoretic objective, as opposed to the Euclidean distance measures commonly used, which improves performance on text-based data. Our parallel implementation also significantly enhances computational efficiency and scalability.
+
+By integrating our parallelizable co-clustering strategy with longitudinal biclustering models, we could achieve faster identification of stable co-clusters over time. This possibility opens new avenues for algorithmic advancements in biclustering techniques, paving the way for more efficient and scalable solutions in this rapidly evolving field.
+
+Our main contributions are as follows:
+
+\begin{enumerate}
+    \item The development of a novel co-clustering approach that integrates matrix partitioning with an ensemble method, enhancing the detection of co-clusters in high-dimensional data matrices.
+    \item The introduction of a probabilistic framework to optimize matrix partitioning, ensuring computational efficiency while maintaining thoroughness in identifying co-clusters.
+    \item A comprehensive evaluation of our methodology across various scenarios, demonstrating its effectiveness in overcoming the traditional limitations of co-clustering.
+\end{enumerate}
+
+The structure of this paper is as follows: Section 2 reviews related works; Section 3 describes our innovative co-clustering approach; Section 4 explores the implementation and optimization of our probabilistic framework; Section 5 presents experiments and results, validating the efficacy of our approach; and Section 6 concludes the paper, summarizing our findings and discussing potential avenues for future research in this domain.
+
+\section{Introduction (second)}
+
+In this academic paper, we introduce an innovative approach to address the prevalent challenges in the field of co-clustering, a critical technique for revealing meaningful patterns in bi-dimensional data. Co-clustering, also known as biclustering, involves the simultaneous clustering of rows and columns in a matrix, identifying submatrices with distinct characteristics. This methodology is vital in a variety of domains, including text data analysis, computer vision, and information retrieval.
+
+The significance of co-clustering lies in its ability to provide a comprehensive analysis of data by considering two dimensions concurrently. In text analysis, it enables the grouping of documents and words, uncovering thematic structures that single-dimensional clustering may overlook. In the realm of computer vision, co-clustering assists in categorizing pixels and features, thereby facilitating more effective image segmentation and object recognition. In information retrieval systems, it enhances the sorting and categorization of large datasets, improving search algorithm accuracy and user experience.
+
+Despite its wide-ranging applications, conventional co-clustering methods encounter significant challenges. First, there is no assurance of identifying all co-clusters within a dataset, potentially leading to incomplete or biased interpretations. Second, these methods often require substantial computational time, posing a barrier when processing large datasets. Third, they are characterized by high memory usage, limiting their applicability to extensive datasets.
+
+To overcome these limitations, our proposed methodology innovatively combines matrix partitioning with an ensemble approach for co-clustering. Initially, the data matrix is partitioned into smaller submatrices, simplifying the complexity of the problem and facilitating more manageable computation. This step is crucial in enhancing the potential to uncover all co-clusters. Subsequently, we apply an ensemble method to co-cluster these submatrices, efficiently processing high-dimensional data typical in various applications.
+
+A unique aspect of our approach is the introduction of a probabilistic framework to determine the optimal frequency of matrix partitioning. This framework aims to achieve a balance between computational efficiency and the comprehensive discovery of co-clusters. By doing so, it addresses the core challenges of conventional co-clustering methods, namely the uncertainty in identifying all co-clusters, excessive computational time, and high memory usage.
+
+In contrast to existing constrained clustering methods, our approach offers several advantages. It autonomously generates constraints, eliminating the need for manual annotations, which is more practical for large-scale applications. Furthermore, we optimize an information-theoretic objective, as opposed to the Euclidean distance measures commonly used, which improves performance on text-based data. Our parallel implementation also significantly enhances computational efficiency and scalability.
+
+By integrating our parallelizable co-clustering strategy with longitudinal biclustering models, we could achieve faster identification of stable co-clusters over time. This possibility opens new avenues for algorithmic advancements in biclustering techniques, paving the way for more efficient and scalable solutions in this rapidly evolving field.
+
+Our main contributions are as follows:
+
+\begin{enumerate}
+    \item The development of a novel co-clustering approach that integrates matrix partitioning with an ensemble method, enhancing the detection of co-clusters in high-dimensional data matrices.
+    \item The introduction of a probabilistic framework to optimize matrix partitioning, ensuring computational efficiency while maintaining thoroughness in identifying co-clusters.
+    \item A comprehensive evaluation of our methodology across various scenarios, demonstrating its effectiveness in overcoming the traditional limitations of co-clustering.
+\end{enumerate}
+
+The structure of this paper is as follows: Section 2 reviews related works; Section 3 describes our innovative co-clustering approach; Section 4 explores the implementation and optimization of our probabilistic framework; Section 5 presents experiments and results, validating the efficacy of our approach; and Section 6 concludes the paper, summarizing our findings and discussing potential avenues for future research in this domain.
