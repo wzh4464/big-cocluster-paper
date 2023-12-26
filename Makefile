@@ -1,13 +1,21 @@
 # Name of the main LaTeX file without the extension
 MAIN = main
 
+# Detect the operating system
+ifeq ($(OS),Windows_NT)
+	RM = del /Q
+else
+	RM = rm -f
+endif
+
 # Rule to compile the LaTeX document
 all: $(MAIN).pdf
 
 # Rule to compile the LaTeX document (biber support)
 $(MAIN).pdf: *.tex *.bib
 	latexmk -synctex=1 -interaction=nonstopmode -file-line-error -pdf -use-make $(MAIN).tex
-	rm -f *.aux *.bbl *.blg *.log *.out *.run.xml *.toc *.bcf *.fls *.fdb_latexmk
+	latexmk -c
 
 clean:
-	rm $(MAIN).pdf $(MAIN).synctex.gz
+	latexmk -CA
+	$(RM) *.bbl *.run.xml
