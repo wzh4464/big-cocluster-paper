@@ -3,7 +3,7 @@
  % Created Date: Tuesday, December 26th, 2023
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 26th December 2023 9:18:17 pm
+ % Last Modified: Tuesday, 26th December 2023 9:22:47 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -12,3 +12,13 @@
 %%%
 
 \section{Introduction}
+
+In this academic paper, we introduce an innovative approach to address the prevalent challenges in co-clustering, a technique pivotal for uncovering meaningful patterns in bi-dimensional data. Co-clustering, also known as biclustering, involves simultaneously clustering rows and columns of a matrix, typically to identify submatrices with particular characteristics.
+
+The challenges inherent in conventional co-clustering methods are multifaceted. Firstly, there is no guarantee of identifying all the co-clusters within the data, which can lead to incomplete or biased interpretations. Secondly, these methods often consume excessive computational time, posing a significant barrier in processing large datasets. Thirdly, they are characterized by high memory usage, further complicating their applicability to extensive datasets.
+
+To overcome these limitations, we propose a novel methodology that involves initially partitioning the matrix. This step aims to break down the larger problem into more manageable sub-problems, potentially alleviating the computational burden. Following this, we employ an ensemble approach to co-cluster the identified submatrices. This strategy not only promises a reduction in computational time and memory usage but also enhances the likelihood of uncovering all possible co-clusters.
+
+A unique aspect of our method is the introduction of a probabilistic framework to determine the number of times the matrix should be partitioned. This aspect is grounded in the principle of achieving a predefined probability of discovering all co-clusters, thereby striking a balance between computational efficiency and completeness of the results.
+
+Overall, our approach addresses the key challenges in co-clustering by offering a more efficient, less resource-intensive method while enhancing the comprehensiveness of the co-clustering results. This paper will delve into the specifics of our methodology, its implementation, and the empirical evidence supporting its efficacy in various co-clustering scenarios.
