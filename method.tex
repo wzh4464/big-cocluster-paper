@@ -5,7 +5,7 @@
  % Created Date: Monday, December 18th 2023
  % Author: Zihan
  % -----
- % Last Modified: Thursday, 21st December 2023 11:09:11 am
+ % Last Modified: Wednesday, 27th December 2023 12:01:16 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -17,19 +17,67 @@
 
 In this section, we first introduce the problem of coclustering on large-scale data. Then we propose our method to solve this problem.
 
-\subsection{Overview}
+\subsection{Method Overview}
 
-Our method concentrates on coclustering on large-scale data. The main idea is to divide the data into blocks, do coclustering on each block, and then ensemble the results. The algorithm is shown in Algorithm \ref{alg:method}.
+Our approach introduces a novel methodology for co-clustering that is primarily focused on enhancing scalability, adaptability and comprehensiveness in identifying co-clusters within bi-dimensional data. This is achieved through a three-step process: randomly partitioning the data matrix, co-clustering the resulting submatrices, and aggregating the co-clusters. Additionally, our method incorporates a probabilistic framework to determine the optimal number of matrix partitioning iterations, aiming to strike a balance between computational efficiency and thoroughness in pattern discovery. 
 
-\begin{algorithm}[!t]
-    \caption {Parallel Co-clustering Method}\label{alg:method}
-    \begin{algorithmic}[1]
-        \REQUIRE {Source data $\mathcal{X}^s$, Source labels ${\bf y}$, Target data $\mathcal{X}^t$, Batch-size $b_s$, Maximum iteration $T_{max}$, Update iteration $T_{up}$, Learning rate $\lambda$, Parameter $\lambda_1$ and $\lambda_2$;}
-        \ENSURE {Learned network $\bm{\Theta}$, Target prediction $\hat{\bf y}^t$;}\\
-        \STATE 
-    \end{algorithmic}
-\end{algorithm}
+The process begins with the strategic partitioning of the data matrix. This initial partitioning is designed to break down the larger, more complex problem into smaller, more manageable sub-problems. This not only facilitates easier computational handling but also increases the potential for uncovering all possible co-clusters within the data.
 
+Following the partitioning, we employ an ensemble method for co-clustering. In this stage, all co-clusters found within the individual submatrices are aggregated. This ensemble approach ensures that the overall clustering results are comprehensive and account for potential co-clusters that might be overlooked if the data were not partitioned.
+
+A unique feature of our methodology is the incorporation of a probabilistic model to optimize the frequency of matrix partitioning. This model is predicated on achieving a predetermined probability of detecting all co-clusters within the data. Doing so allows for a dynamic adjustment in the number of partitions based on the specific characteristics and demands of the dataset, ensuring a balance between computational resources and the completeness of the co-clustering results.
+
+In the subsequent sections, we will delve deeper into the specifics of the matrix partitioning technique, the ensemble co-clustering method, and the probabilistic framework. This will include a discussion of the algorithms employed, the rationale behind the probabilistic model, and the optimization strategies to enhance the scalability and efficacy of our approach.
+
+\subsection{Notation and Definitions}
+% Definitions of symbols, notations, and terminologies used in the method.
+In this section, we define the notation and mathematical formulations used in our method. Understanding these definitions is crucial for comprehending the subsequent descriptions of the algorithm and its implementation.
+
+\begin{itemize}
+    \item $A \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $C = \{C_k\}_{k=1}^K$);
+    \item $A$ is partitioned into $m \times n$ blocks, each block having a size of $\phi_i \times \psi_j$, implying that $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
+    \item The block set is denoted as $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
+    \item The size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ within block $B_{(i,j)}$ is represented as $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
+    \item $T_m$ represents the minimum number of rows, while $T_n$ denotes the minimum number of columns in a co-cluster.
+\end{itemize}
+
+With these notations established, we can now proceed to detail the algorithm and its components in the subsequent sections.
+
+\subsection{Problem Formulation}
+The task at hand involves the analysis of a data matrix, denoted as $A \in \mathbb{R}^{M \times N}$, comprising $M$ rows (representing features or variables) and $N$ columns (representing objects or samples). The entry at the $(i, j)$-th position of $A$ is given by $a_{ij}$, where $a_{i,\cdot}$ and $a_{\cdot,j}$ represent the $i$-th row and $j$-th column of $A$, respectively. 
+
+A co-cluster within this context is identified as a subset of rows and/or columns that exhibit similar characteristics across a subset of columns and/or rows. Let $I$ be a set of row indices forming a row cluster, and $J$ be a set of column indices forming a column cluster; then the sub-matrix $A_{I,J}$ corresponds to a co-cluster in $A$. The objective of co-clustering is to partition the $M$ rows into $k$ row clusters and the $N$ columns into $d$ column clusters, resulting in a total of $k \times d$ co-clusters.
+
+These partitions can be represented by a row label vector $u \in \mathbb{N}^M$ (where $u_i \in \{1, \ldots, k\}, \forall i \in \{1, \ldots, M\}$) and a column label vector $v \in \mathbb{N}^N$ (where $v_j \in \{1, \ldots, d\}, \forall j \in \{1, \ldots, N\}$). Indicator matrices $R \in \mathbb{R}^{M \times k}$ (where $\sum_{k'=1}^{k} R_{i,k'} = 1$) and $C \in \mathbb{R}^{N \times d}$ (where $\sum_{d'=1}^{d} C_{j,d'} = 1$) denote the row and column clusters. 
+
+We aim to identify co-clusters $A_{I,J}$ in $A$ that are correlated according to specific criteria. These criteria include co-clusters with constant values, constant values along rows or columns, and co-clusters with additive or multiplicative coherent values. Recognizing and categorizing these patterns in $A$ forms the basis of our co-clustering approach, which is designed to effectively and efficiently identify such structures within the data.
+
+\subsection{Matrix Partitioning}
+% Description of the matrix partitioning process and criteria for partitioning.
+
+\subsection{Co-Clustering within Submatrices}
+% Detailed method for co-clustering within each of the submatrices.
+
+\subsection{Probabilistic Framework}
+% Presentation of the probabilistic model for determining the number of matrix partitioning iterations.
+
+\subsection{Ensemble Method}
+% Explanation of how co-clustered results from submatrices are aggregated.
+
+\subsection{Algorithmic Description}
+% Step-by-step algorithmic description of the process in pseudocode.
+
+\subsection{Parameter Selection and Optimization}
+% Discussion on the selection and optimization of parameters.
+
+\subsection{Computational Complexity Analysis}
+% (Optional) Analysis of the computational complexity of the method.
+
+\subsection{Theoretical Justification or Rationale}
+% Theoretical support or rationale for the effectiveness of the method.
+
+\subsection{Potential Limitations and Assumptions}
+% Acknowledgment of any limitations or assumptions in the method.
 \subsection{Co-cluster}
 Clustering is very popular and useful in multiple areas. However, co-clustering is more and more important.
 Given two sets of objects $\mathcal{X} = \{x_1, x_2, \dots, x_n\}$ and $\mathcal{Y} = \{y_1, y_2, \dots, y_m\}$, a co-clustering algorithm simultaneously partitions $\mathcal{X}$ and $\mathcal{Y}$ into $k$ and $l$ clusters, respectively. The result is a $k \times l$ matrix $Z$ where $Z_{ij}$ is the cluster assignment of $x_i$ and $y_j$.
@@ -38,15 +86,7 @@ This is equivalent to finding a block structure of the matrix $Z$, i.e., finding
 \subsection{Analysis}
 
 \subsubsection{Notation}
-\begin{itemize}
-    \item $A \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $C = \{C_k\}_{k=1}^K$);
-    \item $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
-    \item thus block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
-          % \item $(i,j) \in \mathbb{N}/Q_m \times \mathbb{N}/Q_n$ is the index of a block;
-          % sub-co-cluster $k$ 的落到block $(i,j)$ 的size 是 $M_i^{(k)} \times N_i^{(k)}$;
-    \item the size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ that falls into block $B_{(i,j)}$ is $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
-    \item $T_m$ is the minimum number of rows, $T_n$ is the minimum number of columns.
-\end{itemize}
+
 
 \subsubsection{Probability}
 % P(Mi<Tm, Ni<Tn for all i in partition j | Qm, Qn, Ms, Ns)
@@ -163,3 +203,20 @@ Thus if we set $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}
 
 Combined with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
+\begin{algorithm}[!t]
+    \caption{Probabilistic Ensemble Co-Clustering Method}\label{alg:method}
+    \begin{algorithmic}[1]
+        \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_{thresh}$;}
+        \ENSURE{Co-clustered result $\mathcal{C}$;}
+        \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
+        \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
+        \FOR{$k=1$ to $K$}
+            \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
+            \IF{$P(\omega_k) < P_{thresh}$}
+                \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
+                \STATE Aggregate co-clustered results from each block
+            \ENDIF
+        \ENDFOR
+        \RETURN Aggregated co-clustered result $\mathcal{C}$
+    \end{algorithmic}
+\end{algorithm}
