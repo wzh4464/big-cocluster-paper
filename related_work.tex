@@ -2,7 +2,7 @@
 
 %%%
 % File: /latex/big-cocluster-paper/related_work.tex
-% Created Date: Monday December 18th 2023
+% Created Date: Monday, December 18th, 2023
 % Author: Zihan
 % -----
 % Last Modified: Monday, 18th December 2023 5:23:36 pm
@@ -11,6 +11,7 @@
 % HISTORY:
 % Date      		By   	Comments
 % ----------		------	---------------------------------------------------------
+% 19-12-2023		Zihan	Complete the first draft of Related Work
 %%%
 
 \section{Related work}
@@ -30,7 +31,7 @@ Key innovations in graph-based co-clustering include leveraging graph editing te
 
 % \cite{kluger2003SpectralBiclusteringMicroarray, sun2014BiforceLargescaleBicluster,kim2022ABCAttributedBipartite}
 \subsection{Neural Network models}
-Dong et al.\cite{dongkuanxu2019DeepCoClustering} proposed DeepCC, the first deep learning model for co-clustering. DeepCC employs deep autoencoders and Gaussian Mixture Models to simultaneously cluster instances and features in an end-to-end fashion, outperforming traditional pipelines. A mutual information loss connects the joint instance and feature representation learning. However, DeepCC is limited to static data and does not scale well to large datasets.
+Dong et al.\cite{dongkuanxu2019DeepCoClustering} proposed DeepCC, the first deep-learning model for co-clustering. DeepCC employs deep autoencoders and Gaussian Mixture Models to simultaneously cluster instances and features in an end-to-end fashion, outperforming traditional pipelines. A mutual information loss connects the joint instance and feature representation learning. However, DeepCC is limited to static data and does not scale well to large datasets.
 
 \subsection{Matrix factorization}
 %TODO: Overview: \cite{lin2019OverviewCoClusteringMatrix}
@@ -44,8 +45,8 @@ The matrix factorization-based co-clustering has not only been limited to static
 
 
 
-% now, to process big data, MTF is the most popular method. \cite{chen2023ParallelNonNegativeMatrix}
+% Now, to process big data, MTF is the most popular method. \cite{chen2023ParallelNonNegativeMatrix}
 
-While matrix factorization techniques have shown promise for co-clustering large datasets, scaling to massive high-dimensional data remains an open challenge. Chen et al. \cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization method that distributes computation across multiple nodes to accelerate factorizations. However, such approaches still struggle on web-scale data.
+While matrix factorization techniques have shown promise for co-clustering large datasets, scaling to massive high-dimensional data remains an open challenge. Chen et al. \cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization method that distributes computation across multiple nodes to accelerate factorizations. However, such approaches still struggle with web-scale data.
 
 Our proposed method takes a divide-and-conquer approach, directly partitioning the input matrix into smaller submatrices before co-clustering each one in parallel. This blocks the original high dimensionality to make co-clustering feasible. The separate results are then ensembled to produce final co-clusters. This represents a new paradigm tailored for big data that sidesteps computational barriers by transforming the problem space rather than relying solely on distributed computing optimizations.

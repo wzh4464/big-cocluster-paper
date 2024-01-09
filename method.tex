@@ -2,10 +2,10 @@
 
 %%%
  % File: /latex/big-cocluster-paper/method.tex
- % Created Date: Monday December 18th 2023
+ % Created Date: Monday, December 18th 2023
  % Author: Zihan
  % -----
- % Last Modified: Monday, 18th December 2023 4:59:28 pm
+ % Last Modified: Wednesday, 27th December 2023 12:01:16 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -15,6 +15,208 @@
 
 \section{Method}
 
-\subsection{Problem formulation}
+In this section, we first introduce the problem of coclustering on large-scale data. Then we propose our method to solve this problem.
 
-\subsubsection{Notations}
+\subsection{Method Overview}
+
+Our approach introduces a novel methodology for co-clustering that is primarily focused on enhancing scalability, adaptability and comprehensiveness in identifying co-clusters within bi-dimensional data. This is achieved through a three-step process: randomly partitioning the data matrix, co-clustering the resulting submatrices, and aggregating the co-clusters. Additionally, our method incorporates a probabilistic framework to determine the optimal number of matrix partitioning iterations, aiming to strike a balance between computational efficiency and thoroughness in pattern discovery. 
+
+The process begins with the strategic partitioning of the data matrix. This initial partitioning is designed to break down the larger, more complex problem into smaller, more manageable sub-problems. This not only facilitates easier computational handling but also increases the potential for uncovering all possible co-clusters within the data.
+
+Following the partitioning, we employ an ensemble method for co-clustering. In this stage, all co-clusters found within the individual submatrices are aggregated. This ensemble approach ensures that the overall clustering results are comprehensive and account for potential co-clusters that might be overlooked if the data were not partitioned.
+
+A unique feature of our methodology is the incorporation of a probabilistic model to optimize the frequency of matrix partitioning. This model is predicated on achieving a predetermined probability of detecting all co-clusters within the data. Doing so allows for a dynamic adjustment in the number of partitions based on the specific characteristics and demands of the dataset, ensuring a balance between computational resources and the completeness of the co-clustering results.
+
+In the subsequent sections, we will delve deeper into the specifics of the matrix partitioning technique, the ensemble co-clustering method, and the probabilistic framework. This will include a discussion of the algorithms employed, the rationale behind the probabilistic model, and the optimization strategies to enhance the scalability and efficacy of our approach.
+
+\subsection{Notation and Definitions}
+% Definitions of symbols, notations, and terminologies used in the method.
+In this section, we define the notation and mathematical formulations used in our method. Understanding these definitions is crucial for comprehending the subsequent descriptions of the algorithm and its implementation.
+
+\begin{itemize}
+    \item $A \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $C = \{C_k\}_{k=1}^K$);
+    \item $A$ is partitioned into $m \times n$ blocks, each block having a size of $\phi_i \times \psi_j$, implying that $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
+    \item The block set is denoted as $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
+    \item The size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ within block $B_{(i,j)}$ is represented as $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
+    \item $T_m$ represents the minimum number of rows, while $T_n$ denotes the minimum number of columns in a co-cluster.
+\end{itemize}
+
+With these notations established, we can now proceed to detail the algorithm and its components in the subsequent sections.
+
+\subsection{Problem Formulation}
+The task at hand involves the analysis of a data matrix, denoted as $A \in \mathbb{R}^{M \times N}$, comprising $M$ rows (representing features or variables) and $N$ columns (representing objects or samples). The entry at the $(i, j)$-th position of $A$ is given by $a_{ij}$, where $a_{i,\cdot}$ and $a_{\cdot,j}$ represent the $i$-th row and $j$-th column of $A$, respectively. 
+
+A co-cluster within this context is identified as a subset of rows and/or columns that exhibit similar characteristics across a subset of columns and/or rows. Let $I$ be a set of row indices forming a row cluster, and $J$ be a set of column indices forming a column cluster; then the sub-matrix $A_{I,J}$ corresponds to a co-cluster in $A$. The objective of co-clustering is to partition the $M$ rows into $k$ row clusters and the $N$ columns into $d$ column clusters, resulting in a total of $k \times d$ co-clusters.
+
+These partitions can be represented by a row label vector $u \in \mathbb{N}^M$ (where $u_i \in \{1, \ldots, k\}, \forall i \in \{1, \ldots, M\}$) and a column label vector $v \in \mathbb{N}^N$ (where $v_j \in \{1, \ldots, d\}, \forall j \in \{1, \ldots, N\}$). Indicator matrices $R \in \mathbb{R}^{M \times k}$ (where $\sum_{k'=1}^{k} R_{i,k'} = 1$) and $C \in \mathbb{R}^{N \times d}$ (where $\sum_{d'=1}^{d} C_{j,d'} = 1$) denote the row and column clusters. 
+
+We aim to identify co-clusters $A_{I,J}$ in $A$ that are correlated according to specific criteria. These criteria include co-clusters with constant values, constant values along rows or columns, and co-clusters with additive or multiplicative coherent values. Recognizing and categorizing these patterns in $A$ forms the basis of our co-clustering approach, which is designed to effectively and efficiently identify such structures within the data.
+
+\subsection{Matrix Partitioning}
+% Description of the matrix partitioning process and criteria for partitioning.
+
+\subsection{Co-Clustering within Submatrices}
+% Detailed method for co-clustering within each of the submatrices.
+
+\subsection{Probabilistic Framework}
+% Presentation of the probabilistic model for determining the number of matrix partitioning iterations.
+
+\subsection{Ensemble Method}
+% Explanation of how co-clustered results from submatrices are aggregated.
+
+\subsection{Algorithmic Description}
+% Step-by-step algorithmic description of the process in pseudocode.
+
+\subsection{Parameter Selection and Optimization}
+% Discussion on the selection and optimization of parameters.
+
+\subsection{Computational Complexity Analysis}
+% (Optional) Analysis of the computational complexity of the method.
+
+\subsection{Theoretical Justification or Rationale}
+% Theoretical support or rationale for the effectiveness of the method.
+
+\subsection{Potential Limitations and Assumptions}
+% Acknowledgment of any limitations or assumptions in the method.
+\subsection{Co-cluster}
+Clustering is very popular and useful in multiple areas. However, co-clustering is more and more important.
+Given two sets of objects $\mathcal{X} = \{x_1, x_2, \dots, x_n\}$ and $\mathcal{Y} = \{y_1, y_2, \dots, y_m\}$, a co-clustering algorithm simultaneously partitions $\mathcal{X}$ and $\mathcal{Y}$ into $k$ and $l$ clusters, respectively. The result is a $k \times l$ matrix $Z$ where $Z_{ij}$ is the cluster assignment of $x_i$ and $y_j$.
+This is equivalent to finding a block structure of the matrix $Z$, i.e., finding $k \times l$ submatrices of $Z$ such that the elements within each submatrix are similar to each other and elements from different submatrices are dissimilar to each other.
+
+\subsection{Analysis}
+
+\subsubsection{Notation}
+
+
+\subsubsection{Probability}
+% P(Mi<Tm, Ni<Tn for all i in partition j | Qm, Qn, Ms, Ns)
+Consider co-cluster $C_k$,
+% P(M_{(i,j)}^{(k)} = i)
+\begin{align*}
+    P(M_{(i,j)}^{(k)} = \alpha) & = \frac{\binom{M^{(k)}}{\alpha} \binom{M-M^{(k)}}{\phi_i-\alpha}}{\binom{M}{\phi_i}} \\
+    % p[x_] := Binomial[Mk, a] * Binomial[M-Mk, P-a] / Binomial[M, P]
+    P(N_{(i,j)}^{(k)} = \beta)  & = \frac{\binom{N^{(k)}}{\beta} \binom{N-N^{(k)}}{\psi_j-\beta}}{\binom{N}{\psi_j}}
+    % q[y_] := Binomial[Nk, b] * Binomial[N-Nk, Q-b] / Binomial[N, Q]
+\end{align*}
+The tail probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
+\begin{align*}
+    P(M_{(i,j)}^{(k)} < T_m) & = \sum_{\alpha=1}^{T_m-1} P(M_{(i,j)}^{(k)} = \alpha) \\
+                             & \le \exp(-2 (s_i^{(k)})^2 \phi_i)
+\end{align*}
+where $s_i^{(k)} = \cfrac{M^{(k)}}{M}-\cfrac{T_m-1}{\phi_i}$, and
+\begin{align*}
+    % &\le \sum_{\alpha=1}^{T_m-1} \frac{\binom{M^{(k)}}{\alpha} \binom{M-M^{(k)}}{\phi_i-\alpha}}{\binom{M}{\phi_i}} \\
+    P(N_{(i,j)}^{(k)} < T_n) & = \sum_{\beta=1}^{T_n-1} P(N_{(i,j)}^{(k)} = \beta) \\
+                             & \le \exp (-2 (t_j^{(k)})^2 \psi_j)
+\end{align*}
+where $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
+
+The joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
+\begin{align*}
+    P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
+    % pq[x_, y_] := Sum[p[a] * q[b], {a, 1, x-1}, {b, 1, y-1}]
+                                                    & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
+\end{align*}
+If $\phi_i = p$ and $\psi_j = q$ for all $i$ and $j$, then
+
+Suppose event $\omega_k$ is that co-cluster $C_k$ can't be find in any block $B_{(i,j)}$, then
+\begin{align*}
+    P(\omega_k) & = \prod_{i=1}^m \prod_{j=1}^n P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n)                          \\
+                & \le \prod_{i=1}^m \prod_{j=1}^n \exp\{-2 \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \} \\
+                & = \exp\{-2 \sum_{i=1}^m \sum_{j=1}^n \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \}     \\
+\end{align*}
+
+If $\phi_i = \phi$ and $\psi_j = \psi$ for all $i$ and $j$, then
+\begin{align*}
+    s_i^{(k)} & = s^{(k)} = \frac{M^{(k)}}{M}-\frac{T_m-1}{\phi} \\
+    t_j^{(k)} & = t^{(k)} = \frac{N^{(k)}}{N}-\frac{T_n-1}{\psi}
+\end{align*}
+
+\begin{align*}
+    P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \\
+\end{align*}
+
+
+And if we do $T_p$ times of random sampling, the Probability of detecting the co-cluster is
+\begin{align*}
+    P & = 1 - P(\omega_k)^{T_p}                                                        \\
+      & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \\
+\end{align*}
+according to which, we can set $m, n, \phi, \psi, T_m, T_n$ and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
+
+\subsubsection{Nosiy case}
+\subsubsubsection{Assumption}
+Assume each noise $n_{ij}$ complies with a normal distribution $N(0, \sigma^2)$, i.i.d. for all $i$ and $j$. Suppose $\exists \lambda > 0$, such that
+$$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
+
+\subsubsubsection{Score}
+The score of a submatrix $A_{I,J}$ is defined as
+\begin{align}
+    S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\
+    S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle \right) \\
+    S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{I,j_1}, x_{I,j_2}\rangle \right)
+\end{align}
+where $x_{i,J}$ is the $i$-th row of $A_{I,J}$. Here we define the inner product of two vectors $x$ and $y$ as
+$$\langle x, y \rangle = \exp(-\frac{||x - y||_1^2}{2\alpha||x||_1||y||_1})$$
+
+Suppose $A$ is a hidden co-cluster matrix, and $E$ is the noise matrix. Then the observed matrix is $B = A + E$. Consider co-cluster $B_{I,J}$, denote $1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle$ as $s_{row}(i_1, i_2, J)$, then
+\begin{align*}
+    \mathbb{E}(s_{row}(i_1, i_2, J)) & = 1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \mathbb{E}(\langle x_{i_1,J}, x_{i_2,J}\rangle)                                    \\
+                                     & = 1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \exp(-\frac{||x_{i_1,J} - x_{i_2,J}||_1^2}{2\alpha||x_{i_1,J}||_1||x_{i_2,J}||_1}) \\
+                                     & \ge 1 - \exp(-\frac{2}{\alpha \min(||x_{i_1,J}||_1, ||x_{i_2,J}||_1)})                                                                  \\
+                                     & \ge 1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})                                                                             \\
+    \sigma^2(s_{row}(i_1, i_2, J))   & = \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \sigma^2(\langle x_{i_1,J}, x_{i_2,J}\rangle)                                          \\
+                                     & = \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \exp(-\frac{||x_{i_1,J} - x_{i_2,J}||_1^2}{2\alpha||x_{i_1,J}||_1||x_{i_2,J}||_1})     \\
+                                     & \le \sigma^2 \exp(-\frac{2}{\alpha \min(||x_{i_1,J}||_1, ||x_{i_2,J}||_1)})                                                             \\
+                                     & \le \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})                                                                        \\
+\end{align*}
+
+Thus the expected value of $S_{row}(I,J)$ satisfies
+\begin{align*}
+    \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
+    \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})          \\
+\end{align*}
+
+Similarly, we can get
+\begin{align*}
+    \mathbb{E}(S_{col}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
+    \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})          \\
+\end{align*}
+
+Then since $x^2 \le x$ for $x \in (0,1)$, we have
+\begin{align*}
+    \mathbb{E}(S(I,J)) & \ge 1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})             \\
+    \sigma^2(S(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \\
+\end{align*}
+
+According to the Chernoff bound, we have
+\begin{align*}
+    P(S(I,J) \le \mathbb{E}(S(I,J)) - \epsilon)
+     & \ge \exp(-\frac{\epsilon^2}{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda})}) \\
+\end{align*}
+
+Thus if we set $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}) \log(1/\delta)}$, then
+
+\begin{align*}
+    P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta \\
+\end{align*}
+
+Combined with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
+
+\begin{algorithm}[!t]
+    \caption{Probabilistic Ensemble Co-Clustering Method}\label{alg:method}
+    \begin{algorithmic}[1]
+        \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_{thresh}$;}
+        \ENSURE{Co-clustered result $\mathcal{C}$;}
+        \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
+        \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
+        \FOR{$k=1$ to $K$}
+            \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
+            \IF{$P(\omega_k) < P_{thresh}$}
+                \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
+                \STATE Aggregate co-clustered results from each block
+            \ENDIF
+        \ENDFOR
+        \RETURN Aggregated co-clustered result $\mathcal{C}$
+    \end{algorithmic}
+\end{algorithm}
