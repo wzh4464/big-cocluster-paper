@@ -1,13 +1,34 @@
 %%%
- % File: /latex/big-cocluster-paper/sections/experiment.tex
- % Created Date: Tuesday, January 23rd 2024
- % Author: Zihan
- % -----
- % Last Modified: Tuesday, 23rd January 2024 11:22:42 am
- % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
- % -----
- % HISTORY:
- % Date      		By   	Comments
- % ----------		------	---------------------------------------------------------
+% File: /latex/big-cocluster-paper/sections/experiment.tex
+% Created Date: Tuesday, January 23rd 2024
+% Author: Zihan
+% -----
+% Last Modified: Tuesday, 23rd January 2024 11:32:44 am
+% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
+% -----
+% HISTORY:
+% Date      		By   	Comments
+% ----------		------	---------------------------------------------------------
 %%%
 
+\section{Experiments}
+\label{sec:experiment}
+
+\subsection{Datasets}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Your caption here}
+    \resizebox{\textwidth}{!}{% Resize table to fit within the text width
+        \begin{tabular}{@{} l ccccccccccc @{}}
+            \toprule
+            Dataset & Metric & Skmeans & NMFT   & ONMTF   & PenNMTF & WCNMTF  & FNMTF   & BKM     & CoclustInfo & DeepCC  & PNMTF  \\
+            \midrule
+            CLASSIC & NMI    & 0.6914* & 0.5674 & 0.6099  & 0.4398* & 0.6153  & 0.3967* & 0.3842* & 0.6520      & 0.4614* & 0.6210 \\
+            CLASSIC & ARI    & 0.5632* & 0.4287 & 0.4954  & 0.3537* & 0.4933  & 0.1839* & 0.1642* & 0.5777      & 0.3846* & 0.4826 \\
+            NG20    & NMI    & 0.5374* & 0.4984 & 0.4402* & 0.0630* & 0.3951* & 0.0884* & 0.0873* & 0.4711*     & -       & 0.4944 \\
+            % ... more rows here
+            \bottomrule
+        \end{tabular}
+    }
+\end{table}
