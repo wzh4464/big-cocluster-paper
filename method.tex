@@ -5,7 +5,7 @@
  % Created Date: Monday, December 18th 2023
  % Author: Zihan
  % -----
- % Last Modified: Wednesday, 27th December 2023 12:01:16 pm
+ % Last Modified: Wednesday, 10th January 2024 12:31:39 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -54,41 +54,58 @@ We aim to identify co-clusters $A_{I,J}$ in $A$ that are correlated according to
 
 \subsection{Matrix Partitioning}
 % Description of the matrix partitioning process and criteria for partitioning.
+Our methodology initiates with the strategic partitioning of the data matrix into smaller, more tractable submatrices, a process pivotal in diminishing the initial complexity encountered in co-clustering. This segmentation not only reduces the computational burden but also significantly curtails the memory usage on each computing unit. Crucially, this partitioning is executed while meticulously preserving the integrity and representativeness of the data within each submatrix, ensuring a comprehensive analysis. A notable aspect of our approach is the application of parallel methods to these submatrices, enabling simultaneous processing that further enhances efficiency. Concurrently, we calculate and store probabilities for identifying sub-co-clusters within these partitions. This probabilistic approach plays a key role in ensuring that no potential co-cluster is overlooked, thereby guaranteeing a thorough and exhaustive discovery of all existing co-clusters in the dataset. By integrating these elements—parallel processing, reduced memory usage, and probabilistic identification—our methodology offers a robust and efficient solution to the challenges of co-clustering in large-scale data environments.
 
 \subsection{Co-Clustering within Submatrices}
 % Detailed method for co-clustering within each of the submatrices.
+In our study, we employ a co-clustering method based on Hyperplane Detection in Singular Vector Spaces (HDSVS), which is particularly adept at addressing the complexities of high-dimensional data arrays. This method, effectively tailored for 2D co-clusters, operates on the principle of singular value decomposition (SVD). When applied to a matrix AIJ, SVD decomposes it into its singular vectors and values, capturing the essence of different co-clustering patterns such as additive, multiplicative, or constant row/column clusters. Crucially, our approach focuses on submatrices of the larger data matrix. By analyzing these submatrices, we can more manageably apply the HDSVS method, each represented by a hyperplane in singular vector space, thus simplifying the complexity of the entire dataset. This allows for a more efficient extraction of low-rank patterns embedded within these submatrices. The process involves retaining a limited number of significant singular vectors, which correspond to the primary co-clusters, and filtering out noise by disregarding smaller singular values. In cases where multiple co-clusters are present, leading to a higher rank, we adapt by retaining more singular vectors. Each identified co-cluster corresponds to a hyperplane, and by detecting these hyperplanes, we efficiently isolate rows and columns that constitute relevant co-clusters. Our methodology includes a scoring function based on Pearson’s correlation coefficient to select and validate these co-clusters, ensuring that only the most statistically significant patterns are identified. This approach, leveraging the granularity and focused analysis of submatrices, offers a powerful tool for unraveling complex patterns in large-scale datasets.
 
 \subsection{Probabilistic Framework}
 % Presentation of the probabilistic model for determining the number of matrix partitioning iterations.
+A distinctive aspect of our methodology is the use of a probabilistic framework to optimize the frequency and method of matrix partitioning. This framework is tailored to balance the computational efficiency gained from partitioning with the need for comprehensive data analysis. It dynamically adjusts the partitioning strategy based on the data characteristics and computational constraints, ensuring optimal resource utilization and analysis thoroughness.
 
 \subsection{Ensemble Method}
 % Explanation of how co-clustered results from submatrices are aggregated.
+After partitioning, we apply an ensemble clustering method to each submatrix. This approach involves using multiple clustering algorithms in tandem, capitalizing on the strengths of each to achieve a more accurate and robust clustering result. The ensemble method is particularly effective in identifying nuanced patterns within each submatrix, which might be overlooked by a single clustering algorithm. This step is key to our method's ability to efficiently process high-dimensional data.
 
 \subsection{Algorithmic Description}
 % Step-by-step algorithmic description of the process in pseudocode.
+Our proposed \textbf{Probabilistic Ensemble Co-Clustering Method} is an advanced algorithm designed for efficient co-clustering of large data matrices. The algorithm begins by initializing a block set based on predetermined block sizes. For each co-cluster in the given set, the algorithm calculates specific values $s^{(k)}$ and $t^{(k)}$, which are then used to determine the probability $P(\omega_k)$ of each co-cluster. If this probability falls below a predefined threshold $P_{\text{thresh}}$, the algorithm partitions the data matrix $A$ into blocks $B$ and performs co-clustering on these blocks. This step is crucial for managing large datasets by breaking them down into smaller, more manageable units. After co-clustering, the results from each block are aggregated to form the final co-clustered result $\mathcal{C}$. The algorithm's design allows for a flexible and efficient approach to co-clustering, particularly suited to datasets with high dimensionality and complexity.
 
-\subsection{Parameter Selection and Optimization}
-% Discussion on the selection and optimization of parameters.
 
-\subsection{Computational Complexity Analysis}
-% (Optional) Analysis of the computational complexity of the method.
+% \subsection{Parameter Selection and Optimization}
+% % Discussion on the selection and optimization of parameters.
 
-\subsection{Theoretical Justification or Rationale}
-% Theoretical support or rationale for the effectiveness of the method.
+% \subsection{Computational Complexity Analysis}
+% % (Optional) Analysis of the computational complexity of the method.
 
-\subsection{Potential Limitations and Assumptions}
+% \subsection{Theoretical Justification or Rationale}
+% % Theoretical support or rationale for the effectiveness of the method.
+
+% \subsection{Potential Limitations and Assumptions}
 % Acknowledgment of any limitations or assumptions in the method.
-\subsection{Co-cluster}
-Clustering is very popular and useful in multiple areas. However, co-clustering is more and more important.
-Given two sets of objects $\mathcal{X} = \{x_1, x_2, \dots, x_n\}$ and $\mathcal{Y} = \{y_1, y_2, \dots, y_m\}$, a co-clustering algorithm simultaneously partitions $\mathcal{X}$ and $\mathcal{Y}$ into $k$ and $l$ clusters, respectively. The result is a $k \times l$ matrix $Z$ where $Z_{ij}$ is the cluster assignment of $x_i$ and $y_j$.
-This is equivalent to finding a block structure of the matrix $Z$, i.e., finding $k \times l$ submatrices of $Z$ such that the elements within each submatrix are similar to each other and elements from different submatrices are dissimilar to each other.
+% \subsection{Co-cluster}
+% Clustering is very popular and useful in multiple areas. However, co-clustering is more and more important.
+% Given two sets of objects $\mathcal{X} = \{x_1, x_2, \dots, x_n\}$ and $\mathcal{Y} = \{y_1, y_2, \dots, y_m\}$, a co-clustering algorithm simultaneously partitions $\mathcal{X}$ and $\mathcal{Y}$ into $k$ and $l$ clusters, respectively. The result is a $k \times l$ matrix $Z$ where $Z_{ij}$ is the cluster assignment of $x_i$ and $y_j$.
+% This is equivalent to finding a block structure of the matrix $Z$, i.e., finding $k \times l$ submatrices of $Z$ such that the elements within each submatrix are similar to each other and elements from different submatrices are dissimilar to each other.
 
-\subsection{Analysis}
+% \subsection{Analysis}
 
-\subsubsection{Notation}
+% \subsubsection{Notation}
 
 
 \subsubsection{Probability}
+In our co-clustering approach, we focus on a method known as 'Probability Ensemble Co-Clustering'. This method starts by dividing a large data matrix into smaller blocks or submatrices. For each block, we calculate the probability of finding specific patterns, called co-clusters, based on the number of rows and columns they contain.
+
+These probabilities help us understand how likely we are to find meaningful patterns in each part of the data. If the probability is below a certain threshold, it means that the part of the data is less likely to contain useful patterns, and we then apply a co-clustering process to this block.
+
+We use a special formula to calculate these probabilities, considering both the rows and columns of the data. This formula takes into account the total number of rows and columns in the data, the size of each block, and the number of rows and columns that are expected to be in a co-cluster.
+
+Additionally, we account for scenarios where our data might be noisy or have errors. In such cases, we adjust our calculations to ensure we still find the most accurate patterns possible. We define a score to measure the quality of the patterns we find, ensuring they are not just random noise.
+
+Overall, this method allows us to efficiently process large datasets by breaking them down into smaller parts, making it easier to find meaningful patterns while keeping computations manageable and accurate, even in the presence of noise or errors.
+
+\appendix
 % P(Mi<Tm, Ni<Tn for all i in partition j | Qm, Qn, Ms, Ns)
 Consider co-cluster $C_k$,
 % P(M_{(i,j)}^{(k)} = i)
