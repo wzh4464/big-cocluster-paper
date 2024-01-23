@@ -209,3 +209,46 @@
   abstract = {As a novel paradigm for data mining and dimensionality reduction, Non-negative Matrix Tri-Factorization (NMTF) has attracted much attention due to its notable performance and elegant mathematical derivation, and it has been applied to a plethora of real-world applications, such as text data co-clustering. However, the existing NMTF-based methods usually involve intensive matrix multiplications, which exhibits a major limitation of high computational complexity. With the explosion at both the size and the feature dimension of texts, there is a growing need to develop a parallel and scalable NMTF-based algorithm for text data co-clustering. To this end, we first show in this paper how to theoretically derive the original optimization problem of NMTF by introducing the Lagrangian multipliers. Then, we propose to solve the Lagrange dual objective function in parallel through an efficient distributed implementation. Extensive experiments on five benchmark corpora validate the effectiveness, efficiency, and scalability of our distributed parallel update algorithm for an NMTF-based text data co-clustering method.},
   eventtitle = {{{IEEE Transactions}} on {{Knowledge}} and {{Data Engineering}}}
 }
+@article{yan2017CoclusteringMultidimensionalBig,
+  title = {Coclustering of {{Multidimensional Big Data}}: {{A Useful Tool}} for {{Genomic}}, {{Financial}}, and {{Other Data Analysis}}},
+  author = {Yan, Hong},
+  date = {2017-04},
+  journaltitle = {IEEE Systems, Man, and Cybernetics Magazine},
+  shortjournal = {IEEE Syst. Man Cybern. Mag.},
+  volume = {3},
+  number = {2},
+  pages = {23--30},
+  publisher = {{Institute of Electrical and Electronics Engineers (IEEE)}},
+  issn = {2333-942X, 2380-1298},
+  doi = {10.1109/msmc.2017.2664218},
+  abstract = {The analysis of a multidimensional data array is necessary in many applications. Although a data set can be very large, it is possible that meaningful and coherent patterns embedded in the data array are much smaller in size. For example, in genomic data, we may want to find a subset of genes that coexpress under a subset of conditions. In this article, I will explain coclustering algorithms for solving the coherent pattern-detection problem. In these methods, a coherent pattern corresponds to a low-rank matrix or tensor and can be represented as an intersection of hyperplanes in a high-dimensional space. We can then extract coherent patterns from the large data array by detecting hyperplanes. Examples will be provided to demonstrate the effectiveness of the coclustering algorithms for solving unsupervised pattern classification problems.},
+  langid = {english}
+}
+@article{chi2020ProvableConvexCoclustering,
+  title = {Provable {{Convex Co-Clustering}} of {{Tensors}}},
+  author = {Chi, Eric C and Gaines, Brian R and Sun, Will Wei and Zhou, Hua and Yang, Jian},
+  date = {2020},
+  journaltitle = {The Journal of Machine Learning Research},
+  shortjournal = {J. Mach. Learn. Res.},
+  volume = {21},
+  number = {1},
+  pages = {8792--8849},
+  publisher = JMLRORG,
+  abstract = {Cluster analysis is a fundamental tool for pattern discovery of complex heterogeneous data. Prevalent clustering methods mainly focus on vector or matrix-variate data and are not applicable to general-order tensors, which arise frequently in modern scientific and business applications. Moreover, there is a gap between statistical guarantees and computational efficiency for existing tensor clustering solutions due to the nature of their non-convex formulations. In this work, we bridge this gap by developing a provable convex formulation of tensor co-clustering. Our convex co-clustering (CoCo) estimator enjoys stability guarantees and its computational and storage costs are polynomial in the size of the data. We further establish a non-asymptotic error bound for the CoCo estimator, which reveals a surprising ``blessing of dimensionality'' phenomenon that does not exist in vector or matrix-variate cluster analysis. Our theoretical findings are supported by extensive simulated studies. Finally, we apply the CoCo estimator to the cluster analysis of advertisement click tensor data from a major online company. Our clustering results provide meaningful business insights to improve advertising effectiveness.},
+  langid = {english}
+}
+@inproceedings{dhillon2003InformationtheoreticCoclustering,
+  title = {Information-Theoretic Co-Clustering},
+  booktitle = {Proceedings of the Ninth {{ACM SIGKDD}} International Conference on {{Knowledge}} Discovery and Data Mining  - {{KDD}} '03},
+  author = {Dhillon, Inderjit S. and Mallela, Subramanyam and Modha, Dharmendra S.},
+  date = {2003-08-24},
+  series = {{{KDD}} '03},
+  pages = {89--98},
+  publisher = {{Association for Computing Machinery}},
+  location = {{New York, NY, USA}},
+  doi = {10.1145/956750.956764},
+  abstract = {Two-dimensional contingency or co-occurrence tables arise frequently in important applications such as text, web-log and market-basket data analysis. A basic problem in contingency table analysis is co-clustering: simultaneous clustering of the rows and columns. A novel theoretical formulation views the contingency table as an empirical joint probability distribution of two discrete random variables and poses the co-clustering problem as an optimization problem in information theory---the optimal co-clustering maximizes the mutual information between the clustered random variables subject to constraints on the number of row and column clusters. We present an innovative co-clustering algorithm that monotonically increases the preserved mutual information by intertwining both the row and column clusterings at all stages. Using the practical example of simultaneous word-document clustering, we demonstrate that our algorithm works well in practice, especially in the presence of sparsity and high-dimensionality.},
+  eventtitle = {{{ACM Knowledge Discovery}} and {{Data Mining}}},
+  isbn = {978-1-58113-737-8},
+  langid = {english}
+}
