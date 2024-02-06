@@ -1,5 +1,4 @@
-% !TEX program = pdflatex
-% !BIB program = biber
+% !TEX program = latexmk
 
 \documentclass{article}
 
@@ -25,11 +24,12 @@
 \usepackage{graphicx}
 \usepackage{multirow}       % multirow in table
 % \usepackage[numeric]{natbib}
-\usepackage[backend=bibtex,style=ieee]{biblatex}
+\usepackage[backend=biber,style=ieee]{biblatex}
 \bibliography{references}  
 \DeclareFieldFormat{url}{}
 \DeclareFieldFormat{urldate}{}
 \usepackage{doi}
+\usepackage{threeparttable}
 
 % set import path of input files
 \makeatletter
@@ -126,6 +126,7 @@ pdfkeywords={First keyword, Second keyword, More},
 \input{related_work.tex}
 \input{method.tex}
 \input{experiment.tex}
+\input{appendix.tex}
 
 % \begin{table}[b]
 % 	\caption{Sample table title}

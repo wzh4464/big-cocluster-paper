@@ -16,19 +16,67 @@
 
 \subsection{Datasets}
 
+Here we describe the datasets used in our experiments.
+
+\subsubsection{Amazon 1000}
+
+This dataset contains 1000 Amazon reviews, each of which is represented by a 1000-dimensional vector. The dataset is available at \url{http://www.cs.utexas.edu/users/ml/riddle/data.html}.
+% \begin{table}[htbp]
+%     \centering
+%     \caption{Statistics of Amazon 1000 dataset.}
+%     \begin{tabular}{@{} l c c c @{}}
+%         \toprule
+%         Dataset     & \# of rows & \# of columns & \# of nonzeros \\
+%         \midrule
+%         Amazon 1000 & 1000       & 1000          & 1000000        \\
+%         \bottomrule
+%     \end{tabular}
+% \end{table}
+
+\subsubsection{CLASSIC4}
+
+This dataset contains 18000 documents from 20 newsgroups, each of which is represented by a 1000-dimensional vector. The dataset is available at \url{http://www.cs.utexas.edu/users/ml/riddle/data.html}.
+
+
 \begin{table}[htbp]
     \centering
-    \caption{Your caption here}
-    \resizebox{\textwidth}{!}{% Resize table to fit within the text width
-        \begin{tabular}{@{} l ccccccccccc @{}}
-            \toprule
-            Dataset & Metric & Skmeans & NMFT   & ONMTF   & PenNMTF & WCNMTF  & FNMTF   & BKM     & CoclustInfo & DeepCC  & PNMTF  \\
-            \midrule
-            CLASSIC & NMI    & 0.6914* & 0.5674 & 0.6099  & 0.4398* & 0.6153  & 0.3967* & 0.3842* & 0.6520      & 0.4614* & 0.6210 \\
-            CLASSIC & ARI    & 0.5632* & 0.4287 & 0.4954  & 0.3537* & 0.4933  & 0.1839* & 0.1642* & 0.5777      & 0.3846* & 0.4826 \\
-            NG20    & NMI    & 0.5374* & 0.4984 & 0.4402* & 0.0630* & 0.3951* & 0.0884* & 0.0873* & 0.4711*     & -       & 0.4944 \\
-            % ... more rows here
-            \bottomrule
-        \end{tabular}
-    }
+    \caption{Running time of co-clustering methods on Amazon 1000, CLASSIC4, and RCV1-Large datasets.}
+    \begin{tabular}{@{} l ccccc @{}}
+        \toprule
+        Dataset     & SCC (s) & DeepCC & PNMTF (s) & P-SCC (s) & P-PNMTF (s) \\
+        \midrule
+        Amazon 1000 & 64545.2 & *      & 303.7     & 112.5     & 242.8       \\
+        CLASSIC4    & *       & *      & 17,810    & 22,894    & 3,028       \\
+        RCV1-Large  & *       & *      & 277,092   & *         & 208,048     \\
+        % ... more rows here
+        \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Notes: * indicates that the method can't deal with the dataset.
+    \end{tablenotes}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \caption{NMIs and ARIs of co-clustering results on Amazon 1000, CLASSIC4, and RCV1-Large datasets.}
+    \begin{tabular}{@{} l c ccccc @{}}
+        \toprule
+        \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Comparison Methods}                                                         \\
+        \cmidrule{3-7}
+                                    &                         & SCC                                    & DeepCC & PNMTF  & Partitioned SCC & Partitioned PNMTF \\
+        \midrule
+        \multirow{2}{*}{Amazon}     & NMI                     & 0.9223                                 & *      & 0.6894 & 0.8650          & 0.6609            \\
+                                    & ARI                     & 0.7713                                 & *      & 0.6188 & 0.7763          & 0.6057            \\
+        \multirow{2}{*}{CLASSIC4}   & NMI                     & *                                      & *      & 0.5944 & 0.7676          & 0.6073            \\
+                                    & ARI                     & *                                      & *      & 0.4523 & 0.5845          & 0.4469            \\
+        \multirow{2}{*}{RCV1-Large} & NMI                     & *                                      & *      & 0.6519 & 0.8349          & 0.6348            \\
+                                    & ARI                     & *                                      & *      & 0.5383 & 0.7576          & 0.5298            \\
+        % ... more rows here
+        \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Notes: * indicates that the method can't deal with the dataset.
+    \end{tablenotes}
 \end{table}
