@@ -9,7 +9,7 @@ else
 endif
 
 # Directories to watch
-TEX_DIRS = . sections/
+TEX_DIRS = sections/
 IMG_DIRS = images/
 BIB_FILES = *.bib
 
@@ -17,7 +17,7 @@ BIB_FILES = *.bib
 all: $(MAIN).pdf
 
 # Rule to compile the LaTeX document (biber support)
-$(MAIN).pdf: $(foreach dir,$(TEX_DIRS),$(wildcard $(dir)*.tex)) $(foreach dir,$(IMG_DIRS),$(wildcard $(dir)*)) $(BIB_FILES)
+$(MAIN).pdf: main.tex $(foreach dir,$(TEX_DIRS),$(wildcard $(dir)*.tex)) $(foreach dir,$(IMG_DIRS),$(wildcard $(dir)*)) $(BIB_FILES)
 	latexmk -synctex=1 -interaction=nonstopmode -file-line-error -pdf -use-make $(MAIN).tex
 	latexmk -c
 clean:
