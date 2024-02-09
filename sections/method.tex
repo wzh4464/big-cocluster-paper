@@ -5,7 +5,7 @@
  % Created Date: Monday, December 18th 2023
  % Author: Zihan
  % -----
- % Last Modified: Friday, 9th February 2024 8:07:44 pm
+ % Last Modified: Friday, 9th February 2024 8:11:15 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -76,7 +76,8 @@ Based on \Cref{eq:prob_of_identifying_all_co_clusters}, we can establish a const
 This constraint ensures that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation. The model assesses various partitioning configurations, taking into account the computational resources available and the theoretical constraints to identify the most efficient partitioning strategy. 
 
 \subsubsection{Optimization and Computational Efficiency}
-Optimizing the partitioning process for computational efficiency is paramount in both academic and industrial applications, where running time often serves as the primary bottleneck. Thanks to the flexible framework established by our probabilistic model and the constraints derived in Theorem \ref{thm:rep_partitioning_constraint}, our optimization strategy can be tailored to address the most critical needs of a given context. In this case, we focus on minimizing the running time without compromising the integrity and success rate of co-cluster identification.
+Optimizing the partitioning process for computational efficiency is paramount in both academic and industrial applications, where running time often serves as the primary bottleneck. Thanks to the flexible framework established by our probabilistic model and the constraints derived in Theorem 1, our optimization strategy can be tailored to address the most critical needs of a given context. In this case, we focus on minimizing the running time without compromising the integrity and success rate of co-cluster identification.
+%TODO check the theorem number
 
 Our approach to optimization leverages the probabilistic model to assess various partitioning configurations, balancing the trade-off between computational resource allocation and the need to adhere to theoretical success thresholds. By systematically evaluating the impact of different partitioning schemes on running time, we can identify strategies that not only meet our co-clustering success criteria but also optimize the use of computational resources.
 
