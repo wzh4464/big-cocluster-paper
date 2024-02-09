@@ -3,7 +3,7 @@
  % Created Date: Tuesday, January 23rd 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 23rd January 2024 2:26:24 pm
+ % Last Modified: Friday, 9th February 2024 8:07:32 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -127,20 +127,3 @@ Thus if we set $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}
 
 Combined with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
-\begin{algorithm}[!t]
-    \caption{Probabilistic Ensemble Co-Clustering Method}\label{alg:method}
-    \begin{algorithmic}[1]
-        \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_{thresh}$;}
-        \ENSURE{Co-clustered result $\mathcal{C}$;}
-        \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
-        \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
-        \FOR{$k=1$ to $K$}
-            \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
-            \IF{$P(\omega_k) < P_{thresh}$}
-                \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
-                \STATE Aggregate co-clustered results from each block
-            \ENDIF
-        \ENDFOR
-        \RETURN Aggregated co-clustered result $\mathcal{C}$
-    \end{algorithmic}
-\end{algorithm}
