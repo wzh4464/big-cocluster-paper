@@ -5,7 +5,7 @@
  % Created Date: Monday, December 18th 2023
  % Author: Zihan
  % -----
- % Last Modified: Friday, 9th February 2024 8:11:15 pm
+ % Last Modified: Saturday, 10th February 2024 8:45:50 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -133,7 +133,7 @@ gives the solution to \Cref{eq:eigenvalue_problem}. To be more specific, the sin
 The above discussion is under the assumption that the graph has only one connected component. In a more general setting, $\mathbf{u_2}, \mathbf{u_3}, \ldots, \mathbf{u_{l+1}}$ and $\mathbf{v_2}, \mathbf{v_3}, \ldots, \mathbf{v_{l+1}}$ reveal the $k$-modal information of the graph, where $\mathbf{u_k}$ and $\mathbf{v_k}$ are the $k$-th left and right singular vectors of $A_n$, respectively.
 And for the last step, 
 $$ Z = \begin{bmatrix} D_1^{-1/2} \hat{U} \\ D_2^{-1/2} \hat{V} \end{bmatrix} $$
-is stacked where $\hat{U} = [\mathbf{u_2}, \mathbf{u_3}, \ldots, \mathbf{u_{l+1}}]$ and $\hat{V} = [\mathbf{v_2}, \mathbf{v_3}, \ldots, \mathbf{v_{l+1}}]$. The approximation to the graph partitioning optimization problem is then solved by applying a $k$-means algorithm to the rows of $Z$. More details can be found in \cite{dhillon2001CoclusteringDocumentsWords}.
+is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}}]$ and $\hat{V} = [\mathbf{v_2}; \mathbf{v_3}; \ldots; \mathbf{v_{l+1}}]$. The approximation to the graph partitioning optimization problem is then solved by applying a $k$-means algorithm to the rows of $Z$. More details can be found in \cite{dhillon2001CoclusteringDocumentsWords}.
 
 \subsection{Ensemble Method}
 % Explanation of how co-clustered results from submatrices are aggregated.
