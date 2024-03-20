@@ -3,7 +3,7 @@
  % Created Date: Tuesday, January 23rd 2024
  % Author: Zihan
  % -----
- % Last Modified: Friday, 9th February 2024 8:07:32 pm
+ % Last Modified: Wednesday, 20th March 2024 12:45:58 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -68,12 +68,12 @@ And if we do $T_p$ times of random sampling, the Probability of detecting the co
 \end{align*}
 according to which, we can set $m, n, \phi, \psi, T_m, T_n$ and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
-\subsubsection{Nosiy case}
-\subsubsubsection{Assumption}
+\subsection{Nosiy case}
+\subsubsection{Assumption}
 Assume each noise $n_{ij}$ complies with a normal distribution $N(0, \sigma^2)$, i.i.d. for all $i$ and $j$. Suppose $\exists \lambda > 0$, such that
 $$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
 
-\subsubsubsection{Score}
+\subsubsection{Score}
 The score of a submatrix $A_{I,J}$ is defined as
 \begin{align}
     S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\

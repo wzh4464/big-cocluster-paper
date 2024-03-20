@@ -1,15 +1,18 @@
 % !TEX program = latexmk
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+% \IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
 
-\documentclass{article}
-
-\usepackage{arxiv}
+% \usepackage{arxiv}
 \usepackage{algorithm,algorithmic}
 \usepackage{bm}
 \usepackage{amsmath}
 \usepackage{amssymb}
 % \usepackage{mathptmx} 
 % theorems
-\usepackage{amsthm}
+% \usepackage{amsthm}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -43,18 +46,18 @@
 % set image path
 \graphicspath{{images/}}
 
-\title{Innovative Hierarchical Ensemble Co-clustering: Framework of Big Data Co-clustering}
+\title{\LARGE \bf Innovative Hierarchical Ensemble Co-clustering: Framework of Big Data Co-clustering}
 
 % Here you can change the date presented in the paper title
 %\date{September 9, 1985}
 % Or remove it
 %\date{}
 
-\newif\ifuniqueAffiliation
-% Uncomment to use multiple affiliations variant of author block 
-\uniqueAffiliationtrue
+% \newif\ifuniqueAffiliation
+% % Uncomment to use multiple affiliations variant of author block 
+% \uniqueAffiliationtrue
 
-\ifuniqueAffiliation % Standard variant of author block
+% \ifuniqueAffiliation % Standard variant of author block
 \author{ 
 	% \href{https://orcid.org/0000-0000-0000-0000}{\includegraphics[scale=0.06]{orcid.pdf}\hspace{1mm}David S.~Hippocampus}\thanks{Use footnote for providing further
 	% 	information about author (webpage, alternative
@@ -86,27 +89,27 @@
 	% Address \\
 	% \texttt{email} \\
 }
-\else
+% \else
 % Multiple affiliations variant of author block
-\usepackage{authblk}
-\renewcommand\Authfont{\bfseries}
-\setlength{\affilsep}{0em}
-% box is needed for correct spacing with authblk
-\newbox{\orcid}\sbox{\orcid}{\includegraphics[scale=0.06]{orcid.pdf}} 
-\author[1]{%
-	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}David S.~Hippocampus\thanks{\texttt{hippo@cs.cranberry-lemon.edu}}}%
-}
-\author[1,2]{%
-	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}Elias D.~Striatum\thanks{\texttt{stariate@ee.mount-sheikh.edu}}}%
-}
-\affil[1]{Department of Computer Science, Cranberry-Lemon University, Pittsburgh, PA 15213}
-\affil[2]{Department of Electrical Engineering, Mount-Sheikh University, Santa Narimana, Levand}
-\fi
+% \usepackage{authblk}
+% \renewcommand\Authfont{\bfseries}
+% \setlength{\affilsep}{0em}
+% % box is needed for correct spacing with authblk
+% \newbox{\orcid}\sbox{\orcid}{\includegraphics[scale=0.06]{orcid.pdf}} 
+% \author[1]{%
+% 	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}David S.~Hippocampus\thanks{\texttt{hippo@cs.cranberry-lemon.edu}}}%
+% }
+% \author[1,2]{%
+% 	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}Elias D.~Striatum\thanks{\texttt{stariate@ee.mount-sheikh.edu}}}%
+% }
+% \affil[1]{Department of Computer Science, Cranberry-Lemon University, Pittsburgh, PA 15213}
+% \affil[2]{Department of Electrical Engineering, Mount-Sheikh University, Santa Narimana, Levand}
+% \fi
 
 % Uncomment to override  the `A preprint' in the header
 %\renewcommand{\headeright}{Technical Report}
 %\renewcommand{\undertitle}{Technical Report}
-\renewcommand{\shorttitle}{\textit{arXiv} Template}
+% \renewcommand{\shorttitle}{\textit{arXiv} Template}
 
 % new command
 %% define \cite{} to represent ~\autocite{}
@@ -124,6 +127,9 @@ pdfkeywords={First keyword, Second keyword, More},
 
 \begin{document}
 \maketitle
+
+\thispagestyle{empty}
+\pagestyle{empty}
 
 \input{abstract.tex}
 \input{introduction.tex}
