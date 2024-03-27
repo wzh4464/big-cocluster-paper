@@ -15,27 +15,24 @@
 %%%
 
 \section{Related work}
-\subsection{Neural Network models}
-Dong \textit{et al.}\cite{dongkuanxu2019DeepCoClustering} proposed DeepCC, the first practical deep-learning model for co-clustering. DeepCC employs deep autoencoders and Gaussian Mixture Models to simultaneously cluster instances and features in an end-to-end fashion. A mutual information loss connects the joint instance and feature representation learning.
-However, DeepCC faces challenges in computational efficiency and parameter tuning. 
-%  {\color{blue} However, DeepCC is limited to static data, because it does not support incremental updates. Besides, DeepCC does not scale well to large datasets due to its high computational complexity.
-% Besides, DeepCC does not scale well to large datasets due to its high computational complexity.
-% If others said these cons, you need to add ref to show not you diss DeepCC}.
+\label{sec:related_work}
+\subsection{Co-clustering Models}
 
-\subsection{Matrix factorization}
-%TODO: Overview: \cite{lin2019OverviewCoClusteringMatrix}
-Kluger et al. \cite{kluger2003SpectralBiclusteringMicroarray} developed a spectral biclustering method that utilizes Singular Value Decomposition (SVD) to find checkerboard structures corresponding to genes differentially expressed across subsets of conditions in gene expression data.   
+The conception of \emph{biclustering}, where the row and column of data are clustered simultaneously, had first been introduced in\cite{hartigan1972DirectClusteringData} while analyzing gene expression data. Since then, this conception was further expanded for many other areas as \emph{co-clustering}; several models have been developed to overcome different challenges.
 
-A pivotal shift in co-clustering methodology emerged with the adoption of matrix factorization techniques. This approach, fundamentally different from traditional clustering methods, factors the data matrix into multiple matrices, revealing underlying patterns and associations between rows and columns. The introduction of Non-negative Matrix Factorization (NMF) in co-clustering marked a significant advancement. By decomposing the sample-feature matrix into separate matrices for samples and features, NMF-based co-clustering techniques, such as the orthogonal NMTF by Ding \textit{et al.} \cite{ding2006OrthogonalNonnegativeMatrix}, provided a more interpretable and efficient way to identify clusters. 
+Spectral Co-clustering method with the Singular Value Decomposition (SVD) introduced by  Dhillon \textit{et al.} \cite{dhillon2001CoclusteringDocumentsWords} was then popularized because it is associated with simplicity and effectiveness. This method has given birth to two great directions in co-clustering: graph-based and matrix factorization-based approaches. 
 
-Following this, various enhancements and extensions to matrix factorization in co-clustering were proposed. Methods like Fast Non-negative Matrix Tri-factorization (FNMTF) \cite{wang2019DualHypergraphRegularized}and Bilateral k-means (BKM) \cite{junweihan2017BilateralKMeansAlgorithm} further refined the approach by introducing constraints and optimizations that improved computational speed and accuracy.  
+The most widely used graph-based co-clustering method to date is FBGPC\cite{chen2023FastFlexibleBipartitea}: a flexible bipartite graph model applied on the original data. In contrast, the most popular matrix factorization-based method, NMTF\cite{long2005CoclusteringBlockValue}, decomposes the data to simpler matrices to find the underlying patterns. 
 
-The matrix factorization-based co-clustering has not only been limited to static data analysis but also extended to dynamic scenarios. This adaptation is evident in applications like real-time collaborative filtering and online text mining, where the ability to update co-clusters incrementally becomes crucial \cite{daruru2009PervasiveParallelismData}.
+DeepCC\cite{dongkuanxu2019DeepCoClustering} is the first deep learning model for co-clustering data, using deep autoencoders and Gaussian Mixture Models for better clustering of data. However, the innovations it brings bear upon the computational efficiency that DeepCC grapples with, besides many kinds of data types. 
 
+However, these methods have limitations with large datasets due to their complex computational demands. Thus parallelizing co-clustering is essential to address these challenges.
 
+\subsection{Parallelizing Co-clustering}
 
-% Now, to process big data, MTF is the most popular method. \cite{chen2023ParallelNonNegativeMatrix}
+To address the big data challenge, parallelizing co-clustering methods emerged as a solution. 
+\cite{cheng2015CoClusterDDistributedFramework} introduced a distributed co-clustering framework, CoClusterD, which alternates minimization co-clustering (AMCC) algorithm with sequential updates and built up a distributed co-clustering framework. However, iterations are not guaranteed in advance thus in-efficiency in computation.
 
- {\color{blue} While matrix factorization techniques have shown promise for co-clustering large datasets, scaling to massive high-dimensional data remains an open challenge. } Chen et al. \cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization method that distributes computation across multiple nodes to accelerate factorizations.  {\color{blue} However, such approaches still struggle with web-scale data.}
+While matrix factorization techniques have shown promise for co-clustering large datasets, scaling to massive high-dimensional data remains an open challenge. Chen \textit{et al.}\cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization method that distributes computation across multiple nodes to accelerate factorizations. However, such approaches still struggle with web-scale data.
 
 Our proposed method takes a divide-and-conquer approach, directly partitioning the input matrix into smaller submatrices before co-clustering each one in parallel. This blocks the original high dimensionality to make co-clustering feasible. The separate results are then ensembled to produce final co-clusters. This represents a new paradigm tailored for big data that sidesteps computational barriers by transforming the problem space rather than relying solely on distributed computing optimizations.
