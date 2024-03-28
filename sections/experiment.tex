@@ -11,6 +11,50 @@
 % ----------		------	---------------------------------------------------------
 %%%
 
+\begin{table*}[htbp]
+    \centering
+    \caption{Running time of co-clustering methods on Amazon 1000, CLASSIC4, and RCV1-Large datasets.}
+    \label{tab:running-time}
+    \begin{tabular}{@{} l ccccc @{}}
+        \toprule
+        Dataset     & SCC (s) & DeepCC & PNMTF (s) & P-SCC (s) & P-PNMTF (s) \\
+        \midrule
+        Amazon 1000 & 64545.2 & *      & 303.7     & 112.5     & 242.8       \\
+        CLASSIC4    & *       & *      & 17,810    & 22,894    & 3,028       \\
+        RCV1-Large  & *       & *      & 277,092   & *         & 208,048     \\
+        % ... more rows here
+        \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Notes: * indicates that the method can't deal with the dataset.
+    \end{tablenotes}
+\end{table*}
+
+\begin{table*}[htbp]
+    \centering
+    \caption{NMIs and ARIs of co-clustering results on Amazon 1000, CLASSIC4, and RCV1-Large datasets.}
+    \label{tab:evaluation-metrics}
+    \begin{tabular}{@{} l c ccccc @{}}
+        \toprule
+        \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Comparison Methods}                                                         \\
+        \cmidrule{3-7}
+                                    &                         & SCC                                    & DeepCC & PNMTF  & Partitioned SCC & Partitioned PNMTF \\
+        \midrule
+        \multirow{2}{*}{Amazon}     & NMI                     & 0.9223                                 & *      & 0.6894 & 0.8650          & 0.6609            \\
+                                    & ARI                     & 0.7713                                 & *      & 0.6188 & 0.7763          & 0.6057            \\
+        \multirow{2}{*}{CLASSIC4}   & NMI                     & *                                      & *      & 0.5944 & 0.7676          & 0.6073            \\
+                                    & ARI                     & *                                      & *      & 0.4523 & 0.5845          & 0.4469            \\
+        \multirow{2}{*}{RCV1-Large} & NMI                     & *                                      & *      & 0.6519 & 0.8349          & 0.6348            \\
+                                    & ARI                     & *                                      & *      & 0.5383 & 0.7576          & 0.5298            \\
+        % ... more rows here
+        \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+        \small
+        \item Notes: * indicates that the method can't deal with the dataset.
+    \end{tablenotes}
+\end{table*}
 \section{Experiments}
 \label{sec:experiment}
 
@@ -56,48 +100,3 @@ The results of the experiments are summarized in Table \ref{tab:running-time} an
 The results demonstrate the proposed method's ability to efficiently handle large-scale datasets without compromising the quality of co-cluster identification. The method's adaptability to different data characteristics and its capacity for parallel processing make it a promising candidate for applications in text analysis, biomedical data analysis, and financial pattern recognition.
 
 In conclusion, the experiments validate that the Probabilistic Ensemble Co-Clustering Method is an efficient and accurate approach for analyzing large data matrices. The method's innovative partitioning strategy and ensemble clustering technique offer a new direction for scalable and precise co-clustering in data analysis.
-
-\begin{table*}[htbp]
-    \centering
-    \caption{Running time of co-clustering methods on Amazon 1000, CLASSIC4, and RCV1-Large datasets.}
-    \label{tab:running-time}
-    \begin{tabular}{@{} l ccccc @{}}
-        \toprule
-        Dataset     & SCC (s) & DeepCC & PNMTF (s) & P-SCC (s) & P-PNMTF (s) \\
-        \midrule
-        Amazon 1000 & 64545.2 & *      & 303.7     & 112.5     & 242.8       \\
-        CLASSIC4    & *       & *      & 17,810    & 22,894    & 3,028       \\
-        RCV1-Large  & *       & *      & 277,092   & *         & 208,048     \\
-        % ... more rows here
-        \bottomrule
-    \end{tabular}
-    \begin{tablenotes}
-        \small
-        \item Notes: * indicates that the method can't deal with the dataset.
-    \end{tablenotes}
-\end{table*}
-
-\begin{table*}[htbp]
-    \centering
-    \caption{NMIs and ARIs of co-clustering results on Amazon 1000, CLASSIC4, and RCV1-Large datasets.}
-    \label{tab:evaluation-metrics}
-    \begin{tabular}{@{} l c ccccc @{}}
-        \toprule
-        \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Comparison Methods}                                                         \\
-        \cmidrule{3-7}
-                                    &                         & SCC                                    & DeepCC & PNMTF  & Partitioned SCC & Partitioned PNMTF \\
-        \midrule
-        \multirow{2}{*}{Amazon}     & NMI                     & 0.9223                                 & *      & 0.6894 & 0.8650          & 0.6609            \\
-                                    & ARI                     & 0.7713                                 & *      & 0.6188 & 0.7763          & 0.6057            \\
-        \multirow{2}{*}{CLASSIC4}   & NMI                     & *                                      & *      & 0.5944 & 0.7676          & 0.6073            \\
-                                    & ARI                     & *                                      & *      & 0.4523 & 0.5845          & 0.4469            \\
-        \multirow{2}{*}{RCV1-Large} & NMI                     & *                                      & *      & 0.6519 & 0.8349          & 0.6348            \\
-                                    & ARI                     & *                                      & *      & 0.5383 & 0.7576          & 0.5298            \\
-        % ... more rows here
-        \bottomrule
-    \end{tabular}
-    \begin{tablenotes}
-        \small
-        \item Notes: * indicates that the method can't deal with the dataset.
-    \end{tablenotes}
-\end{table*}
