@@ -1,18 +1,18 @@
 %%%
- % File: /latex/big-cocluster-paper/sections/appendix.tex
- % Created Date: Tuesday, January 23rd 2024
- % Author: Zihan
- % -----
- % Last Modified: Friday, 9th February 2024 8:07:32 pm
- % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
- % -----
- % HISTORY:
- % Date      		By   	Comments
- % ----------		------	---------------------------------------------------------
+% File: /latex/big-cocluster-paper/sections/appendix.tex
+% Created Date: Tuesday, January 23rd 2024
+% Author: Zihan
+% -----
+% Last Modified: Wednesday, 27th March 2024 10:40:18 pm
+% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
+% -----
+% HISTORY:
+% Date      		By   	Comments
+% ----------		------	---------------------------------------------------------
 %%%
 
+\newpage
 \appendix
-\section*{Appendix}
 % P(Mi<Tm, Ni<Tn for all i in partition j | Qm, Qn, Ms, Ns)
 Consider co-cluster $C_k$,
 % P(M_{(i,j)}^{(k)} = i)
@@ -37,9 +37,9 @@ where $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
 
 The joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
 \begin{align*}
-    P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
+    P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                               \\ & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
     % pq[x_, y_] := Sum[p[a] * q[b], {a, 1, x-1}, {b, 1, y-1}]
-                                                    & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
+                      & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
 \end{align*}
 If $\phi_i = p$ and $\psi_j = q$ for all $i$ and $j$, then
 
@@ -68,12 +68,12 @@ And if we do $T_p$ times of random sampling, the Probability of detecting the co
 \end{align*}
 according to which, we can set $m, n, \phi, \psi, T_m, T_n$ and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
-\subsubsection{Nosiy case}
-\subsubsubsection{Assumption}
+\subsection{Nosiy case}
+\subsubsection{Assumption}
 Assume each noise $n_{ij}$ complies with a normal distribution $N(0, \sigma^2)$, i.i.d. for all $i$ and $j$. Suppose $\exists \lambda > 0$, such that
 $$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
 
-\subsubsubsection{Score}
+\subsubsection{Score}
 The score of a submatrix $A_{I,J}$ is defined as
 \begin{align}
     S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\
