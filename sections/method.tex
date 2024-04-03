@@ -16,9 +16,9 @@
 \section{Hierarchical Ensemble Framework for Co-clustering Large Matrices}
 \label{sec:method}
 
-\subsection{Method Overview}
+\subsection{Overview}
 
-In this paper, we suggest a totally new and revolutionary approach applied to the classical problem of co-clustering matrices of large dimensions. This contribution arises from the central idea of our method, which consists in decomposing the large matrices into smaller, digestible submatrices. Such partitioning is not arbitrary but guided to some extent by our developed optimal big matrix partitioning algorithm. It follows a probabilistic model that offers accurate estimations of the optimal number and the sequence of partitions for efficiency and effectiveness processes. Further, an important aspect is that to split the computational heavy task of co-clustering the large matrix into smaller, parallelizable tasks. This way, we will be able to sharply reduce the computational burden and achieve better scalability by our method.
+In this paper, we propose a novel hierarchical ensemble framework for co-clustering large matrices. This contribution arises from the central idea of our method, which consists in decomposing the large matrices into smaller, digestible submatrices. Such partitioning is not arbitrary but guided to some extent by our developed optimal big matrix partitioning algorithm. It follows a probabilistic model that offers accurate estimations of the optimal number and the sequence of partitions for efficiency and effectiveness processes. Further, an important aspect is that to split the computational heavy task of co-clustering the large matrix into smaller, parallelizable tasks. This way, we will be able to sharply reduce the computational burden and achieve better scalability by our method.
 
 Upon partitioning, co-clustering is performed to each submatrix, that is, through the application of SVD and $k$-means on the resulting singular vectors. This step is important, ensuring adaptivity in clustering; hence, the capability to adapt to the peculiar characteristics of each sub-matrix. It becomes even more flexible in the sense that this does not define the co-clustering algorithm. In our paper, we demonstrate the process with SVD and K-means, but any can be used meeting a certain level of accuracy.
 
