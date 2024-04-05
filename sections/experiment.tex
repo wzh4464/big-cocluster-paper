@@ -17,7 +17,7 @@
     \label{tab:running-time}
     \begin{tabular}{@{} l ccccc @{}}
         \toprule
-        Dataset     & SCC (s) & DeepCC & PNMTF (s) & P-SCC (s) & P-PNMTF (s) \\
+        Dataset     & SCC (s) & DeepCC & PNMTF (s) & DPHE-SCC (s) & DPHE-PNMTF (s) \\
         \midrule
         Amazon 1000 & 64545.2 & *      & 303.7     & 112.5     & 242.8       \\
         CLASSIC4    & *       & *      & 17,810    & 22,894    & 3,028       \\
@@ -39,7 +39,7 @@
         \toprule
         \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{5}{c}{Comparison Methods}                                                         \\
         \cmidrule{3-7}
-                                    &                         & SCC                                    & DeepCC & PNMTF  & Partitioned SCC & Partitioned PNMTF \\
+                                    &                         & SCC                                    & DeepCC & PNMTF  & DPHE-SCC & DPHE-PNMTF \\
         \midrule
         \multirow{2}{*}{Amazon}     & NMI                     & 0.9223                                 & *      & 0.6894 & 0.8650          & 0.6609            \\
                                     & ARI                     & 0.7713                                 & *      & 0.6188 & 0.7763          & 0.6057            \\
@@ -82,8 +82,10 @@ The experiments followed the procedure outlined in Algorithm \ref{alg:method}. T
     \item Spectral Co-Clustering (SCC)
     \item Deep Co-Clustering (DeepCC)
     \item Parallel Non-negative Matrix Tri-Factorization (PNMTF)
-    \item Partitioned Spectral Co-Clustering (P-SCC)
-    \item Partitioned Parallel Non-negative Matrix Tri-Factorization (P-PNMTF)
+    % \item Partitioned Spectral Co-Clustering (P-SCC)
+    % \item Partitioned Parallel Non-negative Matrix Tri-Factorization (P-PNMTF)
+    \item Dynamic Partitioned and Hierarchical Ensemble Co-Clustering with Spectral Co-Clustering (DPHE-SCC)
+    \item Dynamic Partitioned and Hierarchical Ensemble Co-Clustering with Parallel Non-negative Matrix Tri-Factorization (DPHE-PNMTF)
 \end{itemize}
 
 \subsection{Evaluation Metrics}
