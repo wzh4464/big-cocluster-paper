@@ -1,15 +1,4 @@
-%%%
-% File: /latex/big-cocluster-paper/sections/experiment.tex
-% Created Date: Tuesday, January 23rd 2024
-% Author: Zihan
-% -----
-% Last Modified: Tuesday, 23rd January 2024 11:32:44 am
-% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
-% -----
-% HISTORY:
-% Date      		By   	Comments
-% ----------		------	---------------------------------------------------------
-%%%
+% sectionis/experiment.tex
 
 \begin{table*}[htbp]
     \centering
@@ -27,7 +16,7 @@
     \end{tabular}
     \begin{tablenotes}
         \small
-        \item Notes: * indicates that the method can't deal with the dataset.
+        \item Notes: * indicates that the method cannot deal with the dataset.
     \end{tablenotes}
 \end{table*}
 
@@ -58,7 +47,7 @@
 \section{Experiments}
 \label{sec:experiment}
 
-\subsection{Experimental Setup}
+\subsection{Experiment Setup}
 
 This section presents the empirical evaluation of the proposed Probabilistic Ensemble Co-Clustering Method. The experiments aim to assess the method's performance in terms of efficiency, scalability, and accuracy when applied to large data matrices.
 
@@ -93,11 +82,11 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 
 \begin{itemize}
     \item Normalized Mutual Information (NMI): Quantifies the mutual information between the co-clusters obtained and the ground truth, normalized to [0, 1] range, where 1 indicates perfect overlap.
-    \item Adjusted Rand Index (ARI): Adjusts the Rand Index for chance, providing a measure of the agreement between two clusterings, with values ranging from -1 (complete disagreement) to 1 (perfect agreement).
+    \item Adjusted Rand Index (ARI): Adjusts the Rand Index for chance, providing a measure of the agreement between two clusterings, with values ranging from $-1$ (complete disagreement) to 1 (perfect agreement).
 \end{itemize}
 
 \subsection{Results}
-The results of the experiments are summarized in Table \ref{tab:running-time} and Table \ref{tab:evaluation-metrics}. The proposed method outperformed the comparison methods in terms of efficiency, scalability, and accuracy, as evidenced by the running time and evaluation metrics.
+The results of the experiments are summarized in Tables \ref{tab:running-time} and \ref{tab:evaluation-metrics}. The proposed method outperformed the comparison methods in terms of efficiency, scalability, and accuracy, as evidenced by the running time and evaluation metrics.
 
 The results demonstrate the proposed method's ability to efficiently handle large-scale datasets without compromising the quality of co-cluster identification. The method's adaptability to different data characteristics and its capacity for parallel processing make it a promising candidate for applications in text analysis, biomedical data analysis, and financial pattern recognition.
 

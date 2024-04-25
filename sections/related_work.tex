@@ -1,18 +1,4 @@
-% !TeX root = main.tex
-
-%%%
-% File: /latex/big-cocluster-paper/related_work.tex
-% Created Date: Monday, December 18th, 2023
-% Author: Zihan
-% -----
-% Last Modified: Monday, 18th December 2023 5:23:36 pm
-% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
-% -----
-% HISTORY:
-% Date      		By   	Comments
-% ----------		------	---------------------------------------------------------
-% 19-12-2023		Zihan	Complete the first draft of Related Work
-%%%
+% sectionis/related_work.tex
 
 \section{Related work}
 \label{sec:related_work}
@@ -26,12 +12,13 @@ The most widely used graph-based co-clustering method to date is FBGPC\cite{chen
 
 DeepCC\cite{dongkuanxu2019DeepCoClustering} is the first deep learning model for co-clustering data, using deep autoencoders and Gaussian Mixture Models for better clustering of data. However, the innovations it brings bear upon the computational efficiency that DeepCC grapples with, besides many kinds of data types. 
 
-However, these methods have limitations with large datasets due to their complex computational demands. Thus parallelizing co-clustering is essential to address these challenges.
+% However, these methods have limitations with large datasets due to their complex computational demands. Thus parallelizing co-clustering is essential to address these challenges.
+
+However, this method is an iterative approach and its efficiency highly depends on the sparsity of the input data.
 
 \subsection{Parallelizing Co-clustering}
 
-To address the big data challenge, parallelizing co-clustering methods emerged as a solution. 
-\cite{cheng2015CoClusterDDistributedFramework} introduced a distributed co-clustering framework, CoClusterD, which alternates minimization co-clustering (AMCC) algorithm with sequential updates and built up a distributed co-clustering framework. However, iterations are not guaranteed in advance thus in-efficiency in computation.
+To address the big data challenge, parallelizing co-clustering methods emerged as a solution. Cheng, Su, Gao, and Yin introduced a distributed co-clustering framework, CoClusterD\cite{cheng2015CoClusterDDistributedFramework}, which alternates minimization co-clustering (AMCC) algorithm with sequential updates and built up a distributed co-clustering framework. However, iterations are not guaranteed in advance thus in-efficiency in computation.
 
 While matrix factorization techniques have shown promise for co-clustering large datasets, scaling to massive high-dimensional data remains an open challenge. Chen \textit{et al.}\cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization method that distributes computation across multiple nodes to accelerate factorizations. However, such approaches still struggle with web-scale data.
 
