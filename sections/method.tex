@@ -1,7 +1,7 @@
 % @Author: Your name
 % @Date:   2024-04-20 21:21:00
 % @Last Modified by:   Your name
-% @Last Modified time: 2024-04-30 23:45:00
+% @Last Modified time: 2024-04-30 23:52:00
 % sectionis/method.tex
 
  \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
@@ -131,9 +131,7 @@ is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}
 % Explanation of how co-clustered results from submatrices are aggregated.
 
 Hierarchical co-cluster merging is a novel approach that combines the results of co-clustering on submatrices to produce a final co-clustered result.
-The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the complementary strengths of multiple clustering algorithms. This approach is particularly effective in identifying nuanced patterns within each submatrix, which might be overlooked by a single clustering algorithm. The merging method is key to our method's ability to efficiently process high-dimensional data.
-
-After partitioning, we apply an ensemble clustering method to each submatrix. This approach involves using multiple clustering algorithms in tandem, capitalizing on the strengths of each to achieve a more accurate and robust clustering result. The ensemble method is particularly effective in identifying nuanced patterns within each submatrix, which might be overlooked by a single clustering algorithm. This step is key to our method's ability to efficiently process high-dimensional data.
+The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the design of the partitioning algorithm. The hierarchical merging process iteratively combines the co-clusters from each submatrix, ensuring that the final co-clustered result is comprehensive and consistent across all submatrices. This iterative merging process is crucial for addressing issues of heterogeneity and model uncertainty, ensuring that the final co-clustering results are reliable and robust.
 
 \subsection{Algorithmic Description}
 % Step-by-step algorithmic description of the process in pseudocode.
