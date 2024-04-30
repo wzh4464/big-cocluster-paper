@@ -4,60 +4,42 @@
 % @Last Modified time: 2024-04-25 10:44:42
 % sectionis/method.tex
 
-\section{Hierarchical Ensemble Framework for Co-clustering Large Matrices}
+ \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
+\subsection{Mathematical Formulation of Co-clustering}
+Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous sub-matrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters.
+
+When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a block-diagonal matrix, where each block represents a co-cluster with higher similarity within than between blocks. We define the row and column label sets as \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \), respectively. Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) are used to assign rows and columns to clusters, with the constraints \( \sum_k R_{i,k} = 1 \) and \( \sum_d C_{j,d} = 1 \), ensuring each row and column is assigned to exactly one cluster.
+ 
+\subsection{Problem Statement}
+This paper aims to develop a method that efficiently and accurately identifies co-clusters $\mathbf{A}_{I, J}$ within a matrix $\mathbf{A}$ representing large datasets. These co-clusters should exhibit specific structural patterns such as uniformity across elements, consistency along rows or columns, or patterns demonstrating additive or multiplicative coherence. Properly identifying and categorizing these patterns is crucial for understanding the complex data structures inherent in large datasets. This method is intended to improve the detection capabilities of co-clustering, enhancing both the efficiency and precision necessary for handling large-scale data challenges.
+
+
+\section{The Scalable Co-clustering Method}
 \label{sec:method}
-
 \subsection{Overview}
-
-In this paper, we propose a novel hierarchical ensemble framework for co-clustering large matrices as shown in \Cref{fig:workflow}. 
-This contribution arises from the central idea of our method, which consists in decomposing the large matrices into smaller, digestible submatrices. Such partitioning is not arbitrary but guided to some extent by our developed optimal big matrix partitioning algorithm. It follows a probabilistic model that offers accurate estimations of the optimal number and the sequence of partitions for efficiency and effectiveness processes. Further, an important aspect is that to split the computational heavy task of co-clustering the large matrix into smaller, parallelizable tasks. This way, we will be able to sharply reduce the computational burden and achieve better scalability by our method.
-
-Upon partitioning, co-clustering is performed to each submatrix, that is, through the application of SVD and $k$-means on the resulting singular vectors. This step is important, ensuring adaptivity in clustering; hence, the capability to adapt to the peculiar characteristics of each sub-matrix. It becomes even more flexible in the sense that this does not define the co-clustering algorithm. In our paper, we demonstrate the process with SVD and $k$-means, but any can be used meeting a certain level of accuracy.
-
-Our approach is a novel hierarchy ensemble method that fuses cohesively and in an intelligent way the co-clustering results from all submatrices. They add, therefore, not only granularity in the insights that could be got from each of the submatrices but contribute to the overall accuracy and reliability even of the total co-clustering outcome. Our method, validated and optimized through a rigorous process, showed an efficiency in the handling of large-scale datasets that was never reached before in the history of the method. It is a significant stride in the effectiveness of methods applied to contemporary data analyses.
 
 % insert workflow.png here
 \begin{figure*}[htbp]
     \centering
     \includegraphics[width=0.8\linewidth]{workflow.png}
-    \caption{Workflow of the proposed hierarchical ensemble framework for co-clustering large matrices.}
+    \caption{Workflow of our proposed scalable co-clustering method for large matrices.}
     \label{fig:workflow}
 \end{figure*}
+This paper presents a novel and scalable co-cluster method specifically designed for large matrices, as shown in \Cref{fig:workflow}. This method applies a probabilistic model-based optimal partitioning algorithm, which not only predicts the ideal number and sequence of partitions for maximizing computational efficiency but also ensures the effectiveness of the co-clustering process.
 
-% \subsection{Notation and Definitions}
-% % Definitions of symbols, notations, and terminologies used in the method.
-% In this section, we define the notation and mathematical formulations used in our method. Understanding these definitions is crucial for comprehending the subsequent descriptions of the algorithm and its implementation.
+Our method involves partitioning large matrices into smaller, manageable sub-matrices. This strategic partitioning is meticulously guided by our algorithm to facilitate parallel processing. By transforming the computationally intensive task of co-clustering a large matrix into smaller, parallel tasks, our approach significantly reduces computational overhead and enhances scalability.
 
-% \begin{itemize}
-%     \item $A \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $C = \{C_k\}_{k=1}^K$);
-%     \item $A$ is partitioned into $m \times n$ blocks, each block having a size of $\phi_i \times \psi_j$, implying that $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
-%     \item The block set is denoted as $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
-%     \item The size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ within block $B_{(i,j)}$ is represented as $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
-%     \item $T_m$ represents the minimum number of rows, while $T_n$ denotes the minimum number of columns in a co-cluster.
-% \end{itemize}
+Following the partitioning, each sub-matrix undergoes a co-clustering process. This is implemented via the application of Singular Value Decomposition (SVD) and $k$-means clustering on the resulting singular vectors. This pivotal step ensures the adaptability of our method, allowing our algorithm to tailor its approach to the unique characteristics of each sub-matrix, thus optimizing clustering results.
 
-% With these notations established, we can now proceed to detail the algorithm and its components in the subsequent sections
+Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all sub-matrices. This integration provides more fine-grained insight into each sub-matrix and enhances the overall accuracy and reliability of the co-clustering results. Our method, validated and optimized through a comprehensive process, showed efficiency in handling large-scale datasets that were never reached before.  
+ 
 
-\subsection{Problem Formulation}
-The task at hand involves the analysis of a data matrix, denoted as $\mathbf{A} \in \mathbb{R}^{M \times N}$, comprising $M$ rows (representing features or variables) and $N$ columns (representing objects or samples). The entry at the $(i, j)$-th position of $\mathbf{A}$ is given by $a_{ij}$.
-%, where $a_{i,\cdot}$ and $a_{\cdot,j}$ represent the $i$-th row and $j$-th column of $\mathbf{A}$, respectively
-
-A co-cluster within this context is identified as a subset of rows and/or columns that exhibit similar characteristics across a subset of columns and/or rows. Let $I$ be a set of row indices forming a row cluster, and $J$ be a set of column indices forming a column cluster; then the sub-matrix $\mathbf{A}_{I,J}$ corresponds to a co-cluster in $\mathbf{A}$. The objective of co-clustering is to partition the $M$ rows into $k$ row clusters and the $N$ columns into $d$ column clusters, resulting in a total of $k \times d$ co-clusters.
-Notably, with proper reordering of rows and columns, the co-clustered matrix $\mathbf{A}$ can be represented as a block-diagonal matrix.
-With this definition, data matrix $\mathbf{A}$ can be partitioned into submatrices where the data within each submatrix is more similar to each other than to the rest of the data.
-
-% These partitions can be represented by a row label vector $u\in\mathbb{N}^M$ (where $u_i \in \{1, \ldots, k\}, \forall i \in \{1, \ldots, M\}$) and a column label vector $v \in \mathbb{N}^N$ (where $v_j \in \{1, \ldots, d\}, \forall j \in \{1, \ldots, N\}$). Indicator matrices $R \in \mathbb{R}^{M \times k}$ (where $\sum_{k'=1}^{k} R_{i,k'} = 1$) and $C \in \mathbb{R}^{N \times d}$ (where $\sum_{d'=1}^{d} C_{j,d'} = 1$) denote the row and column clusters.
-
-Let \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \) be row and column label sets. Define indicator matrices \( R \in \mathbb{R}^{M \times k} \), \( \sum_k R_{i,k} = 1 \), and \( C \in \mathbb{R}^{N \times d} \), \( \sum_d C_{j,d} = 1 \), for row and column clusters.
-
-We aim to identify co-clusters $\mathbf{A}_{I,J}$ in $\mathbf{A}$ that are correlated according to specific criteria. These criteria include co-clusters with constant values, constant values along rows or columns, and co-clusters with additive or multiplicative coherent values. Recognizing and categorizing these patterns in $\mathbf{A}$ forms the basis of our co-clustering approach, which is designed to effectively and efficiently identify such structures within the data.
-
-\subsection{Dynamic Matrix Partitioning}
+\subsection{Large Matrix Partitioning}
 % Description of the matrix partitioning process and criteria for partitioning.
-The primary challenge in co-clustering large matrices is the risk of losing meaningful co-cluster relationships when the matrix is partitioned into smaller submatrices. To address this, we introduce an optimal partitioning algorithm underpinned by a probabilistic model. This model is meticulously designed to navigate the complexities of partitioning, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. The objective of this algorithm is twofold: to determine the optimal partitioning strategy that minimizes the risk of fragmenting significant co-clusters and to define the appropriate number of repartitioning iterations needed to achieve a desired success rate of co-cluster identification.
+The primary challenge in co-clustering large matrices is the risk of losing meaningful co-cluster relationships when the matrix is partitioned into smaller sub-matrices. To address this, we introduce an optimal partitioning algorithm underpinned by a probabilistic model. This model is meticulously designed to navigate the complexities of partitioning, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. The objective of this algorithm is twofold: to determine the optimal partitioning strategy that minimizes the risk of fragmenting significant co-clusters and to define the appropriate number of repartitioning iterations needed to achieve a desired success rate of co-cluster identification.
 
 \subsubsection{Partitioning and Repartitioning Strategy based on the Probabilistic Model}
-Our probabilistic model serves as the cornerstone of the partitioning algorithm. It evaluates potential partitioning schemes based on their ability to preserve meaningful co-cluster structures within smaller submatrices. The model operates under the premise that each atom-co-cluster (the smallest identifiable co-cluster within a submatrix) can be identified with a probability $p$. This probabilistic framework allows us to estimate the likelihood of successfully identifying all relevant co-clusters across the partitioned submatrices.
+Our probabilistic model serves as the cornerstone of the partitioning algorithm. It evaluates potential partitioning schemes based on their ability to preserve meaningful co-cluster structures within smaller sub-matrices. The model operates under the premise that each atom-co-cluster (the smallest identifiable co-cluster within a sub-matrix) can be identified with a probability $p$. This probabilistic model allows us to estimate the likelihood of successfully identifying all relevant co-clusters across the partitioned sub-matrices.
 
 In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
 \begin{align*}
@@ -67,7 +49,7 @@ In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, ea
 \end{align*}
 where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively. 
 
-% the size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ that falls into block $B_{(i,j)}$ is $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
+% the size of co-cluster Ck∈RM(k)×N(k)C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}} that falls into block B(i,j)B_{(i,j)} is M(k)(i,j)×N(k)(i,j)M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)};
 
 Thus, the probability of identifying all co-clusters given by
 
@@ -145,21 +127,21 @@ And for the last step,
 $$ Z = \begin{bmatrix} D_1^{-1/2} \hat{U} \\ D_2^{-1/2} \hat{V} \end{bmatrix} $$
 is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}}]$ and $\hat{V} = [\mathbf{v_2}; \mathbf{v_3}; \ldots; \mathbf{v_{l+1}}]$. The approximation to the graph partitioning optimization problem is then solved by applying a $k$-means algorithm to the rows of $Z$. More details can be found in \cite{dhillon2001CoclusteringDocumentsWords}.
 
-\subsection{Hierarchical Ensemble Co-clustering}
-% Explanation of how co-clustered results from submatrices are aggregated.
+\subsection{Hierarchical Co-cluster Merging}
+% Explanation of how co-clustered results from sub-matrices are aggregated.
 
-Hierarchical ensemble co-clustering is a novel approach that combines the results of co-clustering on submatrices to produce a final co-clustered result.
-The ensemble method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the complementary strengths of multiple clustering algorithms. This approach is particularly effective in identifying nuanced patterns within each submatrix, which might be overlooked by a single clustering algorithm. The ensemble method is key to our method's ability to efficiently process high-dimensional data.
+Hierarchical co-cluster merging is a novel approach that combines the results of co-clustering on sub-matrices to produce a final co-clustered result.
+The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the complementary strengths of multiple clustering algorithms. This approach is particularly effective in identifying nuanced patterns within each sub-matrix, which might be overlooked by a single clustering algorithm. The merging method is key to our method's ability to efficiently process high-dimensional data.
 
 After partitioning, we apply an ensemble clustering method to each submatrix. This approach involves using multiple clustering algorithms in tandem, capitalizing on the strengths of each to achieve a more accurate and robust clustering result. The ensemble method is particularly effective in identifying nuanced patterns within each submatrix, which might be overlooked by a single clustering algorithm. This step is key to our method's ability to efficiently process high-dimensional data.
 
 \subsection{Algorithmic Description}
 % Step-by-step algorithmic description of the process in pseudocode.
-Our proposed \textbf{Dynamic Partition and Hierarchical Ensembling Co-Clustering Method} is outlined in Algorithm \ref{alg:method}. The algorithm
+Our proposed  Optimal Matrix Partition and Hierarchical Co-cluster Merging Method is outlined in Algorithm \ref{alg:method}. The algorithm
 is an advanced algorithm designed for efficient co-clustering of large data matrices. The algorithm begins by initializing a block set based on predetermined block sizes. For each co-cluster in the given set, the algorithm calculates specific values $s^{(k)}$ and $t^{(k)}$, which are then used to determine the probability $P(\omega_k)$ of each co-cluster. If this probability falls below a predefined threshold $P_{\text{thresh}}$, the algorithm partitions the data matrix $A$ into blocks $B$ and performs co-clustering on these blocks. This step is crucial for managing large datasets by breaking them down into smaller, more manageable units. After co-clustering, the results from each block are aggregated to form the final co-clustered result $\mathcal{C}$. The algorithm's design allows for a flexible and efficient approach to co-clustering, particularly suited to datasets with high dimensionality and complexity.
 
 \begin{algorithm}[!t]
-    \caption{Dynamic Partition and Hierarchical Ensembling Co-Clustering Method}\label{alg:method}
+    \caption{Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:method}
     \begin{algorithmic}[1]
         \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
         \ENSURE{Co-clustered result $\mathcal{C}$;}

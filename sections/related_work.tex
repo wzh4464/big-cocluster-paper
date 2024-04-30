@@ -2,24 +2,16 @@
 
 \section{Related work}
 \label{sec:related_work}
-\subsection{Co-clustering Models}
+\subsection{Co-clustering Methods}
+Co-clustering methods employing Singular Value Decomposition (SVD) can be broadly categorized into graph-based and matrix factorization-based approaches
+\cite{dhillon2001CoclusteringDocumentsWords}. A prominent example of graph-based co-clustering is the Flexible Bipartite Graph Co-clustering (FBGPC) \cite{chen2023FastFlexibleBipartitea}, which directly applies a flexible bipartite graph model to the original data. In contrast, Non-negative Matrix Tri-Factorization (NMTF) represents a leading matrix factorization-based method that decomposes data into multiple matrices to independently cluster samples and features, subsequently discovering the relationships between them \cite{long2005CoclusteringBlockValue}. Our method is orthogonal to NMTF, allowing for potential integration to enhance co-clustering efficiency.
 
-The conception of \emph{biclustering}, where the row and column of data are clustered simultaneously, had first been introduced in\cite{hartigan1972DirectClusteringData} while analyzing gene expression data. Since then, this conception was further expanded for many other areas as \emph{co-clustering}; several models have been developed to overcome different challenges.
-
-Spectral Co-clustering method with the Singular Value Decomposition (SVD) introduced by  Dhillon \textit{et al.} \cite{dhillon2001CoclusteringDocumentsWords} was then popularized because it is associated with simplicity and effectiveness. This method has given birth to two great directions in co-clustering: graph-based and matrix factorization-based approaches. 
-
-The most widely used graph-based co-clustering method to date is FBGPC\cite{chen2023FastFlexibleBipartitea}: a flexible bipartite graph model applied on the original data. In contrast, the most popular matrix factorization-based method, NMTF\cite{long2005CoclusteringBlockValue}, decomposes the data to simpler matrices to find the underlying patterns. 
-
-DeepCC\cite{dongkuanxu2019DeepCoClustering} is the first deep learning model for co-clustering data, using deep autoencoders and Gaussian Mixture Models for better clustering of data. However, the innovations it brings bear upon the computational efficiency that DeepCC grapples with, besides many kinds of data types. 
-
-% However, these methods have limitations with large datasets due to their complex computational demands. Thus parallelizing co-clustering is essential to address these challenges.
-
-However, this method is an iterative approach and its efficiency highly depends on the sparsity of the input data.
+Another innovative method, Deep Co-Clustering (DeepCC), integrates deep autoencoders with Gaussian Mixture Models to improve data clustering \cite{dongkuanxu2019DeepCoClustering}. Despite its advancements, DeepCC struggles with computational efficiency, particularly with diverse data types and iterative processes dependent on data sparsity.
 
 \subsection{Parallelizing Co-clustering}
 
-To address the big data challenge, parallelizing co-clustering methods emerged as a solution. Cheng, Su, Gao, and Yin introduced a distributed co-clustering framework, CoClusterD\cite{cheng2015CoClusterDDistributedFramework}, which alternates minimization co-clustering (AMCC) algorithm with sequential updates and built up a distributed co-clustering framework. However, iterations are not guaranteed in advance thus in-efficiency in computation.
+Parallel co-clustering methods have emerged as a vital solution to the challenges of processing big data. The CoClusterD framework by Cheng \textit{et al.} \cite{cheng2015CoClusterDDistributedFramework} utilizes an Alternating Minimization Co-clustering (AMCC) algorithm with sequential updates in a distributed environment. However, this method faces challenges with guaranteed convergence, leading to potential inefficiencies.
 
-While matrix factorization techniques have shown promise for co-clustering large datasets, scaling to massive high-dimensional data remains an open challenge. Chen \textit{et al.}\cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization method that distributes computation across multiple nodes to accelerate factorizations. However, such approaches still struggle with web-scale data.
+While matrix factorization techniques have shown promise for co-clustering large datasets, scaling to massive high-dimensional data remains an open challenge. Chen \textit{et al.}\cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization method that distributes computation across multiple nodes to accelerate factorizations. However, even these advanced methods encounter difficulties with extremely large datasets.
 
-Our proposed method takes a divide-and-conquer approach, directly partitioning the input matrix into smaller submatrices before co-clustering each one in parallel. This blocks the original high dimensionality to make co-clustering feasible. The separate results are then ensembled to produce final co-clusters. This represents a new paradigm tailored for big data that sidesteps computational barriers by transforming the problem space rather than relying solely on distributed computing optimizations.
+Our proposed method adopts a divide-and-conquer strategy, partitioning the input matrix into smaller sub-matrices, which are then co-clustered in parallel. This technique reduces the complexity imposed by high dimensionality and combines the results to form the final co-clusters. This novel approach addresses the computational challenges and introduces a scalable solution for big data.
