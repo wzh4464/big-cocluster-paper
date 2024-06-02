@@ -1,0 +1,6 @@
+!config
+
+# this is a config file for arararc
+# aiming to change the maximum number of loop to 3
+
+loops: 3
