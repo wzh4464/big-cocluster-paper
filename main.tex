@@ -8,7 +8,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Monday, 3rd June 2024 8:13:54 pm
+ % Last Modified: Monday, 3rd June 2024 8:46:26 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -446,20 +446,32 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 % is an advanced algorithm designed for efficient co-clustering of large data matrices. The algorithm begins by initializing a block set based on predetermined block sizes. For each co-cluster in the given set, the algorithm calculates specific values $s^{(k)}$ and $t^{(k)}$, which are then used to determine the probability $P(\omega_k)$ of each co-cluster. If this probability falls below a predefined threshold $P_{\text{thresh}}$, the algorithm partitions the data matrix $A$ into blocks $B$ and performs co-clustering on these blocks. This step is crucial for managing large datasets by breaking them down into smaller, more manageable units. After co-clustering, the results from each block are aggregated to form the final co-clustered result $\mathcal{C}$. The algorithm's design allows for a flexible and efficient approach to co-clustering, particularly suited to datasets with high dimensionality and complexity.
 
 \begin{algorithm}[!t]
-  \caption{Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:method}
+  \caption{MPI-based Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:mpi_method}
   \begin{algorithmic}[1]
-    \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
+    \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$, Number of processors $P$;}
     \ENSURE{Co-clustered result $\mathcal{C}$;}
-    \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
-    \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
-    \FOR{$k=1$ to $K$}
-    \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
-    \IF{$P(\omega_k) < P_{thresh}$}
-    \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
-    \STATE Aggregate co-clustered results from each block
+    \STATE Initialize MPI environment
+    \STATE Determine rank and size using \texttt{MPI\_Comm\_rank} and \texttt{MPI\_Comm\_size}
+    \IF{rank == 0}
+      \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
+      \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
+      \FOR{$k=1$ to $K$}
+        \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
+        \IF{$P(\omega_k) < P_{thresh}$}
+          \STATE Partition matrix $A$ into blocks $B$ and distribute to processors
+          \FOR{each processor $p$}
+            \STATE Send corresponding block $B_p$ to processor $p$
+          \ENDFOR
+        \ENDIF
+      \ENDFOR
     \ENDIF
-    \ENDFOR
-    \RETURN Aggregated co-clustered result $\mathcal{C}$
+    \STATE Each processor $p$ receives its block $B_p$ and performs co-clustering
+    \STATE Each processor sends its co-clustered result $C_p$ back to the root processor
+    \IF{rank == 0}
+      \STATE Aggregate co-clustered results from all blocks to form $\mathcal{C}$
+      \RETURN Aggregated co-clustered result $\mathcal{C}$
+    \ENDIF
+    \STATE Finalize MPI environment
   \end{algorithmic}
 \end{algorithm}
 
