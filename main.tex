@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Wednesday, 5th June 2024 12:41:40 am
+ % Last Modified: Wednesday, 5th June 2024 1:01:35 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -195,6 +195,19 @@ Co-clustering is a method designed to simultaneously group a set of rows and col
 
 When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a block-diagonal matrix, where each block represents a co-cluster with higher similarity within than between blocks. We define the row and column label sets as \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \), respectively. Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) are used to assign rows and columns to clusters, with the constraints \( \sum_k R_{i,k} = 1 \) and \( \sum_d C_{j,d} = 1 \), ensuring each row and column is assigned to exactly one cluster.
 
+To evaluate if a submatrix $\mathbf{A}_{I, J}$ forms a coherent co-cluster, we define a score function \( f(\mathbf{A}_{I, J}) \) that quantifies the homogeneity of the submatrix.
+
+\begin{definition}[Co-cluster Score Function]
+  \label{def:co_cluster}
+  Given a matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, $I$ and $J$ are the row and column indices of a submatrix $\mathbf{A}_{I, J}$. The co-cluster score function is defined as below:
+  \begin{itemize}
+    \item For a given submatrix $\mathbf{A}_{I, J}$, the co-cluster score function is defined as 
+    $$s(\mathbf{A}_{I, J}) = \frac{s_1}{s_2}. $$ where $s_1$ is largest singular value of $\mathbf{A}_{I, J}$ and $s_2$ is the second largest singular value of $\mathbf{A}_{I, J}$.
+    \item For a given submatrix $\mathbf{A}_{I, J}$, the normalized co-cluster score function is defined as
+    $$S(\mathbf{A}_{I, J}) = \frac{s(\mathbf{A}_{I, J})}{||\mathbf{A}_{I, J}||_F} $$ where $||\mathbf{A}_{I, J}||_F$ is the Frobenius norm of $\mathbf{A}_{I, J}$.
+  \end{itemize}
+\end{definition}
+
 \subsection{Problem Statement}
 This paper aims to develop a method that efficiently and accurately identifies co-clusters $\mathbf{A}_{I, J}$ within a matrix $\mathbf{A}$ representing large datasets. These co-clusters should exhibit specific structural patterns such as uniformity across elements, consistency along rows or columns, or patterns demonstrating additive or multiplicative coherence. Properly identifying and categorizing these patterns is crucial for understanding the complex data structures inherent in large datasets. This method is intended to improve the detection capabilities of co-clustering, enhancing both the efficiency and precision necessary for handling large-scale data challenges.
 
@@ -328,28 +341,47 @@ The above discussion is under the assumption that the graph has only one connect
 $$ Z = \begin{bmatrix} D_1^{-1/2} \hat{U} \\ D_2^{-1/2} \hat{V} \end{bmatrix} $$
 is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}}]$ and $\hat{V} = [\mathbf{v_2}; \mathbf{v_3}; \ldots; \mathbf{v_{l+1}}]$. The approximation to the graph partitioning optimization problem is then solved by applying a $k$-means algorithm to the rows of $Z$. More details can be found in \cite{dhillon2001CoclusteringDocumentsWords}.
 
-\subsection{Hierarchical Co-cluster Merging}
+\subsubsection{Hierarchical Co-cluster Merging}
 
-Hierarchical co-cluster merging is a novel approach that combines the results of co-clustering on submatrices to produce a final co-clustered result. The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the design of the partitioning algorithm. The hierarchical merging process iteratively combines the co-clusters from each submatrix, ensuring that the final co-clustered result is comprehensive and consistent across all submatrices. This iterative merging process is crucial for addressing issues of heterogeneity and model uncertainty, ensuring that the final co-clustering results are reliable and robust.
-The hierarchical merging algorithm is detailed in \Cref{alg:hierarchical_merging}.
+Hierarchical co-cluster merging is a novel approach that combines the results of co-clustering on submatrices to produce a final co-clustered result. The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the design of the partitioning algorithm. The hierarchical merging process iteratively combines the co-clusters from each submatrix, ensuring that the final co-clustered result is comprehensive and consistent across all submatrices. This iterative merging process is crucial for addressing issues of heterogeneity and model uncertainty, ensuring that the final co-clustering results are reliable and robust. The hierarchical merging algorithm is detailed in \Cref{alg:hierarchical_merging}.
+
+\begin{itemize}
+  \item \textbf{Merging Small Co-clusters:} Each pair of identified small co-clusters is considered for merging. The merging decision is based on a scoring system as shown in Definition~\ref{def:co_cluster}, where the score is derived from performing SVD on a matrix and calculating the ratio of the second largest eigenvalue to the largest eigenvalue. This score is regularized by dividing it with the Frobenius norm of the matrix. If the score of the merged co-cluster is not higher than that of any smaller co-cluster, the merging is considered successful, indicating the formation of a larger co-cluster.
+  \item \textbf{Efficiency through Overlap Check:} To accelerate the process, the algorithm checks if the co-clusters overlap in the larger matrix. Merging is only attempted for co-clusters that share common rows or columns. This strategy not only speeds up the merging process but also reduces the computational complexity.
+\end{itemize}
 
 \begin{algorithm}[!t]
   \caption{Hierarchical Co-cluster Merging Algorithm}\label{alg:hierarchical_merging}
   \begin{algorithmic}[1]
-    \REQUIRE{Set of co-clustered submatrices $\{B_{(i,j)}\}$, Co-cluster sets for each submatrix $\{C_{(i,j)}\}$}
-    \ENSURE{Final co-clustered result $\mathcal{C}$}
-    \STATE Initialize final co-cluster set $\mathcal{C} = \emptyset$
-    \FOR{each submatrix $B_{(i,j)}$}
-    \STATE Extract co-cluster set $C_{(i,j)}$ from $B_{(i,j)}$
-    \FOR{each co-cluster $C_{(i,j)}^k \in C_{(i,j)}$}
-    \STATE Merge $C_{(i,j)}^k$ into $\mathcal{C}$ by combining with overlapping or adjacent co-clusters
-    \STATE Update co-cluster statistics and boundaries in $\mathcal{C}$
-    \ENDFOR
-    \ENDFOR
-    \STATE Refine $\mathcal{C}$ by resolving any inconsistencies or overlaps
-    \RETURN Final co-clustered result $\mathcal{C}$
+    \REQUIRE{Set of co-clusters $\mathcal{C}$ from submatrices, data matrix $A \in \mathbb{R}^{M \times N}$, threshold for score improvement $\tau$;}
+    \ENSURE{Final co-clustered result $\mathcal{C}_{\text{final}}$;}
+    
+    \STATE Initialize $\mathcal{C}_{\text{final}} = \mathcal{C}$
+    \STATE Calculate initial scores for all co-clusters in $\mathcal{C}$
+    
+    \WHILE{true}
+      \STATE $merged = \text{False}$
+      \FOR{each pair of co-clusters $(C_i, C_j)$ in $\mathcal{C}_{\text{final}}$}
+        \IF{$C_i$ and $C_j$ have common rows or columns}
+          \STATE Merge $C_i$ and $C_j$ to form $C_{ij}$
+          \STATE Perform SVD on $C_{ij}$ and calculate the score
+          \IF{score of $C_{ij}$ $\leq$ score of $C_i$ and score of $C_{ij}$ $\leq$ score of $C_j$}
+            \STATE Replace $C_i$ and $C_j$ with $C_{ij}$ in $\mathcal{C}_{\text{final}}$
+            \STATE Update the scores for the affected co-clusters
+            \STATE $merged = \text{True}$
+          \ENDIF
+        \ENDIF
+      \ENDFOR
+      \IF{not $merged$}
+        \STATE Break
+      \ENDIF
+    \ENDWHILE
+    
+    \RETURN $\mathcal{C}_{\text{final}}$
   \end{algorithmic}
 \end{algorithm}
+
+In this algorithm, steps 1 and 2 initialize the final co-cluster set and calculate initial scores for all co-clusters. The while loop iteratively attempts to merge co-clusters until no further merging is possible. Within the loop, the algorithm checks for overlaps and calculates scores for potential merges. If the score of a merged co-cluster does not exceed the scores of its components, the merge is accepted, and the final co-cluster set is updated accordingly. This approach ensures a scalable and efficient merging process while maintaining the integrity and robustness of the co-clustering results.
 
 \subsection{MPI Implementation}
 
