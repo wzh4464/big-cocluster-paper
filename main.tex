@@ -1,14 +1,13 @@
 % arara: pdflatex: { options: ["--synctex=1"] }
 % arara: biber if found('log', 'LaTeX Warning: There were undefined references.')
 % arara: pdflatex: { synctex: yes } until !found('log', 'undefined references')
-% arara: pdflatex: { synctex: yes }
 
 %%%
  % File: /main.tex
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 4th June 2024 5:51:37 pm
+ % Last Modified: Tuesday, 4th June 2024 9:07:47 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -34,6 +33,12 @@
 \usepackage{doi}
 % autocite
 \usepackage{csquotes}
+% theorems
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
 \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
 % updated with editorial comments 8/9/2021
 
@@ -152,7 +157,7 @@ The main contributions of this paper are as follows:
 
 \end{enumerate}
 
-The remainder of this paper is organized as follows. Section \ref{sec:related_work} discusses related work in the field of co-clustering and parallel computing. Section \ref{sec:formula} presents the mathematical formulation and problem statement of co-clustering. Section \ref{sec:method} details our proposed scalable co-clustering method. 
+The remainder of this paper is organized as follows. Section \ref{sec:related_work} discusses related work in the field of co-clustering and parallel computing. Section \ref{sec:formula} presents the mathematical formulation and problem statement of co-clustering. Section \ref{sec:method} details our proposed scalable co-clustering method.
 Section \ref{sec:analysis} focuses on the complexity analysis and probabilistic guarantees of our method.
 Section \ref{sec:experiment} presents the experimental evaluation of our method. Finally, Section \ref{sec:conclusion} concludes the paper and outlines future research directions.
 
@@ -182,6 +187,9 @@ While matrix factorization techniques have shown promise for co-clustering large
 Our proposed method adopts a divide-and-conquer strategy to overcome these limitations. By partitioning the input matrix into smaller submatrices, we reduce the dimensionality of each individual task, making them more manageable. Each submatrix is co-clustered in parallel, leveraging distributed computing resources to expedite the process. This technique reduces the complexity imposed by high dimensionality and minimizes the communication overhead associated with broadcasting and synchronization. The separate co-clustering results from each submatrix are then combined using a hierarchical merging algorithm to form the final co-clusters. This novel approach addresses the computational challenges inherent in co-clustering large-scale data and introduces a scalable solution tailored for big data.
 
 \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
+
+In this section, we discuss the preliminaries needed to understand the contributions of our work.
+
 \subsection{Mathematical Formulation of Co-clustering}
 Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters.
 
@@ -332,11 +340,11 @@ The hierarchical merging algorithm is detailed in \Cref{alg:hierarchical_merging
     \ENSURE{Final co-clustered result $\mathcal{C}$}
     \STATE Initialize final co-cluster set $\mathcal{C} = \emptyset$
     \FOR{each submatrix $B_{(i,j)}$}
-      \STATE Extract co-cluster set $C_{(i,j)}$ from $B_{(i,j)}$
-      \FOR{each co-cluster $C_{(i,j)}^k \in C_{(i,j)}$}
-        \STATE Merge $C_{(i,j)}^k$ into $\mathcal{C}$ by combining with overlapping or adjacent co-clusters
-        \STATE Update co-cluster statistics and boundaries in $\mathcal{C}$
-      \ENDFOR
+    \STATE Extract co-cluster set $C_{(i,j)}$ from $B_{(i,j)}$
+    \FOR{each co-cluster $C_{(i,j)}^k \in C_{(i,j)}$}
+    \STATE Merge $C_{(i,j)}^k$ into $\mathcal{C}$ by combining with overlapping or adjacent co-clusters
+    \STATE Update co-cluster statistics and boundaries in $\mathcal{C}$
+    \ENDFOR
     \ENDFOR
     \STATE Refine $\mathcal{C}$ by resolving any inconsistencies or overlaps
     \RETURN Final co-clustered result $\mathcal{C}$
@@ -358,23 +366,23 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
     \STATE Initialize MPI environment
     \STATE Determine rank and size using \texttt{MPI\_Comm\_rank} and \texttt{MPI\_Comm\_size}
     \IF{rank == 0}
-      \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
-      \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
-      \FOR{$k=1$ to $K$}
-        \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
-        \IF{$P(\omega_k) < P_{thresh}$}
-          \STATE Partition matrix $A$ into blocks $B$ and distribute to processors
-          \FOR{each processor $p$}
-            \STATE Send corresponding block $B_p$ to processor $p$
-          \ENDFOR
-        \ENDIF
-      \ENDFOR
+    \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
+    \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
+    \FOR{$k=1$ to $K$}
+    \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
+    \IF{$P(\omega_k) < P_{thresh}$}
+    \STATE Partition matrix $A$ into blocks $B$ and distribute to processors
+    \FOR{each processor $p$}
+    \STATE Send corresponding block $B_p$ to processor $p$
+    \ENDFOR
+    \ENDIF
+    \ENDFOR
     \ENDIF
     \STATE Each processor $p$ receives its block $B_p$ and performs co-clustering
     \STATE Each processor sends its co-clustered result $C_p$ back to the root processor
     \IF{rank == 0}
-      \STATE Aggregate co-clustered results from all blocks to form $\mathcal{C}$
-      \RETURN Aggregated co-clustered result $\mathcal{C}$
+    \STATE Aggregate co-clustered results from all blocks to form $\mathcal{C}$
+    \RETURN Aggregated co-clustered result $\mathcal{C}$
     \ENDIF
     \STATE Finalize MPI environment
   \end{algorithmic}
@@ -385,134 +393,123 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 
 \subsection{Complexity Analysis}
 \label{subsec:complexity}
+In this section, we analyze the complexity of our proposed scalable co-clustering method. We begin by comparing the space and time complexity with traditional co-clustering methods. Then, we discuss the communication cost in a distributed computing environment.
 
+\subsection{Space Complexity Comparison}
+
+The memory requirement for traditional co-clustering methods, such as Non-negative Matrix Tri-Factorization (NMTF), involves the storage of the input data matrix $X$ of size $O(IT)$, output factor matrices $Z$, $S$, and $W$ of size $O(IJ_1 + TJ_2 + J_1J_2)$, and several temporary matrices of size $O(TJ_1 + IJ_2 + J_1^2 + J_2^2)$. The total space complexity for NMTF is $O(IT + (I + T)(J_1 + J_2) + J_1J_2 + J_1^2 + J_2^2)$.
+
+However, due to the sequential computation of NMTF, all matrices need to be stored on a single computing node, leading to significant memory constraints. In contrast, our method distributes the storage across multiple nodes. For each node, the memory requirement includes blocks of input data matrices $X_{\text{row}}$ and $X_{\text{col}}$ of size $O\left(\frac{2IT}{p}\right)$, blocks of factor matrices $Z_{\text{row}}$ and $W_{\text{row}}$ of size $O\left(\frac{IJ_1 + TJ_2}{p}\right)$, and the factor matrix $S$ along with auxiliary matrices of size $O(J_1J_2 + IJ_1 + J_1^2 + TJ_2 + J_2^2)$. The temporary matrices require $O\left(\frac{TJ_1 + IJ_2}{p} + J_1^2 + J_2^2 + J_1J_2\right)$. The total space complexity for our method is $O\left(\frac{IT + (I + T)(J_1 + J_2)}{p} + IJ_1 + TJ_2 + J_1J_2 + J_1^2 + J_2^2\right)$.
+
+Compared to NMTF, our method alleviates the problem of excessive storage by distributing data matrices, making it more applicable for real-world datasets.
+
+\subsection{Time Complexity Comparison}
+
+The computational bottleneck of NMTF lies in the matrix multiplications within the multiplicative update formulas. The complexity for these operations is $O(IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2)$.
+
+Our method, designed to operate in parallel, also focuses on reducing this computational load. The solving procedure of a linear system in each iteration, the most time-consuming operation, has a complexity of $O(J_1^3)$ or $O(J_2^3)$. Thus, the total time complexity for our method is $O\left(\frac{IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2}{p}\right)$.
+
+This parallel approach reduces the computational burden by distributing tasks across multiple nodes, making our method more efficient than traditional NMTF.
+
+\subsection{Communication Cost Analysis}
+
+To analyze the communication cost, we apply the $\alpha$-$\beta$-$\gamma$ model of distributed-memory parallel computation. In this model, the cost of passing a message of $n$ words is modeled as $\alpha + n\beta$, where $\alpha$ is the latency cost and $\beta$ is the per-word bandwidth cost. Each process performs computation with a per-flop computation cost $\gamma$.
+
+% The major communication cost of our method is associated with collective operations such as \textit{Reduce_Scatter} and \textit{Allreduce}. The communication costs for these operations are $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} n\right)$ and $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} n\right)$, respectively.
+
+For lines 10, 16, and 21 in our algorithm, the communication costs are $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} IJ_1\right)$, $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} TJ_2\right)$, and $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} J_1T\right)$, respectively. Similarly, the communication costs for lines 12, 18, 23, 25, and 27 are $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_2^2\right)$, $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1J_2\right)$, and $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1^2\right)$, respectively.
+
+Therefore, the major communication cost of our method is $O\left(2\alpha \cdot \log p + (\beta + \gamma)((I + T)J_1 + TJ_2) + (2\beta + \gamma)(J_1^2 + J_2^2 + J_1J_2)\right)$, which shows that our method effectively balances computation and communication costs in a distributed environment.
+
+\subsection{Complexity of Updating $S$}
+
+Updating the factor matrix $S$ is one of the crucial steps in our method. For each process, the computational cost is $O\left(\frac{ITJ_1 + TJ_1J_2 + IJ_2 + IJ_2^2 + TJ_2^2 + J_1^2J_2 + J_1J_2^2}{p}\right)$, while the communication cost is $O(2\alpha \cdot \log p + (\beta + \gamma)TJ_1 + (2\beta + \gamma)(J_1J_2 + J_1^2 + J_2^2))$. This ensures that the workload of updating $S$ is balanced and symmetric among the processes.
+
+A naive solution would sequentially update $S$ by the master process, gathering necessary matrices from other processes, performing computations, and broadcasting the updated $S$. This would lead to intolerable memory costs and higher computation and communication costs compared to our method.
+
+Our distributed parallel computing approach for updating $S$ balances workloads and reduces space, time, and communication costs, making it efficient and scalable.
 \subsection{Probability Analysis}
+
 \subsubsection{Notations}
 \label{subsec:probability}
 \begin{itemize}
   \item $A \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $C = \{C_k\}_{k=1}^K$);
   \item $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
   \item thus block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
-        % \item $(i,j) \in \mathbb{N}/Q_m \times \mathbb{N}/Q_n$ is the index of a block;
-        % sub-co-cluster $k$ 的落到block $(i,j)$ 的size 是 $M_i^{(k)} \times N_i^{(k)}$;
   \item the size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ that falls into block $B_{(i,j)}$ is $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
   \item $T_m$ is the minimum number of rows, $T_n$ is the minimum number of columns.
 \end{itemize}
 
 \subsubsection{Probability}
-% P(Mi<Tm, Ni<Tn for all i in partition j | Qm, Qn, Ms, Ns)
-Consider co-cluster $C_k$,
-% P(M_{(i,j)}^{(k)} = i)
-\begin{align*}
-  P(M_{(i,j)}^{(k)} = \alpha) & = \frac{\binom{M^{(k)}}{\alpha} \binom{M-M^{(k)}}{\phi_i-\alpha}}{\binom{M}{\phi_i}} \\
-  % p[x_] := Binomial[Mk, a] * Binomial[M-Mk, P-a] / Binomial[M, P]
-  P(N_{(i,j)}^{(k)} = \beta)  & = \frac{\binom{N^{(k)}}{\beta} \binom{N-N^{(k)}}{\psi_j-\beta}}{\binom{N}{\psi_j}}
-  % q[y_] := Binomial[Nk, b] * Binomial[N-Nk, Q-b] / Binomial[N, Q]
-\end{align*}
-The tail probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
-\begin{align*}
-  P(M_{(i,j)}^{(k)} < T_m) & = \sum_{\alpha=1}^{T_m-1} P(M_{(i,j)}^{(k)} = \alpha) \\
-                           & \le \exp(-2 (s_i^{(k)})^2 \phi_i)
-\end{align*}
-where $s_i^{(k)} = \cfrac{M^{(k)}}{M}-\cfrac{T_m-1}{\phi_i}$, and
-\begin{align*}
-  % &\le \sum_{\alpha=1}^{T_m-1} \frac{\binom{M^{(k)}}{\alpha} \binom{M-M^{(k)}}{\phi_i-\alpha}}{\binom{M}{\phi_i}} \\
-  P(N_{(i,j)}^{(k)} < T_n) & = \sum_{\beta=1}^{T_n-1} P(N_{(i,j)}^{(k)} = \beta) \\
-                           & \le \exp (-2 (t_j^{(k)})^2 \psi_j)
-\end{align*}
-where $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
 
-The joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
-\begin{align*}
-  P(M_{(i,j)}^{(k)} &< T_m, N_{(i,j)}^{(k)} < T_n) \\ & =  \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
-  % pq[x_, y_] := Sum[p[a] * q[b], {a, 1, x-1}, {b, 1, y-1}]
-                                                  & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
-\end{align*}
-If $\phi_i = p$ and $\psi_j = q$ for all $i$ and $j$, then
+\begin{theorem}
+  \label{thm:joint_probability}
+  Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_m$ rows and $T_n$ columns is given by:
+  \begin{align*}
+    P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) & \le \exp[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j]
+  \end{align*}
+  where $s_i^{(k)} = \cfrac{M^{(k)}}{M}-\cfrac{T_m-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
+\end{theorem}
 
-Suppose event $\omega_k$ is that co-cluster $C_k$ can't be find in any block $B_{(i,j)}$, then
-\begin{align*}
-  P(\omega_k) & = \prod_{i=1}^m \prod_{j=1}^n P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n)                          \\
-              & \le \prod_{i=1}^m \prod_{j=1}^n \exp\{-2 \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \} \\
-              & = \exp\{-2 \sum_{i=1}^m \sum_{j=1}^n \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \}     \\
-\end{align*}
+\begin{theorem}
+  \label{thm:probability_co_cluster_detection}
+  If the matrix $A$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $C_k$ in any block is $P(\omega_k)$, then
+  \begin{align*}
+    P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
+  \end{align*}
+  Given $T_p$ times of random sampling, the probability of detecting the co-cluster $C_k$ is
+  \begin{align*}
+    P & = 1 - P(\omega_k)^{T_p}                                                        \\
+      & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
+  \end{align*}
+  This can be used to set $m, n, \phi, \psi, T_m, T_n$, and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
+\end{theorem}
 
-If $\phi_i = \phi$ and $\psi_j = \psi$ for all $i$ and $j$, then
-\begin{align*}
-  s_i^{(k)} & = s^{(k)} = \frac{M^{(k)}}{M}-\frac{T_m-1}{\phi} \\
-  t_j^{(k)} & = t^{(k)} = \frac{N^{(k)}}{N}-\frac{T_n-1}{\psi}
-\end{align*}
+\subsubsection{Noisy Case}
+\begin{assumption}
+  Assume each noise $n_{ij}$ follows a normal distribution $N(0, \sigma^2)$, independently and identically distributed (i.i.d.) for all $i$ and $j$. Suppose there exists $\lambda > 0$, such that
+  $$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
+\end{assumption}
 
-\begin{align*}
-  P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \\
-\end{align*}
+\begin{definition}
+  The score of a submatrix $A_{I,J}$ is defined as
+  \begin{align}
+    S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\
+    S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle \right) \\
+    S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{I,j_1}, x_{I,j_2}\rangle \right)
+  \end{align}
+  where $x_{i,J}$ is the $i$-th row of $A_{I,J}$ and the inner product $\langle x, y \rangle$ is defined as
+  $$\langle x, y \rangle = \exp(-\frac{||x - y||_1^2}{2\alpha||x||_1||y||_1})$$
+\end{definition}
 
+\begin{theorem}
+  \label{thm:expected_score}
+  Given the hidden co-cluster matrix $A$ and noise matrix $E$, the observed matrix is $B = A + E$. The expected value and variance of $S_{row}(I,J)$ are:
+  \begin{align*}
+    \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
+    \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})
+  \end{align*}
+  Similarly, for $S_{col}(I,J)$:
+  \begin{align*}
+    \mathbb{E}(S_{col}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
+    \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})
+  \end{align*}
+\end{theorem}
 
-And if we do $T_p$ times of random sampling, the Probability of detecting the co-cluster is
-\begin{align*}
-  P & = 1 - P(\omega_k)^{T_p}                                                        \\
-    & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \\
-\end{align*}
-according to which, we can set $m, n, \phi, \psi, T_m, T_n$ and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
+\begin{theorem}
+  \label{thm:chernoff_bound}
+  According to the Chernoff bound, the probability that $S(I,J)$ is close to its expected value is:
+  \begin{align*}
+    P(S(I,J) \le \mathbb{E}(S(I,J)) - \epsilon)
+     & \ge \exp(-\frac{\epsilon^2}{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda})})
+  \end{align*}
+  Setting $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}) \log(1/\delta)}$, we have:
+  \begin{align*}
+    P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta
+  \end{align*}
+  Combining this with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
+\end{theorem}
 
-\subsubsection{Nosiy case}
-\subsection{Assumption}
-Assume each noise $n_{ij}$ complies with a normal distribution $N(0, \sigma^2)$, i.i.d. for all $i$ and $j$. Suppose $\exists \lambda > 0$, such that
-$$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
-
-
-The score of a submatrix $A_{I,J}$ is defined as
-\begin{align}
-  S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\
-  S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle \right) \\
-  S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{I,j_1}, x_{I,j_2}\rangle \right)
-\end{align}
-where $x_{i,J}$ is the $i$-th row of $A_{I,J}$. Here we define the inner product of two vectors $x$ and $y$ as
-$$\langle x, y \rangle = \exp(-\frac{||x - y||_1^2}{2\alpha||x||_1||y||_1})$$
-
-Suppose $A$ is a hidden co-cluster matrix, and $E$ is the noise matrix. Then the observed matrix is $B = A + E$. Consider co-cluster $B_{I,J}$, denote $1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle$ as $s_{row}(i_1, i_2, J)$, then
-\begin{align*}
-  \mathbb{E}&(s_{row}(i_1, i_2, J))  = 1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \mathbb{E}(\langle x_{i_1,J}, x_{i_2,J}\rangle)                                    \\
-                                   & = 1 - \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \exp(-\frac{||x_{i_1,J} - x_{i_2,J}||_1^2}{2\alpha||x_{i_1,J}||_1||x_{i_2,J}||_1}) \\
-                                   & \ge 1 - \exp(-\frac{2}{\alpha \min(||x_{i_1,J}||_1, ||x_{i_2,J}||_1)})                                                                  \\
-                                   & \ge 1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})                                                                             \\
-  \sigma^2&(s_{row}(i_1, i_2, J))   = \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \sigma^2(\langle x_{i_1,J}, x_{i_2,J}\rangle)                                          \\
-                                   & = \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \exp(-\frac{||x_{i_1,J} - x_{i_2,J}||_1^2}{2\alpha||x_{i_1,J}||_1||x_{i_2,J}||_1})     \\
-                                   & \le \sigma^2 \exp(-\frac{2}{\alpha \min(||x_{i_1,J}||_1, ||x_{i_2,J}||_1)})                                                             \\
-                                   & \le \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})                                                                        \\
-\end{align*}
-
-Thus the expected value of $S_{row}(I,J)$ satisfies
-\begin{align*}
-  \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
-  \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})          \\
-\end{align*}
-
-Similarly, we can get
-\begin{align*}
-  \mathbb{E}(S_{col}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
-  \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})          \\
-\end{align*}
-
-Then since $x^2 \le x$ for $x \in (0,1)$, we have
-\begin{align*}
-  \mathbb{E}(S(I,J)) & \ge 1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})             \\
-  \sigma^2(S(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \\
-\end{align*}
-
-According to the Chernoff bound, we have
-\begin{align*}
-  P(S(I,J) \le \mathbb{E}(S(I,J)) - \epsilon)
-   & \ge \exp(-\frac{\epsilon^2}{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda})}) \\
-\end{align*}
-
-Thus if we set $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}) \log(1/\delta)}$, then
-
-\begin{align*}
-  P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta \\
-\end{align*}
-
-Combine with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
 \section{Experiment Evaluation}
 \label{sec:experiment}
@@ -572,6 +569,22 @@ Combine with the probability control of $T_p$, we can select parameters to ensur
 This section presents the empirical evaluation of the proposed co-cluster method. The experiments aim to assess the method's efficiency, scalability, and accuracy when applied to large data matrices. More experiments on varying the computation units numbers and partition settings show the ability of parallel acceleration and verify the optimal setting proposed respectivley.
 
 \subsection{Experiment Setup}
+
+\begin{table*}[h]
+  \centering
+  \caption{Statistics of Datasets}
+  \begin{tabular}{lrrrrrr}
+    \hline
+    \textbf{Dataset} & \textbf{\#Docs} & \textbf{\#Words} & \textbf{\#Clus} & \textbf{Sparsity (\%)} & \textbf{Balance (\%)} \\
+    \hline
+    CLASSIC4         & 6,461           & 4,667            & 4               & 0.95                   & 40.2                  \\
+    NG20             & 18,778          & 27,782           & 20              & 0.38                   & 62.8                  \\
+    Amazon           & 123,321         & 23,379           & 24              & 0.20                   & 75.4                  \\
+    RCV1-Small       & 220,824         & 9,138            & 4               & 0.85                   & 41.2                  \\
+    RCV1-Large       & 685,071         & 90,210           & 4               & 0.08                   & 18.3                  \\
+    \hline
+  \end{tabular}
+\end{table*}
 
 \textbf{Datasets.}
 The experiments were conducted using three distinct datasets to demonstrate the versatility and robustness of our method:
