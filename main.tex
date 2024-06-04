@@ -4,11 +4,11 @@
 % arara: pdflatex: { synctex: yes }
 
 %%%
- % File: /bare_jrnl_new_sample4.tex1
+ % File: /main.tex
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Monday, 3rd June 2024 8:46:26 pm
+ % Last Modified: Tuesday, 4th June 2024 12:03:30 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -201,11 +201,14 @@ This paper aims to develop a method that efficiently and accurately identifies c
 
 This paper presents a novel and scalable co-clustering method specifically designed for large matrices, as shown in \Cref{fig:workflow}. This method applies a probabilistic model-based optimal partitioning algorithm, which not only predicts the ideal number and sequence of partitions for maximizing computational efficiency but also ensures the effectiveness of the co-clustering process.
 
-Our method involves partitioning large matrices into smaller, manageable submatrices. This strategic partitioning is meticulously guided by our algorithm to facilitate parallel processing. By transforming the computationally intensive task of co-clustering a large matrix into smaller, parallel tasks, our approach significantly reduces computational overhead and enhances scalability. This partitioning strategy ensures that each submatrix is small enough to be processed efficiently while still retaining the essential co-cluster structures of the original large matrix.
+Our method involves partitioning large matrices into smaller, manageable submatrices. This strategic partitioning is meticulously guided by a probabilistic model, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. After partitioning, each submatrix is handled by a separate computational unit. This approach significantly shortens the processing time and reduces memory consumption for each unit. The probabilistic model serves as a guide, addressing one of the biggest challenges of the partitioning framework: the potential risk of missing small co-clusters. By estimating the likelihood of identifying all relevant co-clusters, the model ensures comprehensive data coverage and robust clustering results, even for smaller, more intricate patterns within the data.
 
-Following the partitioning, each submatrix undergoes a co-clustering process. This is implemented via the application of Singular Value Decomposition (SVD) and $k$-means clustering on the resulting singular vectors. SVD helps in reducing the dimensionality of each submatrix, capturing the most significant features, while $k$-means clustering groups these features into meaningful clusters. This pivotal step ensures the adaptability of our method, allowing our algorithm to tailor its approach to the unique characteristics of each submatrix, thus optimizing clustering results. The use of SVD and $k$-means clustering leverages the strengths of both techniques, ensuring a robust and accurate co-clustering outcome.
+Following the partitioning, each submatrix undergoes a co-clustering process, leveraging the strengths of advanced co-clustering methods. Our approach is modular, allowing any sophisticated co-clustering technique, whether existing or developed in the future, to be applied to each submatrix. This flexibility ensures that the method can be tailored to the unique characteristics of each submatrix, optimizing clustering results. A crucial theorem guarantees the success probability of our framework, provided that the chosen atom co-clustering method is effective in identifying all co-clusters above a certain size with a high probability. This modular design not only enhances the adaptability and robustness of our method but also ensures a comprehensive and accurate co-clustering outcome.
 
-Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all submatrices. This integration provides more fine-grained insight into each submatrix and enhances the overall accuracy and reliability of the co-clustering results. The hierarchical merging process iteratively combines co-clusters from the submatrices, ensuring that the final result is comprehensive and consistent across the entire dataset. Our method, validated and optimized through a comprehensive process, showed efficiency in handling large-scale datasets that were never reached before. This multi-step process not only improves scalability but also ensures that the final co-clustering results are robust and reliable, even for very large datasets.
+Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all submatrices. This integration provides more fine-grained insights into each submatrix and enhances the overall accuracy and reliability of the co-clustering results. The hierarchical merging process iteratively combines co-clusters from the submatrices, ensuring that the final result is comprehensive and consistent across the entire dataset. Unlike other methods such as NMTF or alternating row and column optimization, our approach guarantees that the iteration number is bounded by a function of the data size, leading to an expected time frame for achieving the ideal result\cite{wang2011FastNonnegativeMatrix}. This multi-step process not only improves scalability but also ensures that the final co-clustering results are robust and reliable, even for very large datasets. Our method, validated and optimized through a comprehensive process, demonstrates unprecedented efficiency in handling large-scale datasets.
+More details about the partitioning and co-clustering processes are shown in \Cref{alg:method}.
+
+In the following subsections, we first introduce the large matrix partitioning algorithm, which is the cornerstone of our scalable co-clustering method. We then present the atom-co-clustering algorithm, which is compatible with our framework and can be applied to each submatrix. Finally, for the self-containedness of this paper, we introduce a graph-based spectral co-clustering algorithm, which can be integrated into our framework and applied to each submatrix.
 
 \subsection{Large Matrix Partitioning}
 
