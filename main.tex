@@ -8,7 +8,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 4th June 2024 12:09:07 pm
+ % Last Modified: Tuesday, 4th June 2024 12:18:23 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -208,6 +208,24 @@ Following the partitioning, each submatrix undergoes a co-clustering process, le
 Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all submatrices. This integration provides more fine-grained insights into each submatrix and enhances the overall accuracy and reliability of the co-clustering results. The hierarchical merging process iteratively combines co-clusters from the submatrices, ensuring that the final result is comprehensive and consistent across the entire dataset. Unlike other methods such as NMTF or alternating row and column optimization, our approach guarantees that the iteration number is bounded by a function of the data size, leading to an expected time frame for achieving the ideal result\cite{wang2011FastNonnegativeMatrix}. This multi-step process not only improves scalability but also ensures that the final co-clustering results are robust and reliable, even for very large datasets. Our method, validated and optimized through a comprehensive process, demonstrates unprecedented efficiency in handling large-scale datasets.
 More details about the partitioning and co-clustering processes are shown in \Cref{alg:method}.
 
+\begin{algorithm}[!t]
+  \caption{Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:method}
+  \begin{algorithmic}[1]
+    \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
+    \ENSURE{Co-clustered result $\mathcal{C}$;}
+    \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
+    \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
+    \FOR{$k=1$ to $K$}
+    \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
+    \IF{$P(\omega_k) < P_{thresh}$}
+    \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
+    \STATE Aggregate co-clustered results from each block
+    \ENDIF
+    \ENDFOR
+    \RETURN Aggregated co-clustered result $\mathcal{C}$
+  \end{algorithmic}
+\end{algorithm}
+
 In the following sections, we begin by introducing the large matrix partitioning algorithm, which forms the cornerstone of our scalable co-clustering method. Following this, we describe the atom-co-clustering algorithm, designed for compatibility with our framework and suitable for application to each submatrix. For completeness, we also present a graph-based spectral co-clustering algorithm that can be seamlessly integrated into our framework for submatrix processing. Afterward, we explain the hierarchical merging algorithm, which efficiently combines the co-clustering results from all submatrices. Finally, we detail the MPI implementation of our method, demonstrating its feasibility and effectiveness in multi-node scenarios.
 
 \subsection{Large Matrix Partitioning}
@@ -303,150 +321,32 @@ is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}
 \subsection{Hierarchical Co-cluster Merging}
 
 Hierarchical co-cluster merging is a novel approach that combines the results of co-clustering on submatrices to produce a final co-clustered result. The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the design of the partitioning algorithm. The hierarchical merging process iteratively combines the co-clusters from each submatrix, ensuring that the final co-clustered result is comprehensive and consistent across all submatrices. This iterative merging process is crucial for addressing issues of heterogeneity and model uncertainty, ensuring that the final co-clustering results are reliable and robust.
-
-\subsection{Algorithmic Description}
-
-Our proposed Optimal Matrix Partition and Hierarchical Co-cluster Merging Method is outlined in Algorithm \ref{alg:method}. The algorithm is an advanced algorithm designed for efficient co-clustering of large data matrices. The algorithm begins by initializing a block set based on predetermined block sizes. For each co-cluster in the given set, the algorithm calculates specific values $s^{(k)}$ and $t^{(k)}$, which are then used to determine the probability $P(\omega_k)$ of each co-cluster. If this probability falls below a predefined threshold $P_{\text{thresh}}$, the algorithm partitions the data matrix $A$ into blocks $B$ and performs co-clustering on these blocks. This step is crucial for managing large datasets by breaking them down into smaller, more manageable units. After co-clustering, the results from each block are aggregated to form the final co-clustered result $\mathcal{C}$. The algorithm's design allows for a flexible and efficient approach to co-clustering, particularly suited to datasets with high dimensionality and complexity.
+The hierarchical merging algorithm is detailed in \Cref{alg:hierarchical_merging}.
 
 \begin{algorithm}[!t]
-  \caption{Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:method}
+  \caption{Hierarchical Co-cluster Merging Algorithm}\label{alg:hierarchical_merging}
   \begin{algorithmic}[1]
-    \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
-    \ENSURE{Co-clustered result $\mathcal{C}$;}
-    \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
-    \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
-    \FOR{$k=1$ to $K$}
-    \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
-    \IF{$P(\omega_k) < P_{thresh}$}
-    \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
-    \STATE Aggregate co-clustered results from each block
-    \ENDIF
+    \REQUIRE{Set of co-clustered submatrices $\{B_{(i,j)}\}$, Co-cluster sets for each submatrix $\{C_{(i,j)}\}$}
+    \ENSURE{Final co-clustered result $\mathcal{C}$}
+    \STATE Initialize final co-cluster set $\mathcal{C} = \emptyset$
+    \FOR{each submatrix $B_{(i,j)}$}
+      \STATE Extract co-cluster set $C_{(i,j)}$ from $B_{(i,j)}$
+      \FOR{each co-cluster $C_{(i,j)}^k \in C_{(i,j)}$}
+        \STATE Merge $C_{(i,j)}^k$ into $\mathcal{C}$ by combining with overlapping or adjacent co-clusters
+        \STATE Update co-cluster statistics and boundaries in $\mathcal{C}$
+      \ENDFOR
     \ENDFOR
-    \RETURN Aggregated co-clustered result $\mathcal{C}$
+    \STATE Refine $\mathcal{C}$ by resolving any inconsistencies or overlaps
+    \RETURN Final co-clustered result $\mathcal{C}$
   \end{algorithmic}
 \end{algorithm}
 
+\subsection{MPI Implementation}
+
+Our proposed scalable co-clustering method is implemented using the Message Passing Interface (MPI) to enable distributed computing across multiple nodes. This implementation allows for effective distribution of the computational load, facilitating parallel processing of submatrices and enhancing the scalability of our method. The main computation node is responsible for computing thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes. This design ensures that our approach is practical and scalable for large-scale applications, without the need for a supercomputer or high-performance central processing unit.
+More details about the MPI implementation are shown in \Cref{alg:mpi_method}.
+
 In conclusion, our proposed scalable co-clustering method effectively addresses the challenges associated with large-scale data analysis. By leveraging a probabilistic model for optimal partitioning and a hierarchical merging strategy, we ensure that our method is both efficient and robust. The detailed algorithmic framework and theoretical underpinnings provide a solid foundation for further research and development in this field.
-
-% \section{The Scalable Co-clustering Method}
-% \label{sec:method}
-% \subsection{Overview}
-
-% \begin{figure*}[htbp]
-%   \centering
-%   \includegraphics[width=0.8\linewidth]{workflow.png}
-%   \caption{Workflow of our proposed scalable co-clustering method for large matrices.}
-%   \label{fig:workflow}
-% \end{figure*}
-% This paper presents a novel and scalable co-cluster method specifically designed for large matrices, as shown in \Cref{fig:workflow}. This method applies a probabilistic model-based optimal partitioning algorithm, which not only predicts the ideal number and sequence of partitions for maximizing computational efficiency but also ensures the effectiveness of the co-clustering process.
-
-% Our method involves partitioning large matrices into smaller, manageable submatrices. This strategic partitioning is meticulously guided by our algorithm to facilitate parallel processing. By transforming the computationally intensive task of co-clustering a large matrix into smaller, parallel tasks, our approach significantly reduces computational overhead and enhances scalability.
-
-% Following the partitioning, each submatrix undergoes a co-clustering process. This is implemented via the application of Singular Value Decomposition (SVD) and $k$-means clustering on the resulting singular vectors. This pivotal step ensures the adaptability of our method, allowing our algorithm to tailor its approach to the unique characteristics of each submatrix, thus optimizing clustering results.
-
-% Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all submatrices. This integration provides more fine-grained insight into each submatrix and enhances the overall accuracy and reliability of the co-clustering results. Our method, validated and optimized through a comprehensive process, showed efficiency in handling large-scale datasets that were never reached before.
-
-
-% \subsection{Large Matrix Partitioning}
-% The primary challenge in co-clustering large matrices is the risk of losing meaningful co-cluster relationships when the matrix is partitioned into smaller submatrices. To address this, we introduce an optimal partitioning algorithm underpinned by a probabilistic model. This model is meticulously designed to navigate the complexities of partitioning, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. The objective of this algorithm is twofold: to determine the optimal partitioning strategy that minimizes the risk of fragmenting significant co-clusters and to define the appropriate number of repartitioning iterations needed to achieve a desired success rate of co-cluster identification.
-
-% \subsubsection{Partitioning and Repartitioning Strategy based on the Probabilistic Model}
-% Our probabilistic model serves as the cornerstone of the partitioning algorithm. It evaluates potential partitioning schemes based on their ability to preserve meaningful co-cluster structures within smaller submatrices. The model operates under the premise that each atom-co-cluster (the smallest identifiable co-cluster within a submatrix) can be identified with a probability $p$. This probabilistic model allows us to estimate the likelihood of successfully identifying all relevant co-clusters across the partitioned submatrices.
-
-% In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ are
-% \begin{align*}
-%   P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                               \\ & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
-%                     & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
-% \end{align*}
-% where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively.
-
-
-
-% Thus, the probability of identifying all co-clusters is given by
-
-% \begin{align}
-%   P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\},
-% \end{align}
-% and
-% \begin{align}
-%   P & = 1 - P(\omega_k)^{T_p}                                                                                                       \\
-%     & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \label{eq:prob_of_identifying_all_co_clusters}
-% \end{align}
-% where $P(\omega_k)$ is the probability of the failure of identifying co-cluster $C_k$, $T_p$ is the number of sampling times, $\phi$ and $\psi$ are the row and column block sizes, and $s^{(k)}$ and $t^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$.
-
-
-% \Cref{eq:prob_of_identifying_all_co_clusters} is central to our algorithm for partitioning large matrices for co-clustering, providing a probabilistic model that informs and optimizes our partitioning strategy to preserve co-cluster integrity. It mathematically quantifies the likelihood of identifying all relevant co-clusters within partitioned blocks, guiding us to mitigate risks associated with partitioning that might fragment vital co-cluster relationships.
-
-% Based on \Cref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the repartitioning time $Tr$ and the partition solution $Part$, ensuring that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation. The constraints are discussed in appendix due to space limitations.
-
-% \subsubsection{Optimization and Computational Efficiency}
-% Optimizing the partitioning process for computational efficiency is paramount in both academic and industrial applications, where running time often serves as the primary bottleneck. Thanks to the flexible framework established by our probabilistic model and the constraints derived in Theorem 1, our optimization strategy can be tailored to address the most critical needs of a given context. In this case, we focus on minimizing the running time without compromising the integrity and success rate of co-cluster identification.
-
-
-% Our approach to optimization leverages the probabilistic model to assess various partitioning configurations, balancing the trade-off between computational resource allocation and the need to adhere to theoretical success thresholds. By systematically evaluating the impact of different partitioning schemes on running time, we can identify strategies that not only meet our co-clustering success criteria but also optimize the use of computational resources.
-
-% To ensure that our optimization does not sacrifice the quality of co-cluster identification for the sake of efficiency, we introduce a secondary theorem that outlines the conditions under which optimization can be achieved without compromising the success rate of co-cluster discovery. This theorem provides a mathematical basis for optimizing the partitioning algorithm in a manner that maintains a balance between computational efficiency and the fidelity of co-cluster identification.
-
-
-% Under the constraint of maintaining a predetermined success rate $P$ for co-cluster identification, the optimization of the partitioning algorithm with respect to running time must satisfy the following condition:
-% \begin{align*}
-%   T_p = \text{argmin}_{T_p} \{
-%   1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2         \\
-%     & + n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
-% \end{align*}
-
-
-% This condition delineates the parameters within which the partitioning strategy can be optimized for speed without detracting from the algorithm's ability to accurately identify co-clusters. By adhering to this theorem, we ensure that our optimization efforts align with the overarching goal of preserving the integrity and effectiveness of co-cluster discovery. This balance is crucial for developing a partitioning algorithm that is not only fast and efficient but also robust and reliable across various data sets and co-clustering challenges.
-
-% \subsection{Co-clustering on Small Submatrices}
-
-
-% \subsubsection{Atom-co-clustering Algorithm}
-% Our framework, which encompasses both partitioning and ensembling, offers remarkable flexibility, allowing it to be compatible with a wide range of atom-co-clustering methods. For the sake of making this paper comprehensive and self-contained, we provide an introduction to the atom-co-cluster method herein. The only requirement for an atom-co-clustering method to be compatible with our framework is that it must be able to identify co-clusters under a given criterion with a probability $p$, or more relaxed conditions, has a lower bound estimate of the probability of identifying co-clusters equipped with a validation mechanism.
-
-% \subsubsection{Graph-based Spectral Co-clustering Algorithm}
-
-% Spectral co-clustering (SCC) stands as one of the most prevalent methods in the realm of co-clustering today\cite{vonluxburg2007TutorialSpectralClustering}, primarily due to its adeptness in unraveling the complexities of high-dimensional data. At its core, this method harnesses the power of spectral clustering principles, focusing on the utilization of a graph's Laplacian matrix eigenvectors for effectively partitioning data into distinct clusters. This approach is exceptionally beneficial for analyzing data that naturally forms a bipartite graph structure, including applications in text-document analysis, social network modeling, and gene expression studies.
-
-
-% \paragraph{Graph Construction in Co-clustering Expanded}
-
-% SCC begins with constructing a bipartite graph $G=(U,V,E)$. Here, $U$ and $V$, both as vertex sets, symbolize the sets corresponding to the rows and columns of the data matrix, respectively. The edges $E$ of this graph are assigned weights reflecting the relationships between rows and columns. Consequently, the graph's weighted adjacency matrix $W$ is defined as:
-
-% $$ W = \begin{bmatrix} 0 & A \\ A^T & 0 \end{bmatrix}, $$
-% where $A$ denotes the data matrix, also called adjacency matrix in the graph context.
-% Through this representation, the challenge of co-clustering is reformulated into a graph partitioning task, aiming to segregate the graph into distinct clusters based on the interrelations between the data matrix's rows and columns.
-
-% \paragraph{Laplacian Matrix}
-
-% The graph's Laplacian matrix $L$ is computed as $L=D-W$, with $D$ being the graph's degree matrix—a diagonal matrix whose entries equal the sum of the weights of the edges incident to each node. The Laplacian matrix plays a crucial role in identifying the graph's cluster structure. It does so by facilitating the calculation of eigenvectors associated with its smallest positive eigenvalues, which in turn, guide the partitioning of the graph into clusters.
-
-% \paragraph{Graph Partitioning and Singular Value Decomposition}
-% Theorem 4 in \cite{dhillon2001CoclusteringDocumentsWords} states that the eigenvector corresponding to the second smallest eigenvalue of the following eigenvalue problem gives the generalized partition vectors for the graph:
-
-% \begin{equation}
-%   L \mathbf{v} = \lambda D \mathbf{v}
-%   \label{eq:eigenvalue_problem}
-% \end{equation}
-
-% And according to Section 4 of \cite{dhillon2001CoclusteringDocumentsWords}, the singular value decomposition of the normalized matrix $A_n = D^{-1/2} A D^{-1/2}$
-% $$A_n = U \Sigma V^T$$
-% gives the solution to \Cref{eq:eigenvalue_problem}. To be more specific, the singular vectors corresponding to the second largest singular value of $A_n$ is the eigenvector corresponding to the second smallest eigenvalue of \Cref{eq:eigenvalue_problem}.
-
-% The above discussion is under the assumption that the graph has only one connected component. In a more general setting, $\mathbf{u_2}, \mathbf{u_3}, \ldots, \mathbf{u_{l+1}}$ and $\mathbf{v_2}, \mathbf{v_3}, \ldots, \mathbf{v_{l+1}}$ reveal the $k$-modal information of the graph, where $\mathbf{u_k}$ and $\mathbf{v_k}$ are the $k$-th left and right singular vectors of $A_n$, respectively.
-% And for the last step,
-% $$ Z = \begin{bmatrix} D_1^{-1/2} \hat{U} \\ D_2^{-1/2} \hat{V} \end{bmatrix} $$
-% is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}}]$ and $\hat{V} = [\mathbf{v_2}; \mathbf{v_3}; \ldots; \mathbf{v_{l+1}}]$. The approximation to the graph partitioning optimization problem is then solved by applying a $k$-means algorithm to the rows of $Z$. More details can be found in \cite{dhillon2001CoclusteringDocumentsWords}.
-
-% \subsection{Hierarchical Co-cluster Merging}
-
-
-% Hierarchical co-cluster merging is a novel approach that combines the results of co-clustering on submatrices to produce a final co-clustered result.
-% The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the design of the partitioning algorithm. The hierarchical merging process iteratively combines the co-clusters from each submatrix, ensuring that the final co-clustered result is comprehensive and consistent across all submatrices. This iterative merging process is crucial for addressing issues of heterogeneity and model uncertainty, ensuring that the final co-clustering results are reliable and robust.
-
-% \subsection{Algorithmic Description}
-% Our proposed  Optimal Matrix Partition and Hierarchical Co-cluster Merging Method is outlined in Algorithm \ref{alg:method}. The algorithm
-% is an advanced algorithm designed for efficient co-clustering of large data matrices. The algorithm begins by initializing a block set based on predetermined block sizes. For each co-cluster in the given set, the algorithm calculates specific values $s^{(k)}$ and $t^{(k)}$, which are then used to determine the probability $P(\omega_k)$ of each co-cluster. If this probability falls below a predefined threshold $P_{\text{thresh}}$, the algorithm partitions the data matrix $A$ into blocks $B$ and performs co-clustering on these blocks. This step is crucial for managing large datasets by breaking them down into smaller, more manageable units. After co-clustering, the results from each block are aggregated to form the final co-clustered result $\mathcal{C}$. The algorithm's design allows for a flexible and efficient approach to co-clustering, particularly suited to datasets with high dimensionality and complexity.
 
 \begin{algorithm}[!t]
   \caption{MPI-based Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:mpi_method}
