@@ -8,7 +8,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 4th June 2024 12:03:30 pm
+ % Last Modified: Tuesday, 4th June 2024 12:09:07 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -208,7 +208,7 @@ Following the partitioning, each submatrix undergoes a co-clustering process, le
 Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all submatrices. This integration provides more fine-grained insights into each submatrix and enhances the overall accuracy and reliability of the co-clustering results. The hierarchical merging process iteratively combines co-clusters from the submatrices, ensuring that the final result is comprehensive and consistent across the entire dataset. Unlike other methods such as NMTF or alternating row and column optimization, our approach guarantees that the iteration number is bounded by a function of the data size, leading to an expected time frame for achieving the ideal result\cite{wang2011FastNonnegativeMatrix}. This multi-step process not only improves scalability but also ensures that the final co-clustering results are robust and reliable, even for very large datasets. Our method, validated and optimized through a comprehensive process, demonstrates unprecedented efficiency in handling large-scale datasets.
 More details about the partitioning and co-clustering processes are shown in \Cref{alg:method}.
 
-In the following subsections, we first introduce the large matrix partitioning algorithm, which is the cornerstone of our scalable co-clustering method. We then present the atom-co-clustering algorithm, which is compatible with our framework and can be applied to each submatrix. Finally, for the self-containedness of this paper, we introduce a graph-based spectral co-clustering algorithm, which can be integrated into our framework and applied to each submatrix.
+In the following sections, we begin by introducing the large matrix partitioning algorithm, which forms the cornerstone of our scalable co-clustering method. Following this, we describe the atom-co-clustering algorithm, designed for compatibility with our framework and suitable for application to each submatrix. For completeness, we also present a graph-based spectral co-clustering algorithm that can be seamlessly integrated into our framework for submatrix processing. Afterward, we explain the hierarchical merging algorithm, which efficiently combines the co-clustering results from all submatrices. Finally, we detail the MPI implementation of our method, demonstrating its feasibility and effectiveness in multi-node scenarios.
 
 \subsection{Large Matrix Partitioning}
 
