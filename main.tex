@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Wednesday, 5th June 2024 1:01:35 am
+ % Last Modified: Wednesday, 5th June 2024 12:03:16 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -36,11 +36,19 @@
 % theorems
 \usepackage{amsthm}
 \newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+% Cref for lemma
+\crefname{lemma}{lemma}{lemmas}
+\Crefname{lemma}{Lemma}{Lemmas}
+\crefname{assumption}{assumption}{assumptions}
+\Crefname{assumption}{Assumption}{Assumptions}
+\crefname{definition}{definition}{definitions}
+\Crefname{definition}{Definition}{Definitions}
+
 \hyphenation{op-tical net-works semi-conduc-tor IEEE-Xplore}
-% updated with editorial comments 8/9/2021
 
 % image path: images/
 \graphicspath{ {images/} }
@@ -240,7 +248,7 @@ More details about the partitioning and co-clustering processes are shown in \Cr
     \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
     \FOR{$k=1$ to $K$}
     \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
-    \IF{$P(\omega_k) < P_{thresh}$}
+    \IF{$P(\omega_k) < P_\text{thresh}$}
     \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
     \STATE Aggregate co-clustered results from each block
     \ENDIF
@@ -259,47 +267,42 @@ The primary challenge in co-clustering large matrices is the risk of losing mean
 
 Our probabilistic model serves as the cornerstone of the partitioning algorithm. It assures all co-clusters above a demarcated size threshold are identified with a high probability, guiding the partitioning process to minimize the risk of losing critical co-cluster relationships. The model is based on the following assumptions:
 
-In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ is given by:
+In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ is given by \Cref{thm:joint_probability}:
 \begin{align*}
   P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                                                           \\
                     & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
                     & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
 \end{align*}
-where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively.
+where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively. 
 
-Thus, the probability of identifying all co-clusters is given by:
+Thus, $P$, the probability of identifying all co-clusters is given by \Cref{thm:probability_co_cluster_detection}:
 
 \begin{align}
-  P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\},
-\end{align}
-and
-\begin{align}
-  P & = 1 - P(\omega_k)^{T_p}                                                                                                       \\
-    & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \label{eq:prob_of_identifying_all_co_clusters}
+  P \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \label{eq:prob_of_identifying_all_co_clusters}
 \end{align}
 where $P(\omega_k)$ is the probability of the failure of identifying co-cluster $C_k$, $T_p$ is the number of sampling times, $\phi$ and $\psi$ are the row and column block sizes, and $s^{(k)}$ and $t^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$.
 
 \Cref{eq:prob_of_identifying_all_co_clusters} is central to our algorithm for partitioning large matrices for co-clustering, providing a probabilistic model that informs and optimizes our partitioning strategy to preserve co-cluster integrity. It mathematically quantifies the likelihood of identifying all relevant co-clusters within partitioned blocks, guiding us to mitigate risks associated with partitioning that might fragment vital co-cluster relationships.
 
-Based on \Cref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the repartitioning time $Tr$ and the partition solution $Part$, ensuring that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation. The constraints are discussed in the appendix due to space limitations.
+Based on \Cref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the partitioning time $T_p$ and the partition solution $Par(\{\phi_i\}_{i=1}^m, \{\psi_j\}_{j=1}^n)$, ensuring that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation.
 
 \subsubsection{Optimization and Computational Efficiency}
 
-Optimizing the partitioning process for computational efficiency is paramount in both academic and industrial applications, where running time often serves as the primary bottleneck. Thanks to the flexible framework established by our probabilistic model and the constraints derived in Theorem \ref{thm:probability_co_cluster_detection}, our optimization strategy can be tailored to address the most critical needs of a given context. In this case, we focus on minimizing the running time without compromising the integrity and success rate of co-cluster identification.
+Optimizing the partitioning process for computational efficiency is critical in both academic and industrial applications, where running time is often the primary bottleneck. Our optimization strategy leverages the probabilistic model and constraints derived in Theorem 1 to balance computational resource allocation and adherence to theoretical success thresholds.
 
-Our approach to optimization leverages the probabilistic model to assess various partitioning configurations, balancing the trade-off between computational resource allocation and the need to adhere to theoretical success thresholds. By systematically evaluating the impact of different partitioning schemes on running time, we can identify strategies that not only meet our co-clustering success criteria but also optimize the use of computational resources.
+Our approach systematically evaluates various partitioning configurations to minimize running time without compromising the integrity and success rate of co-cluster identification. The key condition for optimizing the partitioning algorithm, while maintaining a predetermined success rate \( P \) for co-cluster identification, is given by:
 
-To ensure that our optimization does not sacrifice the quality of co-cluster identification for the sake of efficiency, we introduce a secondary theorem that outlines the conditions under which optimization can be achieved without compromising the success rate of co-cluster discovery. This theorem provides a mathematical basis for optimizing the partitioning algorithm in a manner that maintains a balance between computational efficiency and the fidelity of co-cluster identification.
-
-Under the constraint of maintaining a predetermined success rate $P$ for co-cluster identification, the optimization of the partitioning algorithm with respect to running time must satisfy the following condition:
 \begin{align*}
   T_p = \text{argmin}_{T_p} \{
   1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2         \\
     & + n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
 \end{align*}
 
-This condition delineates the parameters within which the partitioning strategy can be optimized for speed without detracting from the algorithm's ability to accurately identify co-clusters. By adhering to this theorem, we ensure that our optimization efforts align with the overarching goal of preserving the integrity and effectiveness of co-cluster discovery. This balance is crucial for developing a partitioning algorithm that is not only fast and efficient but also robust and reliable across various datasets and co-clustering challenges.
+This condition delineates the parameters within which the partitioning strategy can be optimized for speed without sacrificing the algorithm's ability to accurately identify co-clusters. By adhering to this theorem, we ensure that our optimization efforts preserve the integrity and effectiveness of co-cluster discovery, making the partitioning algorithm fast, efficient, and robust across various datasets and co-clustering challenges.
 
+\subsubsection{Noisy Case Analysis}
+
+In the presence of noise, the partitioning algorithm must be adapted to account for the additional complexity introduced by noisy data. The probabilistic model, which forms the foundation of our partitioning strategy, can be extended to accommodate noisy data by incorporating noise parameters into the co-cluster score function. This extension allows the model to evaluate the impact of noise on co-cluster identification and adjust the partitioning strategy accordingly. More details can be found in \Cref{subsubsec:noisy_case}.
 \subsection{Co-clustering on Small Submatrices}
 
 \subsubsection{Atom-co-clustering Algorithm}
@@ -474,14 +477,14 @@ Our distributed parallel computing approach for updating $S$ balances workloads 
 
 \subsubsection{Probability}
 
-\begin{theorem}
+\begin{lemma}[Joint Probability of Co-cluster Size]
   \label{thm:joint_probability}
   Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_m$ rows and $T_n$ columns is given by:
   \begin{align*}
     P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) & \le \exp[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j]
   \end{align*}
   where $s_i^{(k)} = \cfrac{M^{(k)}}{M}-\cfrac{T_m-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
-\end{theorem}
+\end{lemma}
 
 \begin{theorem}
   \label{thm:probability_co_cluster_detection}
@@ -498,6 +501,7 @@ Our distributed parallel computing approach for updating $S$ balances workloads 
 \end{theorem}
 
 \subsubsection{Noisy Case}
+\label{subsubsec:noisy_case}
 \begin{assumption}
   Assume each noise $n_{ij}$ follows a normal distribution $N(0, \sigma^2)$, independently and identically distributed (i.i.d.) for all $i$ and $j$. Suppose there exists $\lambda > 0$, such that
   $$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
