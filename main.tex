@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Wednesday, 5th June 2024 12:03:16 pm
+ % Last Modified: Wednesday, 5th June 2024 9:50:12 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -100,7 +100,7 @@
 \maketitle
 
 \begin{abstract}
-  Co-clustering algorithms are effective at uncovering complex multi-dimensional data patterns by concurrently grouping rows and columns. However, they are limited by scalability challenges and high computational complexity. This paper presents a novel and scalable co-clustering method designed to handle large-scale data efficiently. First, we propose a dynamic partitioning algorithm that divides large data matrices into smaller submatrices, facilitating parallel processing and significantly reducing computational and storage demands. The configurations of the submatrices are optimal based on a probabilistic model, guaranteeing convergence with iterations determined by the data matrix's scale. Besides, we develop a hierarchical co-cluster merging algorithm that iteratively combines co-clusters from submatrices, ensuring robust and consistent clustering performance. Experimental evaluations demonstrate that our method outperforms existing solutions in scalability, efficiency, and co-cluster identification quality, particularly in high-dimensional and heterogeneous data scenarios. The proposed framework also supports integration with various co-clustering techniques and does not require specialized main thread performance, making it practical for real-world applications. Our extensive evaluations demonstrate that \emph{MPHMCo} achieves substantial improvements in scalability and efficiency. Experimental results show a significant reduction in computation time, with dense matrices seeing an approximate 83\% decrease and sparse matrices up to 30\%.
+  Co-clustering algorithms are effective at uncovering complex multi-dimensional data patterns by concurrently grouping rows and columns. However, they are limited by scalability challenges and high computational complexity. This paper presents a novel and scalable co-clustering method designed to handle large-scale data efficiently. First, we propose a dynamic partitioning algorithm that divides large data matrices into smaller submatrices, facilitating parallel processing and significantly reducing computational and storage demands. The configurations of the submatrices are optimal based on a probabilistic model, guaranteeing convergence with iterations determined by the data matrix's scale. Besides, we develop a hierarchical co-cluster merging algorithm that iteratively combines co-clusters from submatrices, ensuring robust and consistent clustering performance. The proposed framework also supports integration with various co-clustering techniques and does not require specialized main thread performance, making it practical for real-world applications. Experimental evaluations demonstrate that our method outperforms existing solutions in scalability, efficiency, and co-cluster identification quality, particularly in high-dimensional and heterogeneous data scenarios. Specifically, our extensive evaluations show that \emph{MPHMCo} achieves substantial improvements, with a significant reduction in computation time—approximately 83\% for dense matrices and up to 30\% for sparse matrices.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -108,11 +108,11 @@
 \end{IEEEkeywords}
 
 \section{Introduction}
-\IEEEPARstart{R}{ecent} advancements in machine learning have significantly benefited from the use of large-scale datasets. Clustering, a fundamental unsupervised learning technique, plays an important role in the preprocessing of large-scale training data. . By grouping similar data together, clustering enables refined feature recognition and intricate pattern analysis. Consequently, clustering diminishes noise during model training and improves data organization, significantly boosting both the efficiency and effectiveness of large-scale models\cite{raskutti2002CombiningClusteringCotraining, li2014ClusteringguidedSparseStructural, ghimatgar2018ImprovedFeatureSelection, li2023DistributedClusteringCooperative, bertsimas2020InterpretableClusteringOptimization}. However, traditional clustering algorithms\cite{} treat all features of data uniformly and solely cluster either rows (samples) or columns (features), as shown in Figure \ref{fig:cluster}. This approach overlooks the potential multi-dimensional relationships within the data, thereby limiting its effectiveness in applications with complex multi-dimensional data patterns.
+\IEEEPARstart{R}{ecent} advancements in machine learning have significantly benefited from the use of large-scale datasets. Clustering, a fundamental unsupervised learning technique, plays an important role in the preprocessing of large-scale training data. By grouping similar data together, clustering enables refined feature recognition and intricate pattern analysis. Consequently, clustering diminishes noise during model training and improves data organization, significantly boosting both the efficiency and effectiveness of large-scale models\cite{raskutti2002CombiningClusteringCotraining, li2014ClusteringguidedSparseStructural, ghimatgar2018ImprovedFeatureSelection, li2023DistributedClusteringCooperative, bertsimas2020InterpretableClusteringOptimization}. However, traditional clustering algorithms\cite{lloyd1982LeastSquaresQuantization, arthur2007KmeansAdvantagesCareful, mclachlan1987MixtureModelsInference} treat all features of data uniformly and solely cluster either rows (samples) or columns (features), as shown in Figure \ref{fig:cluster}. This approach overlooks the potential multi-dimensional relationships within the data, thereby limiting its effectiveness in applications with complex multi-dimensional data patterns.
 
-\textit{Co-clustering}\cite{cheng2000BiclusteringExpressionData, kluger2003SpectralBiclusteringMicroarray, yan2017CoclusteringMultidimensionalBig} address these limitations by simultaneously grouping rows (samples) and columns (features), as shown in Figure \ref{fig:cocluster}. Co-clustering enables a more nuanced analysis of interdependencies between different data dimensions, uncovering complex correlations between diverse data types. This approach is especially important in scenarios where the relationships between rows and columns are as important as the individual entities themselves. For example, in bioinformatics, co-clustering can identify gene-related patterns leading to biological insights by concurrently analyzing genes and conditions\cite{higham2007SpectralClusteringIts, kluger2003SpectralBiclusteringMicroarray, madeira2004BiclusteringAlgorithmsBiological, zhao2012BiclusteringAnalysisPattern, golchev2015BiclusteringAnalysisGene}. 
-In multimodal learning, co-clustering can integrate and analyze different types of data modalities, such as text and images, to reveal intricate connections and improve predictive performance across diverse datasets\cite{} 
- 
+\textit{Co-clustering}\cite{cheng2000BiclusteringExpressionData, kluger2003SpectralBiclusteringMicroarray, yan2017CoclusteringMultidimensionalBig} address these limitations by simultaneously grouping rows (samples) and columns (features), as shown in Figure \ref{fig:cocluster}. Co-clustering enables a more nuanced analysis of interdependencies between different data dimensions, uncovering complex correlations between diverse data types. This approach is especially important in scenarios where the relationships between rows and columns are as important as the individual entities themselves. For example, in bioinformatics, co-clustering can identify gene-related patterns leading to biological insights by concurrently analyzing genes and conditions\cite{higham2007SpectralClusteringIts, kluger2003SpectralBiclusteringMicroarray, madeira2004BiclusteringAlgorithmsBiological, zhao2012BiclusteringAnalysisPattern, golchev2015BiclusteringAnalysisGene}.
+In multimodal learning, co-clustering can integrate and analyze different types of data modalities, such as text and images, to reveal intricate connections and improve predictive performance across diverse datasets\cite{mu2022LearningHybridBehavior}.
+
 
 \begin{figure}[t]
   \centering
@@ -181,7 +181,7 @@ Cheng \textit{et al.} \cite{cheng2015CoClusterDDistributedFramework} introduced 
 
 While matrix factorization techniques have shown promise for co-clustering large datasets, scaling these algorithms for massive high-dimensional data remains an open challenge. Chen \textit{et al.} \cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization (PNMTF) method that distributes computation across multiple nodes to accelerate factorizations. PNMTF decomposes the original matrix into simpler, non-negative components, which are then processed in parallel. However, even these advanced methods encounter difficulties with extremely large datasets. The need to broadcast intermediate results and synchronize updates across nodes introduces significant communication overhead, which can negate the benefits of parallelization.
 
-{Existing co-clustering algorithms, such as PNMTF and Co-ClusterD, rely on a central processing thread to handle complex tasks like managing co-cluster statistics. This centralization creates a bottleneck, significantly limiting their scalability and making them impractical for large-scale datasets. Additionally, the dual-focus analysis of co-clustering, which simultaneously optimizes row and column clusters, requires evaluating a vast number of potential relationships. This complexity can grow exponentially with the size of the data, making it impractical for large-scale applications.}
+  {Existing co-clustering algorithms, such as PNMTF and Co-ClusterD, rely on a central processing thread to handle complex tasks like managing co-cluster statistics. This centralization creates a bottleneck, significantly limiting their scalability and making them impractical for large-scale datasets. Additionally, the dual-focus analysis of co-clustering, which simultaneously optimizes row and column clusters, requires evaluating a vast number of potential relationships. This complexity can grow exponentially with the size of the data, making it impractical for large-scale applications.}
 
 In contrast, our proposed method adopts a divide-and-conquer strategy to overcome these limitations. By partitioning the input matrix into smaller submatrices, we reduce the dimensionality of each individual task, making them more manageable. Each submatrix is co-clustered in parallel, leveraging distributed computing resources to expedite the process. This technique reduces the complexity imposed by high dimensionality and minimizes the communication overhead associated with broadcasting and synchronization. The separate co-clustering results from each submatrix are then combined using a hierarchical merging algorithm to form the final co-clusters. This novel approach addresses the computational challenges inherent in co-clustering large-scale data and introduces a scalable solution tailored for big data.
 
@@ -200,10 +200,10 @@ To evaluate if a submatrix $\mathbf{A}_{I, J}$ forms a coherent co-cluster, we d
   \label{def:co_cluster}
   Given a matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, $I$ and $J$ are the row and column indices of a submatrix $\mathbf{A}_{I, J}$. The co-cluster score function is defined as below:
   \begin{itemize}
-    \item For a given submatrix $\mathbf{A}_{I, J}$, the co-cluster score function is defined as 
-    $$s(\mathbf{A}_{I, J}) = \frac{s_1}{s_2}. $$ where $s_1$ is largest singular value of $\mathbf{A}_{I, J}$ and $s_2$ is the second largest singular value of $\mathbf{A}_{I, J}$.
+    \item For a given submatrix $\mathbf{A}_{I, J}$, the co-cluster score function is defined as
+          $$s(\mathbf{A}_{I, J}) = \frac{s_1}{s_2}. $$ where $s_1$ is largest singular value of $\mathbf{A}_{I, J}$ and $s_2$ is the second largest singular value of $\mathbf{A}_{I, J}$.
     \item For a given submatrix $\mathbf{A}_{I, J}$, the normalized co-cluster score function is defined as
-    $$S(\mathbf{A}_{I, J}) = \frac{s(\mathbf{A}_{I, J})}{||\mathbf{A}_{I, J}||_F} $$ where $||\mathbf{A}_{I, J}||_F$ is the Frobenius norm of $\mathbf{A}_{I, J}$.
+          $$S(\mathbf{A}_{I, J}) = \frac{s(\mathbf{A}_{I, J})}{||\mathbf{A}_{I, J}||_F} $$ where $||\mathbf{A}_{I, J}||_F$ is the Frobenius norm of $\mathbf{A}_{I, J}$.
   \end{itemize}
 \end{definition}
 
@@ -264,7 +264,7 @@ In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, ea
                     & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
                     & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
 \end{align*}
-where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively. 
+where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively.
 
 Thus, $P$, the probability of identifying all co-clusters is given by \Cref{thm:probability_co_cluster_detection}:
 
@@ -349,28 +349,28 @@ Hierarchical co-cluster merging is a novel approach that combines the results of
   \begin{algorithmic}[1]
     \REQUIRE{Set of co-clusters $\mathcal{C}$ from submatrices, data matrix $A \in \mathbb{R}^{M \times N}$, threshold for score improvement $\tau$;}
     \ENSURE{Final co-clustered result $\mathcal{C}_{\text{final}}$;}
-    
+
     \STATE Initialize $\mathcal{C}_{\text{final}} = \mathcal{C}$
     \STATE Calculate initial scores for all co-clusters in $\mathcal{C}$
-    
+
     \WHILE{true}
-      \STATE $merged = \text{False}$
-      \FOR{each pair of co-clusters $(C_i, C_j)$ in $\mathcal{C}_{\text{final}}$}
-        \IF{$C_i$ and $C_j$ have common rows or columns}
-          \STATE Merge $C_i$ and $C_j$ to form $C_{ij}$
-          \STATE Perform SVD on $C_{ij}$ and calculate the score
-          \IF{score of $C_{ij}$ $\leq$ score of $C_i$ and score of $C_{ij}$ $\leq$ score of $C_j$}
-            \STATE Replace $C_i$ and $C_j$ with $C_{ij}$ in $\mathcal{C}_{\text{final}}$
-            \STATE Update the scores for the affected co-clusters
-            \STATE $merged = \text{True}$
-          \ENDIF
-        \ENDIF
-      \ENDFOR
-      \IF{not $merged$}
-        \STATE Break
-      \ENDIF
+    \STATE $merged = \text{False}$
+    \FOR{each pair of co-clusters $(C_i, C_j)$ in $\mathcal{C}_{\text{final}}$}
+    \IF{$C_i$ and $C_j$ have common rows or columns}
+    \STATE Merge $C_i$ and $C_j$ to form $C_{ij}$
+    \STATE Perform SVD on $C_{ij}$ and calculate the score
+    \IF{score of $C_{ij}$ $\leq$ score of $C_i$ and score of $C_{ij}$ $\leq$ score of $C_j$}
+    \STATE Replace $C_i$ and $C_j$ with $C_{ij}$ in $\mathcal{C}_{\text{final}}$
+    \STATE Update the scores for the affected co-clusters
+    \STATE $merged = \text{True}$
+    \ENDIF
+    \ENDIF
+    \ENDFOR
+    \IF{not $merged$}
+    \STATE Break
+    \ENDIF
     \ENDWHILE
-    
+
     \RETURN $\mathcal{C}_{\text{final}}$
   \end{algorithmic}
 \end{algorithm}
