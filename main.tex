@@ -187,7 +187,6 @@ In contrast, our proposed method adopts a divide-and-conquer strategy to overcom
 
 \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
 
-In this section, we discuss the preliminaries needed to understand the contributions of our work.
 
 \subsection{Mathematical Formulation of Co-clustering}
 Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters.
