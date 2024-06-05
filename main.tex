@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Wednesday, 5th June 2024 10:02:49 pm
+ % Last Modified: Wednesday, 5th June 2024 10:19:22 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -187,7 +187,6 @@ In contrast, our proposed method adopts a divide-and-conquer strategy to overcom
 
 \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
 
-In this section, we discuss the preliminaries needed to understand the contributions of our work.
 
 \subsection{Mathematical Formulation of Co-clustering}
 Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters.
@@ -279,7 +278,7 @@ Based on \Cref{eq:prob_of_identifying_all_co_clusters}, we can establish a const
 
 \subsubsection{Optimization and Computational Efficiency}
 
-Optimizing the partitioning process for computational efficiency is critical in both academic and industrial applications, where running time is often the primary bottleneck. Our optimization strategy leverages the probabilistic model and constraints derived in Theorem 1 to balance computational resource allocation and adherence to theoretical success thresholds.
+Optimizing the partitioning process for computational efficiency is critical in both academic and industrial applications, where running time is often the primary bottleneck. Our optimization strategy leverages the probabilistic model and constraints derived in \Cref{eq:prob_of_identifying_all_co_clusters} to balance computational resource allocation and adherence to theoretical success thresholds.
 
 Our approach systematically evaluates various partitioning configurations to minimize running time without compromising the integrity and success rate of co-cluster identification. The key condition for optimizing the partitioning algorithm, while maintaining a predetermined success rate \( P \) for co-cluster identification, is given by:
 
