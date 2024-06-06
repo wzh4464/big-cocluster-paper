@@ -232,7 +232,7 @@ More details about the partitioning and co-clustering processes are shown in \Cr
 \begin{algorithm}[!t]
   \caption{Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:method}
   \begin{algorithmic}[1]
-    \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
+    \REQUIRE{Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
     \ENSURE{Co-clustered result $\mathcal{C}$;}
     \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
     \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
