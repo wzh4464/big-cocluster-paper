@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Thursday, 6th June 2024 4:22:24 pm
+ % Last Modified: Thursday, 6th June 2024 5:05:56 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -206,14 +206,20 @@ When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as
 
 To evaluate if a submatrix $\mathbf{A}_{I, J}$ forms a coherent co-cluster, we define a score function \( f(\mathbf{A}_{I, J}) \) that quantifies the homogeneity of the submatrix.
 
-\begin{definition}[Co-cluster Score Function]
+\begin{definition}[Singular Value Ratio Score]
   \label{def:co_cluster}
-  Given a matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, $I$ and $J$ are the row and column indices of a submatrix $\mathbf{A}_{I, J}$. The co-cluster score function is defined as below:
+  Consider a matrix \(\mathbf{A} \in \mathbb{R}^{M \times N}\), and let \(I\) and \(J\) denote the sets of row and column indices, respectively, for a submatrix \(\mathbf{A}_{I, J}\). The Singular Value Ratio Score is defined as follows:
   \begin{itemize}
-    \item For a given submatrix $\mathbf{A}_{I, J}$, the co-cluster score function is defined as
-          $$s(\mathbf{A}_{I, J}) = \frac{s_1}{s_2}. $$ where $s_1$ is largest singular value of $\mathbf{A}_{I, J}$ and $s_2$ is the second largest singular value of $\mathbf{A}_{I, J}$.
-    \item For a given submatrix $\mathbf{A}_{I, J}$, the normalized co-cluster score function is defined as
-          $$S(\mathbf{A}_{I, J}) = \frac{s(\mathbf{A}_{I, J})}{||\mathbf{A}_{I, J}||_F} $$ where $||\mathbf{A}_{I, J}||_F$ is the Frobenius norm of $\mathbf{A}_{I, J}$.
+    \item For a given submatrix \(\mathbf{A}_{I, J}\), the Singular Value Ratio Score is given by:
+          \[
+            s(\mathbf{A}_{I, J}) = \frac{s_1}{s_2},
+          \]
+          where \(s_1\) is the largest singular value of \(\mathbf{A}_{I, J}\) and \(s_2\) is the second largest singular value of \(\mathbf{A}_{I, J}\).
+    \item For a given submatrix \(\mathbf{A}_{I, J}\), the normalized Singular Value Ratio Score is defined as:
+          \[
+            S(\mathbf{A}_{I, J}) = \frac{s(\mathbf{A}_{I, J})}{\|\mathbf{A}_{I, J}\|_F},
+          \]
+          where \(\|\mathbf{A}_{I, J}\|_F\) denotes the Frobenius norm of \(\mathbf{A}_{I, J}\).
   \end{itemize}
 \end{definition}
 
