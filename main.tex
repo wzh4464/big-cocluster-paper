@@ -406,7 +406,7 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
     \STATE Each processor $p$ receives its block $B_p$ and performs co-clustering
     \STATE Each processor sends its co-clustered result $C_p$ back to the root processor
     \IF{rank == 0}
-    \STATE Aggregate co-clustered results from all blocks to form $\mathcal{C}$
+    \STATE $\mathcal{C}$ $\gets$ Aggregate co-clustered results from all blocks
     \RETURN Aggregated co-clustered result $\mathcal{C}$
     \ENDIF
     \STATE Finalize MPI environment
@@ -414,6 +414,7 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 \end{algorithm}
 
 \section{Complexity and Probability Analysis}
+
 \label{sec:analysis}
 
 \subsection{Complexity Analysis}
