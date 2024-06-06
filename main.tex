@@ -1,5 +1,5 @@
 % arara: pdflatex: { options: ["--synctex=1"] }
-% arara: biber if found('log', 'LaTeX Warning: There were undefined references.')
+% arara: biber if found('log', 'LaTeX Warning: There were undefined references.') || changed('references.bib')
 % arara: pdflatex: { synctex: yes } until !found('log', 'undefined references')
 
 %%%
@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Thursday, 6th June 2024 2:00:04 pm
+ % Last Modified: Thursday, 6th June 2024 4:22:24 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -80,6 +80,17 @@
   \clearfield{issn}
 }
 
+% add doi if available
+\DeclareFieldFormat{doi}{%
+  \iffieldundef{doi}{%
+  }{%
+    \mkbibacro{DOI}\addcolon\space
+    \ifhyperref
+      {\href{https://doi.org/#1}{\nolinkurl{#1}}}
+      {\nolinkurl{#1}}%
+  }%
+}
+
 % tables
 \usepackage{booktabs}       % for professional tables
 \usepackage{multirow}       % multirow in tables
@@ -110,7 +121,7 @@
 \section{Introduction}
 \IEEEPARstart{R}{ecent} advancements in machine learning have significantly benefited from the use of large-scale datasets. Clustering, a fundamental unsupervised learning technique, plays an important role in the preprocessing of large-scale training data. By grouping similar data together, clustering enables refined feature recognition and intricate pattern analysis. Consequently, clustering diminishes noise during model training and improves data organization, significantly boosting both the efficiency and effectiveness of large-scale models\cite{raskutti2002CombiningClusteringCotraining, li2014ClusteringguidedSparseStructural, ghimatgar2018ImprovedFeatureSelection, li2023DistributedClusteringCooperative, bertsimas2020InterpretableClusteringOptimization}. However, traditional clustering algorithms\cite{lloyd1982LeastSquaresQuantization, arthur2007KmeansAdvantagesCareful, mclachlan1987MixtureModelsInference} treat all features of data uniformly and solely cluster either rows (samples) or columns (features), as shown in Figure \ref{fig:cluster}. This approach overlooks the potential multi-dimensional relationships within the data, thereby limiting its effectiveness in applications with complex multi-dimensional data patterns.
 
-\textit{Co-clustering}\cite{cheng2000BiclusteringExpressionData, kluger2003SpectralBiclusteringMicroarray, yan2017CoclusteringMultidimensionalBig} address these limitations by simultaneously grouping rows (samples) and columns (features), as shown in Figure \ref{fig:cocluster}. Co-clustering enables a more nuanced analysis of interdependencies between different data dimensions, uncovering complex correlations between diverse data types. This approach is especially important in scenarios where the relationships between rows and columns are as important as the individual entities themselves. For example, in bioinformatics, co-clustering can identify gene-related patterns leading to biological insights by concurrently analyzing genes and conditions\cite{higham2007SpectralClusteringIts, kluger2003SpectralBiclusteringMicroarray, madeira2004BiclusteringAlgorithmsBiological, zhao2012BiclusteringAnalysisPattern, golchev2015BiclusteringAnalysisGene}.
+\textit{Co-clustering}\cite{cheng2000BiclusteringExpressionData, kluger2003SpectralBiclusteringMicroarray, yan2017CoclusteringMultidimensionalBig,wu2024AccurateDetectionEllipses} address these limitations by simultaneously grouping rows (samples) and columns (features), as shown in Figure \ref{fig:cocluster}. Co-clustering enables a more nuanced analysis of interdependencies between different data dimensions, uncovering complex correlations between diverse data types. This approach is especially important in scenarios where the relationships between rows and columns are as important as the individual entities themselves. For example, in bioinformatics, co-clustering can identify gene-related patterns leading to biological insights by concurrently analyzing genes and conditions\cite{higham2007SpectralClusteringIts, kluger2003SpectralBiclusteringMicroarray, madeira2004BiclusteringAlgorithmsBiological, zhao2012BiclusteringAnalysisPattern, golchev2015BiclusteringAnalysisGene}.
 In multimodal learning, co-clustering can integrate and analyze different types of data modalities, such as text and images, to reveal intricate connections and improve predictive performance across diverse datasets\cite{mu2022LearningHybridBehavior}.
 
 
@@ -189,7 +200,7 @@ In contrast, our proposed method adopts a divide-and-conquer strategy to overcom
 
 
 \subsection{Mathematical Formulation of Co-clustering}
-Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters.
+Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters\cite{zhao2017DetectionCorrelatedCoclusters}. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters. Note that if we find all low rank submatrices, and after evaluate its Pearson correlation coefficient, we can find the co-clusters\cite{zhao2016IdentifyingMultidimensionalCoclusters}.
 
 When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a block-diagonal matrix, where each block represents a co-cluster with higher similarity within than between blocks. We define the row and column label sets as \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \), respectively. Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) are used to assign rows and columns to clusters, with the constraints \( \sum_k R_{i,k} = 1 \) and \( \sum_d C_{j,d} = 1 \), ensuring each row and column is assigned to exactly one cluster.
 
@@ -315,7 +326,7 @@ Through this representation, the challenge of co-clustering is reformulated into
 
 \paragraph{Laplacian Matrix}
 
-The graph's Laplacian matrix $L$ is computed as $L=D-W$, with $D$ being the graph's degree matrix—a diagonal matrix whose entries equal the sum of the weights of the edges incident to each node. The Laplacian matrix plays a crucial role in identifying the graph's cluster structure. It does so by facilitating the calculation of eigenvectors associated with its smallest positive eigenvalues, which in turn, guide the partitioning of the graph into clusters.
+The graph's Laplacian matrix $L$ is computed as $L=D-W$, with $D$ being the graph's degree matrix - a diagonal matrix whose entries equal the sum of the weights of the edges incident to each node. The Laplacian matrix plays a crucial role in identifying the graph's cluster structure. It does so by facilitating the calculation of eigenvectors associated with its smallest positive eigenvalues, which in turn, guide the partitioning of the graph into clusters.
 
 \paragraph{Graph Partitioning and Singular Value Decomposition}
 
@@ -602,7 +613,7 @@ This section presents the empirical evaluation of the proposed co-cluster method
 
 \begin{table}[h]
   \centering
-  \caption{Statistics of Datasets}
+  \caption{Statistics of Datasets\cite{role2019CoClustPythonPackage}}
   \label{tab:dataset-statistics}
   % \setlength{\tabcolsep}{9pt} % Adjust column separation
   \begin{tabular}{lccc@{}c@{}c@{}c}
@@ -665,7 +676,7 @@ The results of the experiments are presented in Tables \ref{tab:running-time} an
 These experiments validate our proposed scalable co-clustering method as more efficient and capable of handling diverse and large-scale datasets without sacrificing the quality of co-cluster identification. The adaptability of our method to different data characteristics and its capacity for parallel processing demonstrate its potential as a robust tool for applications in domains requiring the analysis of large data matrices, such as text and biomedical data analyses and financial pattern recognition.
 
 \subsection{Parallel Efficiency Evaluation}
-To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000, Classic4, and RCV1-Large. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. The efficiency metric was normalized to 1 for a single node and measured for the increased number of nodes. The results, plotted in Figure~\ref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
+To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. The efficiency metric was normalized to 1 for a single node and measured for the increased number of nodes. The results, plotted in Figure~\ref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
 
 % include images/optimisation.jpg
 % \includegraphics[width=0.8\linewidth]{optimisation.jpg}
@@ -676,13 +687,13 @@ To evaluate the efficiency of our proposed co-clustering method, we conducted ex
   \label{fig:efficiency}
 \end{figure}
 
-\Cref{fig:efficiency} presents the efficiency of our proposed co-clustering method across different datasets as the number of nodes increases. The datasets considered are Amazon 1000, Classic4, and RCV1-Large. The x-axis represents the number of nodes, while the y-axis indicates the efficiency, normalized to the baseline (single node) efficiency of 1.
+\Cref{fig:efficiency} presents the efficiency of our proposed co-clustering method across different datasets as the number of nodes increases. The datasets considered are Amazon 1000, CLASSIC4, and RCV1-Large. The x-axis represents the number of nodes, while the y-axis indicates the efficiency, normalized to the baseline (single node) efficiency of 1.
 
 \subsubsection{Amazon 1000 Dataset}
 The efficiency starts at 1 for a single node and gradually decreases to 0.39 as the number of nodes increases to 24. The decrease in efficiency is relatively smooth, indicating that our method scales well but exhibits some overhead as more nodes are added. Despite the reduction in efficiency, the method maintains more than 39\% efficiency with 24 nodes, highlighting the robustness of the algorithm even at higher parallelization levels.
 
-\subsubsection{Classic4 Dataset}
-The efficiency for Classic4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
+\subsubsection{CLASSIC4 Dataset}
+The efficiency for CLASSIC4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
 
 \subsubsection{RCV1-Large Dataset}
 Starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows a significant efficiency retention at higher node counts, indicating effective parallelization.
@@ -693,7 +704,7 @@ Starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease
 The results demonstrate that our method effectively scales across multiple nodes, maintaining a reasonable level of efficiency even as the number of nodes increases. This is crucial for large-scale data processing, where distributing the computational load is necessary to handle extensive datasets without incurring prohibitive computational costs.
 
 \subsubsection{Dataset Characteristics}
-The differences in efficiency reduction between datasets highlight the influence of dataset characteristics on parallelization. For instance, Classic4 shows a more significant drop, which could be due to its specific data structure or inherent complexity that introduces more overhead when partitioned across nodes. The smoother efficiency decline for Amazon 1000 and RCV1-Large suggests that these datasets are more amenable to parallel processing, possibly due to less inter-node communication or better partitioning.
+The differences in efficiency reduction between datasets highlight the influence of dataset characteristics on parallelization. For instance, CLASSIC4 shows a more significant drop, which could be due to its specific data structure or inherent complexity that introduces more overhead when partitioned across nodes. The smoother efficiency decline for Amazon 1000 and RCV1-Large suggests that these datasets are more amenable to parallel processing, possibly due to less inter-node communication or better partitioning.
 
 \subsubsection{Parallel Processing Overhead}
 The observed decrease in efficiency is expected due to the overhead introduced by parallel processing, such as inter-node communication, synchronization, and data partitioning. Our method's design, which includes dynamic partitioning and hierarchical merging, helps mitigate these overheads to a significant extent, as evidenced by the relatively high efficiency retention.
