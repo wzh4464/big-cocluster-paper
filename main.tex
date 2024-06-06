@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Wednesday, 5th June 2024 10:19:22 pm
+ % Last Modified: Thursday, 6th June 2024 10:20:52 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -386,7 +386,7 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 \begin{algorithm}[!t]
   \caption{MPI-based Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:mpi_method}
   \begin{algorithmic}[1]
-    \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$, Number of processors $P$;}
+    \REQUIRE{Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$, Number of processors $P$;}
     \ENSURE{Co-clustered result $\mathcal{C}$;}
     \STATE Initialize MPI environment
     \STATE Determine rank and size using \texttt{MPI\_Comm\_rank} and \texttt{MPI\_Comm\_size}
@@ -396,7 +396,7 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
     \FOR{$k=1$ to $K$}
     \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
     \IF{$P(\omega_k) < P_{thresh}$}
-    \STATE Partition matrix $A$ into blocks $B$ and distribute to processors
+    \STATE Partition matrix $\mathbf{A}$ into blocks $B$ and distribute to processors
     \FOR{each processor $p$}
     \STATE Send corresponding block $B_p$ to processor $p$
     \ENDFOR
@@ -424,7 +424,7 @@ In this section, we analyze the complexity of our proposed scalable co-clusterin
 
 The memory requirement for traditional co-clustering methods, such as Non-negative Matrix Tri-Factorization (NMTF), involves the storage of the input data matrix $X$ of size $O(IT)$, output factor matrices $Z$, $S$, and $W$ of size $O(IJ_1 + TJ_2 + J_1J_2)$, and several temporary matrices of size $O(TJ_1 + IJ_2 + J_1^2 + J_2^2)$. The total space complexity for NMTF is $O(IT + (I + T)(J_1 + J_2) + J_1J_2 + J_1^2 + J_2^2)$.
 
-However, due to the sequential computation of NMTF, all matrices need to be stored on a single computing node, leading to significant memory constraints. In contrast, our method distributes the storage across multiple nodes. For each node, the memory requirement includes blocks of input data matrices $X_{\text{row}}$ and $X_{\text{col}}$ of size $O\left(\frac{2IT}{p}\right)$, blocks of factor matrices $Z_{\text{row}}$ and $W_{\text{row}}$ of size $O\left(\frac{IJ_1 + TJ_2}{p}\right)$, and the factor matrix $S$ along with auxiliary matrices of size $O(J_1J_2 + IJ_1 + J_1^2 + TJ_2 + J_2^2)$. The temporary matrices require $O\left(\frac{TJ_1 + IJ_2}{p} + J_1^2 + J_2^2 + J_1J_2\right)$. The total space complexity for our method is $O\left(\frac{IT + (I + T)(J_1 + J_2)}{p} + IJ_1 + TJ_2 + J_1J_2 + J_1^2 + J_2^2\right)$.
+However, due to the sequential computation of NMTF, all matrices need to be stored on a single computing node, leading to significant memory constraints. In contrast, our method distributes the storage across multiple nodes. For each node, the memory requirement includes blocks of input data matrices $X_{\text{row}}$ and $X_{\text{col}}$ of size $O(\frac{2IT}{p})$, blocks of factor matrices $Z_{\text{row}}$ and $W_{\text{row}}$ of size $O(\frac{IJ_1 + TJ_2}{p})$, and the factor matrix $S$ along with auxiliary matrices of size $O(J_1J_2 + IJ_1 + J_1^2 + TJ_2 + J_2^2)$. The temporary matrices require $O(\frac{TJ_1 + IJ_2}{p} + J_1^2 + J_2^2 + J_1J_2)$. The total space complexity for our method is $O(\frac{IT + (I + T)(J_1 + J_2)}{p} + IJ_1 + TJ_2 + J_1J_2 + J_1^2 + J_2^2)$.
 
 Compared to NMTF, our method alleviates the problem of excessive storage by distributing data matrices, making it more applicable for real-world datasets.
 
@@ -432,7 +432,7 @@ Compared to NMTF, our method alleviates the problem of excessive storage by dist
 
 The computational bottleneck of NMTF lies in the matrix multiplications within the multiplicative update formulas. The complexity for these operations is $O(IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2)$.
 
-Our method, designed to operate in parallel, also focuses on reducing this computational load. The solving procedure of a linear system in each iteration, the most time-consuming operation, has a complexity of $O(J_1^3)$ or $O(J_2^3)$. Thus, the total time complexity for our method is $O\left(\frac{IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2}{p}\right)$.
+Our method, designed to operate in parallel, also focuses on reducing this computational load. The solving procedure of a linear system in each iteration, the most time-consuming operation, has a complexity of $O(J_1^3)$ or $O(J_2^3)$. Thus, the total time complexity for our method is $O(\frac{IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2}{p})$.
 
 This parallel approach reduces the computational burden by distributing tasks across multiple nodes, making our method more efficient than traditional NMTF.
 
@@ -440,28 +440,21 @@ This parallel approach reduces the computational burden by distributing tasks ac
 
 To analyze the communication cost, we apply the $\alpha$-$\beta$-$\gamma$ model of distributed-memory parallel computation. In this model, the cost of passing a message of $n$ words is modeled as $\alpha + n\beta$, where $\alpha$ is the latency cost and $\beta$ is the per-word bandwidth cost. Each process performs computation with a per-flop computation cost $\gamma$.
 
-% The major communication cost of our method is associated with collective operations such as \textit{Reduce_Scatter} and \textit{Allreduce}. The communication costs for these operations are $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} n\right)$ and $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} n\right)$, respectively.
+% The major communication cost of our method is associated with collective operations such as \textit{Reduce_Scatter} and \textit{Allreduce}. The communication costs for these operations are $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} n)$ and $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} n)$, respectively.
 
-For lines 10, 16, and 21 in our algorithm, the communication costs are $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} IJ_1\right)$, $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} TJ_2\right)$, and $O\left(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} J_1T\right)$, respectively. Similarly, the communication costs for lines 12, 18, 23, 25, and 27 are $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_2^2\right)$, $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1J_2\right)$, and $O\left(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1^2\right)$, respectively.
+For lines 10, 16, and 21 in our algorithm, the communication costs are $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} IJ_1)$, $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} TJ_2)$, and $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} J_1T)$, respectively. Similarly, the communication costs for lines 12, 18, 23, 25, and 27 are $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_2^2)$, $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1J_2)$, and $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1^2)$, respectively.
 
-Therefore, the major communication cost of our method is $O\left(2\alpha \cdot \log p + (\beta + \gamma)((I + T)J_1 + TJ_2) + (2\beta + \gamma)(J_1^2 + J_2^2 + J_1J_2)\right)$, which shows that our method effectively balances computation and communication costs in a distributed environment.
+Therefore, the major communication cost of our method is $O(2\alpha \cdot \log p + (\beta + \gamma)((I + T)J_1 + TJ_2) + (2\beta + \gamma)(J_1^2 + J_2^2 + J_1J_2))$, which shows that our method effectively balances computation and communication costs in a distributed environment.
 
-\subsection{Complexity of Updating $S$}
-
-Updating the factor matrix $S$ is one of the crucial steps in our method. For each process, the computational cost is $O\left(\frac{ITJ_1 + TJ_1J_2 + IJ_2 + IJ_2^2 + TJ_2^2 + J_1^2J_2 + J_1J_2^2}{p}\right)$, while the communication cost is $O(2\alpha \cdot \log p + (\beta + \gamma)TJ_1 + (2\beta + \gamma)(J_1J_2 + J_1^2 + J_2^2))$. This ensures that the workload of updating $S$ is balanced and symmetric among the processes.
-
-A naive solution would sequentially update $S$ by the master process, gathering necessary matrices from other processes, performing computations, and broadcasting the updated $S$. This would lead to intolerable memory costs and higher computation and communication costs compared to our method.
-
-Our distributed parallel computing approach for updating $S$ balances workloads and reduces space, time, and communication costs, making it efficient and scalable.
 \subsection{Probability Analysis}
 
 \subsubsection{Notations}
 \label{subsec:probability}
 \begin{itemize}
-  \item $A \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $C = \{C_k\}_{k=1}^K$);
-  \item $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
-  \item thus block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
-  \item the size of co-cluster $C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ that falls into block $B_{(i,j)}$ is $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
+  \item $\mathbf{A} \in \mathbb{R}^{M \times N}$ is a matrix with $K$ co-clusters (co-cluster set $\mathcal{C} = \{\mathbf{C}_k\}_{k=1}^K$);
+  \item $\mathbf{A}$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$;
+  \item thus block set $\mathbf{B} = \{\mathbf{B}_{(i,j)}\}_{i=1}^m,_{j=1}^n$;
+  \item the size of co-cluster $\mathbf{C}_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}}$ that falls into block $\mathbf{B}_{(i,j)}$ is $M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)}$;
   \item $T_m$ is the minimum number of rows, $T_n$ is the minimum number of columns.
 \end{itemize}
 
@@ -476,9 +469,11 @@ Our distributed parallel computing approach for updating $S$ balances workloads 
   where $s_i^{(k)} = \cfrac{M^{(k)}}{M}-\cfrac{T_m-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
 \end{lemma}
 
+This lemma provides a mathematical foundation for estimating the likelihood of a co-cluster's size being below a specified threshold within any given block. It helps us understand how partitioning impacts the detection of small co-clusters.
+
 \begin{theorem}
   \label{thm:probability_co_cluster_detection}
-  If the matrix $A$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $C_k$ in any block is $P(\omega_k)$, then
+  If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $\mathbf{C}_k$ in any block is $P(\omega_k)$, then
   \begin{align*}
     P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
   \end{align*}
@@ -490,15 +485,18 @@ Our distributed parallel computing approach for updating $S$ balances workloads 
   This can be used to set $m, n, \phi, \psi, T_m, T_n$, and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
 \end{theorem}
 
+This theorem allows us to determine the optimal partitioning parameters to maximize the probability of detecting co-clusters. It provides a theoretical guarantee for the success of our partitioning strategy by specifying conditions under which co-cluster detection is highly probable.
+
 \subsubsection{Noisy Case}
 \label{subsubsec:noisy_case}
+
 \begin{assumption}
   Assume each noise $n_{ij}$ follows a normal distribution $N(0, \sigma^2)$, independently and identically distributed (i.i.d.) for all $i$ and $j$. Suppose there exists $\lambda > 0$, such that
-  $$\lambda \le \max(||B||_1, ||B^\top||_1)/\sigma^2.$$
+  $$\lambda \le \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)/\sigma^2.$$
 \end{assumption}
 
 \begin{definition}
-  The score of a submatrix $A_{I,J}$ is defined as
+  The score of a submatrix $\mathbf{A}_{I,J}$ is defined as
   \begin{align}
     S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\
     S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle \right) \\
@@ -508,19 +506,23 @@ Our distributed parallel computing approach for updating $S$ balances workloads 
   $$\langle x, y \rangle = \exp(-\frac{||x - y||_1^2}{2\alpha||x||_1||y||_1})$$
 \end{definition}
 
+The score function $S(I,J)$ measures the similarity within a submatrix, considering both row and column relationships. This metric is crucial for evaluating the quality of co-clustering under noisy conditions.
+
 \begin{theorem}
   \label{thm:expected_score}
-  Given the hidden co-cluster matrix $A$ and noise matrix $E$, the observed matrix is $B = A + E$. The expected value and variance of $S_{row}(I,J)$ are:
+  Given the hidden co-cluster matrix $A$ and noise matrix $\mathbf{E}$, the observed matrix is $\mathbf{B} = \mathbf{A} + \mathbf{E}$. The expected value and variance of $S_{row}(I,J)$ are:
   \begin{align*}
-    \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
-    \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})
+    \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
+    \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
   \end{align*}
   Similarly, for $S_{col}(I,J)$:
   \begin{align*}
-    \mathbb{E}(S_{col}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)}) \right) \\
-    \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||B||_1, ||B^\top||_1)})
+    \mathbb{E}(S_{col}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
+    \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
   \end{align*}
 \end{theorem}
+
+This theorem establishes the expected behavior of the score function $S(I,J)$ under noise, providing insights into how noise impacts the similarity measures used in our co-clustering method.
 
 \begin{theorem}
   \label{thm:chernoff_bound}
@@ -536,6 +538,7 @@ Our distributed parallel computing approach for updating $S$ balances workloads 
   Combining this with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
 \end{theorem}
 
+This theorem uses the Chernoff bound to quantify the likelihood that the score function $S(I,J)$ will remain close to its expected value, even in the presence of noise. By appropriately selecting parameters, we can ensure high confidence in detecting co-clusters despite noisy data.
 
 \section{Experiment Evaluation}
 \label{sec:experiment}
@@ -596,21 +599,20 @@ This section presents the empirical evaluation of the proposed co-cluster method
 
 \subsection{Experiment Setup}
 
-\begin{table*}[h]
+\begin{table}[h]
   \centering
   \caption{Statistics of Datasets}
-  \begin{tabular}{lrrrrrr}
+  % \setlength{\tabcolsep}{9pt} % Adjust column separation
+  \begin{tabular}{lccc@{}c@{}c@{}c}
     \hline
     \textbf{Dataset} & \textbf{\#Docs} & \textbf{\#Words} & \textbf{\#Clus} & \textbf{Sparsity (\%)} & \textbf{Balance (\%)} \\
     \hline
     CLASSIC4         & 6,461           & 4,667            & 4               & 0.95                   & 40.2                  \\
-    NG20             & 18,778          & 27,782           & 20              & 0.38                   & 62.8                  \\
     Amazon           & 123,321         & 23,379           & 24              & 0.20                   & 75.4                  \\
-    RCV1-Small       & 220,824         & 9,138            & 4               & 0.85                   & 41.2                  \\
     RCV1-Large       & 685,071         & 90,210           & 4               & 0.08                   & 18.3                  \\
     \hline
   \end{tabular}
-\end{table*}
+\end{table}
 
 \textbf{Datasets.}
 The experiments were conducted using three distinct datasets to demonstrate the versatility and robustness of our method:
