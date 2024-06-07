@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Thursday, 6th June 2024 5:05:56 pm
+ % Last Modified: Friday, 7th June 2024 10:20:44 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -208,20 +208,34 @@ To evaluate if a submatrix $\mathbf{A}_{I, J}$ forms a coherent co-cluster, we d
 
 \begin{definition}[Singular Value Ratio Score]
   \label{def:co_cluster}
-  Consider a matrix \(\mathbf{A} \in \mathbb{R}^{M \times N}\), and let \(I\) and \(J\) denote the sets of row and column indices, respectively, for a submatrix \(\mathbf{A}_{I, J}\). The Singular Value Ratio Score is defined as follows:
+  Consider a matrix \(\mathbf{A} \in \mathbb{R}^{M \times N}\). The Singular Value Ratio Score is defined as follows:
   \begin{itemize}
-    \item For a given submatrix \(\mathbf{A}_{I, J}\), the Singular Value Ratio Score is given by:
+    \item For a given submatrix \(\mathbf{A}\), the Singular Value Ratio Score is given by:
           \[
-            s(\mathbf{A}_{I, J}) = \frac{s_1}{s_2},
+            s(\mathbf{A}) = \frac{s_1}{s_2},
           \]
-          where \(s_1\) is the largest singular value of \(\mathbf{A}_{I, J}\) and \(s_2\) is the second largest singular value of \(\mathbf{A}_{I, J}\).
-    \item For a given submatrix \(\mathbf{A}_{I, J}\), the normalized Singular Value Ratio Score is defined as:
+          where \(s_1\) is the largest singular value of \(\mathbf{A}\) and \(s_2\) is the second largest singular value of \(\mathbf{A}\).
+    \item For a given submatrix \(\mathbf{A}\), the normalized Singular Value Ratio Score is defined as:
           \[
-            S(\mathbf{A}_{I, J}) = \frac{s(\mathbf{A}_{I, J})}{\|\mathbf{A}_{I, J}\|_F},
+            S(\mathbf{A}) = \frac{s(\mathbf{A})}{\|\mathbf{A}\|_F},
           \]
-          where \(\|\mathbf{A}_{I, J}\|_F\) denotes the Frobenius norm of \(\mathbf{A}_{I, J}\).
+          where \(\|\mathbf{A}\|_F\) denotes the Frobenius norm of \(\mathbf{A}\).
   \end{itemize}
 \end{definition}
+
+% % definition of Mahalanobis distance Distance
+% \begin{definition}[Mahalanobis Distance]
+%   \label{def:mahalanobis_distance}
+%   Consider a point \( x \in \mathbb{R}^n \) and a covariance matrix \( \Sigma \in \mathbb{R}^{n \times n} \). The Mahalanobis distance of \( x \) is defined as:
+%   \[
+%     D(x) = \sqrt{(x - \mu)^T \Sigma^{-1} (x - \mu)},
+%   \]
+%   where \( \mu \) is the mean of the distribution.
+% \end{definition}
+
+% % pick x1, x2
+
+% The Mahalanobis distance is a measure of the distance between a point and a distribution, taking into account the covariance structure of the data. If one considered $(s_1, s_2)$ as a point in a two-dimensional space, the Mahalanobis distance would measure the distance of this point from the origin, taking into account the covariance structure of the data. This distance is particularly useful for identifying outliers or anomalies in high-dimensional data, as it accounts for the correlation between variables.
 
 \subsection{Problem Statement}
 This paper aims to develop a method that efficiently and accurately identifies co-clusters $\mathbf{A}_{I, J}$ within a matrix $\mathbf{A}$ representing large datasets. These co-clusters should exhibit specific structural patterns such as uniformity across elements, consistency along rows or columns, or patterns demonstrating additive or multiplicative coherence. Properly identifying and categorizing these patterns is crucial for understanding the complex data structures inherent in large datasets. This method is intended to improve the detection capabilities of co-clustering, enhancing both the efficiency and precision necessary for handling large-scale data challenges.
@@ -435,10 +449,10 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 \label{sec:analysis}
 
 \subsection{Complexity Analysis}
-\label{subsec:complexity}
+\label{subsubsec:complexity}
 In this section, we analyze the complexity of our proposed scalable co-clustering method. We begin by comparing the space and time complexity with traditional co-clustering methods. Then, we discuss the communication cost in a distributed computing environment.
 
-\subsection{Space Complexity Comparison}
+\subsubsection{Space Complexity Comparison}
 
 The memory requirement for traditional co-clustering methods, such as Non-negative Matrix Tri-Factorization (NMTF), involves the storage of the input data matrix $X$ of size $O(IT)$, output factor matrices $Z$, $S$, and $W$ of size $O(IJ_1 + TJ_2 + J_1J_2)$, and several temporary matrices of size $O(TJ_1 + IJ_2 + J_1^2 + J_2^2)$. The total space complexity for NMTF is $O(IT + (I + T)(J_1 + J_2) + J_1J_2 + J_1^2 + J_2^2)$.
 
@@ -446,7 +460,7 @@ However, due to the sequential computation of NMTF, all matrices need to be stor
 
 Compared to NMTF, our method alleviates the problem of excessive storage by distributing data matrices, making it more applicable for real-world datasets.
 
-\subsection{Time Complexity Comparison}
+\subsubsection{Time Complexity Comparison}
 
 The computational bottleneck of NMTF lies in the matrix multiplications within the multiplicative update formulas. The complexity for these operations is $O(IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2)$.
 
@@ -454,7 +468,7 @@ Our method, designed to operate in parallel, also focuses on reducing this compu
 
 This parallel approach reduces the computational burden by distributing tasks across multiple nodes, making our method more efficient than traditional NMTF.
 
-\subsection{Communication Cost Analysis}
+\subsubsection{Communication Cost Analysis}
 
 To analyze the communication cost, we apply the $\alpha$-$\beta$-$\gamma$ model of distributed-memory parallel computation. In this model, the cost of passing a message of $n$ words is modeled as $\alpha + n\beta$, where $\alpha$ is the latency cost and $\beta$ is the per-word bandwidth cost. Each process performs computation with a per-flop computation cost $\gamma$.
 
