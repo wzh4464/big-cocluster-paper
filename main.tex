@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Friday, 7th June 2024 10:20:44 am
+ % Last Modified: Friday, 7th June 2024 1:20:04 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -111,7 +111,7 @@
 \maketitle
 
 \begin{abstract}
-  Co-clustering algorithms are effective at uncovering complex multi-dimensional data patterns by concurrently grouping rows and columns. However, they are limited by scalability challenges and high computational complexity. This paper presents a novel and scalable co-clustering method designed to handle large-scale data efficiently. First, we propose a dynamic partitioning algorithm that divides large data matrices into smaller submatrices, facilitating parallel processing and significantly reducing computational and storage demands. The configurations of the submatrices are optimal based on a probabilistic model, guaranteeing convergence with iterations determined by the data matrix's scale. Besides, we develop a hierarchical co-cluster merging algorithm that iteratively combines co-clusters from submatrices, ensuring robust and consistent clustering performance. The proposed framework also supports integration with various co-clustering techniques and does not require specialized main thread performance, making it practical for real-world applications. Experimental evaluations demonstrate that our method outperforms existing solutions in scalability, efficiency, and co-cluster identification quality, particularly in high-dimensional and heterogeneous data scenarios. Specifically, our extensive evaluations show that \emph{MPHMCo} achieves substantial improvements, with a significant reduction in computation time—approximately 83\% for dense matrices and up to 30\% for sparse matrices.
+  Co-clustering algorithms are effective at uncovering complex multi-dimensional data patterns by concurrently grouping rows and columns. However, they are limited by scalability challenges and high computational complexity. We present a novel and scalable co-clustering method designed to handle large-scale data efficiently. First, we propose a dynamic partitioning algorithm that divides large data matrices into smaller submatrices, facilitating parallel processing and significantly reducing computational and storage demands. The configurations of the submatrices are optimal based on a probabilistic model, guaranteeing convergence with iterations determined by the data matrix's scale. Besides, we develop a hierarchical co-cluster merging algorithm that iteratively combines co-clusters from submatrices, ensuring robust and consistent clustering performance. The proposed framework also supports integration with various co-clustering techniques and does not require specialized main thread performance, making it practical for real-world applications. Experimental evaluations demonstrate that our method outperforms existing solutions in scalability, efficiency, and co-cluster identification quality, particularly in high-dimensional and heterogeneous data scenarios. Specifically, our extensive evaluations show that \emph{MPHMCo} achieves substantial improvements, with a significant reduction in computation time—approximately 83\% for dense matrices and up to 30\% for sparse matrices.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -251,7 +251,7 @@ This paper aims to develop a method that efficiently and accurately identifies c
   \label{fig:workflow}
 \end{figure*}
 
-This paper presents a novel and scalable co-clustering method specifically designed for large matrices, as shown in \Cref{fig:workflow}. This method applies a probabilistic model-based optimal partitioning algorithm, which not only predicts the ideal number and sequence of partitions for maximizing computational efficiency but also ensures the effectiveness of the co-clustering process.
+We propose a novel and scalable co-clustering method specifically designed for large matrices, as shown in \Cref{fig:workflow}. This method applies a probabilistic model-based optimal partitioning algorithm, which not only predicts the ideal number and sequence of partitions for maximizing computational efficiency but also ensures the effectiveness of the co-clustering process.
 
 Our method involves partitioning large matrices into smaller, manageable submatrices. This strategic partitioning is meticulously guided by a probabilistic model, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. After partitioning, each submatrix is handled by a separate computational unit. This approach significantly shortens the processing time and reduces memory consumption for each unit. The probabilistic model serves as a guide, addressing one of the biggest challenges of the partitioning framework: the potential risk of missing small co-clusters. By estimating the likelihood of identifying all relevant co-clusters, the model ensures comprehensive data coverage and robust clustering results, even for smaller, more intricate patterns within the data.
 
@@ -409,7 +409,7 @@ In this algorithm, steps 1 and 2 initialize the final co-cluster set and calcula
 
 \subsection{MPI Implementation}
 
-Our proposed scalable co-clustering method is implemented using the Message Passing Interface (MPI) to enable distributed computing across multiple nodes. This implementation allows for effective distribution of the computational load, facilitating parallel processing of submatrices and enhancing the scalability of our method. The main computation node is responsible for computing thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes. This design ensures that our approach is practical and scalable for large-scale applications, without the need for a supercomputer or high-performance central processing unit.
+To demonstrate the practical feasibility and performance of our proposed distributed system, we implement it using the Message Passing Interface (MPI) to enable distributed computing across multiple nodes. This implementation allows for effective distribution of the computational load, facilitating parallel processing of submatrices and enhancing the scalability of our method. The main computation node is responsible for computing thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes. This design ensures that our approach is practical and scalable for large-scale applications, without the need for a supercomputer or high-performance central processing unit.
 More details about the MPI implementation are shown in \Cref{alg:mpi_method}.
 
 In conclusion, our proposed scalable co-clustering method effectively addresses the challenges associated with large-scale data analysis. By leveraging a probabilistic model for optimal partitioning and a hierarchical merging strategy, we ensure that our method is both efficient and robust. The detailed algorithmic framework and theoretical underpinnings provide a solid foundation for further research and development in this field.
@@ -514,10 +514,10 @@ This lemma provides a mathematical foundation for estimating the likelihood of a
     P & = 1 - P(\omega_k)^{T_p}                                                        \\
       & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
   \end{align*}
-  This can be used to set $m, n, \phi, \psi, T_m, T_n$, and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
+
 \end{theorem}
 
-This theorem allows us to determine the optimal partitioning parameters to maximize the probability of detecting co-clusters. It provides a theoretical guarantee for the success of our partitioning strategy by specifying conditions under which co-cluster detection is highly probable.
+\Cref{thm:probability_co_cluster_detection} can be used to set $m, n, \phi, \psi, T_m, T_n$, and $T_p$ to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
 \subsubsection{Noisy Case}
 \label{subsubsec:noisy_case}
