@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Friday, 7th June 2024 1:20:04 pm
+ % Last Modified: Friday, 7th June 2024 1:39:58 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -522,39 +522,51 @@ This lemma provides a mathematical foundation for estimating the likelihood of a
 \subsubsection{Noisy Case}
 \label{subsubsec:noisy_case}
 
+In the presence of noise, the probability of detecting co-clusters is affected by the noise level. To address this, we introduce a score function that quantifies the similarity within a submatrix, considering both row and column relationships. This score function is crucial for evaluating the quality of co-clustering under noisy conditions, as it helps to differentiate between genuine co-cluster structures and noise-induced patterns.
+
 \begin{assumption}
+  Without loss of generality, we model the noise matrix $\mathbf{N}$ as a Gaussian noise matrix with mean 0 and variance $\sigma^2$. The noise matrix $\mathbf{N}$ is added to the hidden co-cluster matrix $\mathbf{A}$ to form the observed matrix $\mathbf{B} = \mathbf{A} + \mathbf{N}$.
   Assume each noise $n_{ij}$ follows a normal distribution $N(0, \sigma^2)$, independently and identically distributed (i.i.d.) for all $i$ and $j$. Suppose there exists $\lambda > 0$, such that
   $$\lambda \le \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)/\sigma^2.$$
 \end{assumption}
 
 \begin{definition}
-  The score of a submatrix $\mathbf{A}_{I,J}$ is defined as
-  \begin{align}
-    S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                          \\
-    S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1,J}, x_{i_2,J}\rangle \right) \\
-    S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{I,j_1}, x_{I,j_2}\rangle \right)
-  \end{align}
-  where $x_{i,J}$ is the $i$-th row of $A_{I,J}$ and the inner product $\langle x, y \rangle$ is defined as
-  $$\langle x, y \rangle = \exp(-\frac{||x - y||_1^2}{2\alpha||x||_1||y||_1})$$
+  Suppose $\mathbf{A} \in \mathbb{R}^{M \times N}$ is a matrix, and $I \subseteq \{1, 2, \ldots, M\}$ and $J \subseteq \{1, 2, \ldots, N\}$ are two sets of row and column indices.
+  \label{def:co_cluster_score}
+  % two definitions: 1. matrix 2. submatrix
+  \begin{enumerate}
+    \item The co-cluster score function $S(\mathbf{A})$ of a matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$ is defined as
+          \begin{align}
+            S(\mathbf{A})       & = \min(S_{row}(\mathbf{A}), S_{col}(A))                                                                                        \\
+            S_{row}(A) & = \min_{i_1, i_2 \in M} \left(1- \frac{1}{M-1} \sum_{i_2 \in M, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
+            S_{col}(A) & = \min_{j_1, j_2 \in N} \left(1- \frac{1}{N-1} \sum_{j_2 \in N, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
+          \end{align}
+    \item The co-cluster score function $S(I,J)$ of a submatrix $\mathbf{A}_{I,J}$ is defined as
+          \begin{align}
+            S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                      \\
+            S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
+            S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
+          \end{align}
+  \end{enumerate}
 \end{definition}
 
-The score function $S(I,J)$ measures the similarity within a submatrix, considering both row and column relationships. This metric is crucial for evaluating the quality of co-clustering under noisy conditions.
+The score function measures the similarity within a submatrix, considering both row and column relationships. This metric is crucial for evaluating the quality of co-clustering under noisy conditions.
 
 \begin{theorem}
   \label{thm:expected_score}
-  Given the hidden co-cluster matrix $A$ and noise matrix $\mathbf{E}$, the observed matrix is $\mathbf{B} = \mathbf{A} + \mathbf{E}$. The expected value and variance of $S_{row}(I,J)$ are:
+  Given the hidden co-cluster matrix $A$ and noise matrix $\mathbf{N}$, the observed matrix is $\mathbf{B} = \mathbf{A} + \mathbf{N}$. The expected value and variance of $S_{row}(I,J)$ are:
   \begin{align*}
     \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
     \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
   \end{align*}
   Similarly, for $S_{col}(I,J)$:
   \begin{align*}
-    \mathbb{E}(S_{col}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
+    \mathbb{E}(S_{col}(I,J)) & \ge |I||J| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
     \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
   \end{align*}
 \end{theorem}
 
-This theorem establishes the expected behavior of the score function $S(I,J)$ under noise, providing insights into how noise impacts the similarity measures used in our co-clustering method.
+\Cref{thm:expected_score} establishes the expected behavior of the score function $S(I,J)$ under noise, providing insights into how noise impacts the similarity measures used in our co-clustering method.
 
 \begin{theorem}
   \label{thm:chernoff_bound}
@@ -567,10 +579,10 @@ This theorem establishes the expected behavior of the score function $S(I,J)$ un
   \begin{align*}
     P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta
   \end{align*}
-  Combining this with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
+  
 \end{theorem}
 
-This theorem uses the Chernoff bound to quantify the likelihood that the score function $S(I,J)$ will remain close to its expected value, even in the presence of noise. By appropriately selecting parameters, we can ensure high confidence in detecting co-clusters despite noisy data.
+\Cref{thm:chernoff_bound} uses the Chernoff bound to quantify the likelihood that the score function $S(I,J)$ will remain close to its expected value, even in the presence of noise. By appropriately selecting parameters, we can ensure high confidence in detecting co-clusters despite noisy data. Combining this with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
 
 \section{Experiment Evaluation}
 \label{sec:experiment}
