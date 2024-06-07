@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Friday, 7th June 2024 1:39:58 pm
+ % Last Modified: Saturday, 8th June 2024 1:43:48 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -450,7 +450,36 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 
 \subsection{Complexity Analysis}
 \label{subsubsec:complexity}
-In this section, we analyze the complexity of our proposed scalable co-clustering method. We begin by comparing the space and time complexity with traditional co-clustering methods. Then, we discuss the communication cost in a distributed computing environment.
+In this section, we analyze the complexity of our proposed scalable co-clustering framework. Since it is a modular framework, denote the atom co-clustering method's complexity as \(O(f(n))\) for time complexity and \(O(g(n))\) for space complexity, respectively, where \(n\) is the size of the submatrix. Our goal is to demonstrate that our framework significantly reduces the time and space requirements for each computation node, enhancing the scalability and efficiency of the co-clustering process.
+
+By partitioning the large matrix \(A \in \mathbb{R}^{M \times N}\) into \(m \times n\) smaller submatrices, each of size \(\phi_i \times \psi_j\), we distribute the computational load across multiple nodes. This distribution allows for parallel processing, where each node handles a submatrix independently. As a result, the computational complexity of the entire framework is significantly reduced compared to traditional methods that process the entire matrix as a whole.
+
+% ### Time Complexity Analysis
+\subsubsection{Time Complexity Analysis}
+\label{subsubsec:time_complexity}
+The whole procedure of our method can be divided into three parts: partitioning, co-clustering on submatrices, and hierarchical merging.
+
+\begin{itemize}
+  % \item The time complexity for each submatrix, given by the atom co-clustering method, is \(O(f(n))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i \times \psi_j))\). For the merging process, 
+  \item \emph{Partitioning and Co-clustering on Submatrices:} We only do $O(1)$ computation for partitioning step, and by distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i \psi_j))\).
+  \item \emph{Hierarchical Merging:} The hierarchical merging process
+\end{itemize}
+
+
+
+
+% ### Space Complexity Analysis
+\subsubsection{Space Complexity Analysis}
+\label{subsubsec:space_complexity}
+Similarly, the space complexity for each submatrix, given by the atom co-clustering method, is \(O(g(n))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires space \(O(g(\phi_i \times \psi_j))\). The overall space complexity for the framework is the maximum space complexity among the submatrices:
+\[ O\left(\max_{i,j} g(\phi_i \times \psi_j)\right) \]
+
+% ### Scalability and Efficiency
+\subsubsection{Scalability and Efficiency}
+\label{subsubsec:scalability_efficiency}
+The partitioning strategy not only reduces the computational burden on each node but also improves the scalability of the co-clustering process. As the size of the input matrix increases, the framework can handle larger datasets by simply increasing the number of partitions and computation nodes. This modular approach ensures that the framework remains efficient and scalable, even for very large and high-dimensional datasets.
+
+In conclusion, our proposed scalable co-clustering framework effectively reduces the time and space complexity for each computation node by partitioning the large matrix into smaller, manageable submatrices. This approach leverages the strengths of parallel processing, ensuring that the co-clustering process is both efficient and scalable.
 
 \subsubsection{Space Complexity Comparison}
 
@@ -537,9 +566,9 @@ In the presence of noise, the probability of detecting co-clusters is affected b
   \begin{enumerate}
     \item The co-cluster score function $S(\mathbf{A})$ of a matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$ is defined as
           \begin{align}
-            S(\mathbf{A})       & = \min(S_{row}(\mathbf{A}), S_{col}(A))                                                                                        \\
-            S_{row}(A) & = \min_{i_1, i_2 \in M} \left(1- \frac{1}{M-1} \sum_{i_2 \in M, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
-            S_{col}(A) & = \min_{j_1, j_2 \in N} \left(1- \frac{1}{N-1} \sum_{j_2 \in N, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
+            S(\mathbf{A}) & = \min(S_{row}(\mathbf{A}), S_{col}(A))                                                                               \\
+            S_{row}(A)    & = \min_{i_1, i_2 \in M} \left(1- \frac{1}{M-1} \sum_{i_2 \in M, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
+            S_{col}(A)    & = \min_{j_1, j_2 \in N} \left(1- \frac{1}{N-1} \sum_{j_2 \in N, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
           \end{align}
     \item The co-cluster score function $S(I,J)$ of a submatrix $\mathbf{A}_{I,J}$ is defined as
           \begin{align}
@@ -579,7 +608,7 @@ The score function measures the similarity within a submatrix, considering both 
   \begin{align*}
     P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta
   \end{align*}
-  
+
 \end{theorem}
 
 \Cref{thm:chernoff_bound} uses the Chernoff bound to quantify the likelihood that the score function $S(I,J)$ will remain close to its expected value, even in the presence of noise. By appropriately selecting parameters, we can ensure high confidence in detecting co-clusters despite noisy data. Combining this with the probability control of $T_p$, we can select parameters to ensure the probability of detecting the co-cluster is larger than a given threshold.
