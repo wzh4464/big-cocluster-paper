@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Saturday, 8th June 2024 12:50:35 pm
+ % Last Modified: Saturday, 8th June 2024 7:32:27 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -205,7 +205,7 @@ In contrast, our proposed method adopts a divide-and-conquer strategy to overcom
 
 
 \subsection{Mathematical Formulation of Co-clustering}
-Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters\cite{zhao2017DetectionCorrelatedCoclusters}. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters. Note that if we find all low rank submatrices, and after evaluate its Pearson correlation coefficient, we can find the co-clusters\cite{zhao2016IdentifyingMultidimensionalCoclusters}.
+Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters\cite{zhao2017DetectionCorrelatedCoclusters}. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters. Note that if we find all low-rank submatrices, and after evaluating its Pearson correlation coefficient, we can find the co-clusters\cite{zhao2016IdentifyingMultidimensionalCoclusters}.
 
 When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a block-diagonal matrix, where each block represents a co-cluster with higher similarity within than between blocks. We define the row and column label sets as \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \), respectively. Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) are used to assign rows and columns to clusters, with the constraints \( \sum_k R_{i,k} = 1 \) and \( \sum_d C_{j,d} = 1 \), ensuring each row and column is assigned to exactly one cluster.
 
@@ -339,7 +339,7 @@ be compatible with a wide range of atom-co-clustering methods. For the sake of m
 
 \subsubsection{Graph-based Spectral Co-clustering Algorithm}
 
-Spectral co-clustering (SCC) stands as one of the most prevalent methods in the realm of co-clustering today \cite{vonluxburg2007TutorialSpectralClustering}, primarily due to its adeptness in unraveling the complexities of high-dimensional data. At its core, this method harnesses the power of spectral clustering principles, focusing on the utilization of a graph's Laplacian matrix eigenvectors for effectively partitioning data into distinct clusters. This approach is exceptionally beneficial for analyzing data that naturally forms a bipartite graph structure, including applications in text-document analysis, social network modeling, and gene expression studies.
+Spectral co-clustering (SCC) stands as one of the most prevalent methods in the realm of co-clustering today \cite{vonluxburg2007TutorialSpectralClustering}, primarily due to its adeptness in unraveling the complexities of high-dimensional data. At its core, this method harnesses the power of spectral clustering principles, focusing on the utilization of a graph's Laplacian matrix eigenvectors for effectively partitioning data into distinct clusters. This approach is exceptionally beneficial for analyzing data that naturally form a bipartite graph structure, including applications in text-document analysis, social network modeling, and gene expression studies.
 
 \paragraph{Graph Construction in Co-clustering Expanded}
 
@@ -465,15 +465,15 @@ By partitioning the large matrix \(A \in \mathbb{R}^{M \times N}\) into \(m \tim
 
 The whole procedure of our method can be divided into three parts: partitioning, co-clustering on submatrices, and hierarchical merging.
 
-\paragraph{Partitioning and Co-clustering on Submatrices} The time complexity for each submatrix, given by the atom co-clustering method, is \(O(f(MN))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i\psi_j))\). For $T_p$ sampling times, the total time complexity for partitioning and co-clustering on submatrices is upbounded by:
+\paragraph{Partitioning and Co-clustering on Submatrices} The time complexity for each submatrix, given by the atom co-clustering method, is \(O(f(MN))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i\psi_j))\). For $T_p$ sampling times, the total time complexity for partitioning and co-clustering on submatrices is bounded by:
 \begin{align}
   O\left(T_p \max_{i,j} f(\phi_i\psi_j)\right) \le O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) \right)
   \label{eq:time_complexity_partitioning}
 \end{align}
 
-\paragraph{Hierarchical Merging} The hierarchical merging process iteratively combines co-clusters from the submatrices. This can be represented by a binary tree, where each internal node corresponds to a merged co-cluster, and each leaf node represents a small co-cluster. The time complexity of the hierarchical merging process is upbounded by \(O(n \log n \cdot L(\phi_\text{max}, \psi_\text{max}))\), where \(L(\phi_\text{max}, \psi_\text{max})\) is the time complexity of calculating the score of merging two co-clusters with the largest size \(\phi_\text{max},  \psi_\text{max}\). Using the methods from \cite{lee2014BigDataMatrix}, we have \(L(\phi_\text{max}, \psi_\text{max}) = O(16 \max(\phi_\text{max}, \psi_\text{max})) = O(\max(\phi_\text{max}, \psi_\text{max}))\).
+\paragraph{Hierarchical Merging} The hierarchical merging process iteratively combines co-clusters from the submatrices. This can be represented by a binary tree, where each internal node corresponds to a merged co-cluster, and each leaf node represents a small co-cluster. The time complexity of the hierarchical merging process is bounded by \(O(n \log n \cdot L(\phi_\text{max}, \psi_\text{max}))\), where \(L(\phi_\text{max}, \psi_\text{max})\) is the time complexity of calculating the score of merging two co-clusters with the largest size \(\phi_\text{max},  \psi_\text{max}\). Using the methods from \cite{lee2014BigDataMatrix}, we have \(L(\phi_\text{max}, \psi_\text{max}) = O(16 \max(\phi_\text{max}, \psi_\text{max})) = O(\max(\phi_\text{max}, \psi_\text{max}))\).
 
-Combining these, the overall time complexity for our method can be upbounded by:
+Combining these, the overall time complexity for our method can be bounded by:
 \begin{align}
   O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) + n \log n \cdot \max(\phi_{\text{max}}, \psi_{\text{max}}) \right)
   \label{eq:time_complexity}
@@ -646,9 +646,7 @@ The score function measures the similarity within a submatrix, considering both 
   \end{tablenotes}
 \end{table*}
 
-
-
-This section presents the empirical evaluation of the proposed co-cluster method. The experiments aim to assess the method's efficiency, scalability, and accuracy when applied to large data matrices. More experiments on varying the computation units numbers and partition settings show the ability of parallel acceleration and verify the optimal setting proposed respectivley.
+This section presents the empirical evaluation of the proposed co-cluster method. The experiments aim to assess the method's efficiency, scalability, and accuracy when applied to large data matrices. More experiments on varying the computation unit numbers and partition settings show the ability of parallel acceleration and verify the optimal setting proposed respectively.
 
 \subsection{Experiment Setup}
 
@@ -689,7 +687,7 @@ The experiments followed the procedure outlined in Algorithm \ref{alg:method}. T
   \item Deep Co-Clustering (DeepCC)\cite{dongkuanxu2019DeepCoClustering}
 \end{itemize}
 
-Notably, 1) PNMTF is one of the most efficient co-clustering algorithms in the state-of-art. 2) All our experiments show that DeepCC cannot process all selected datasets due to the dataset size exceeds DeepCC processing limit.
+Notably, 1) PNMTF is one of the most efficient co-clustering algorithms in the state-of-art. 2) All our experiments show that DeepCC cannot process all selected datasets due to the dataset size exceeds the DeepCC's processing limit.
 
 \textbf{Our Methods.} Our proposed scalable co-cluster method is applied along with the SCC and PNMTF to demonstrate the enhanced performance and capability of handling large datasets:
 \begin{itemize}
@@ -712,7 +710,7 @@ The results of the experiments are presented in Tables \ref{tab:running-time} an
 \Cref{tab:running-time} provides a clear demonstration of the efficiency variations among different co-clustering methods across several datasets. The MPHM-SCC method stands out in terms of efficiency on the CLASSIC4 dataset with a significantly lower running time of only 112.5 seconds, suggesting a robust performance when handling smaller or less complex data structures. Conversely, for the larger and presumably more complex Amazon and RCV1-Large datasets, the MPHM-PNMTF method displays impressive efficiency, particularly for the Amazon dataset with a running time of 3,028 seconds, which is significantly shorter compared to other methods. This performance indicates that the MPHM-PNMTF might be particularly optimized for larger datasets or those with a specific structure that benefits from the method's parallel processing capabilities. The asterisks (\*) denote the inability of certain methods to process the larger datasets, highlighting a critical limitation in scalability which is crucial for practical applications where data sizes can vary widely.
 
 \subsubsection{Evaluation Metrics Comparison}
-\Cref{tab:evaluation-metrics}  table contrasts the effectiveness of various co-clustering methods by utilizing two metrics: Normalized Mutual Information (NMI) and Adjusted Rand Index (ARI). These metrics are valuable for assessing the quality of the clusters formed by each method. In the CLASSIC4 dataset, MPHM-SCC achieves the highest NMI and ARI scores, suggesting that this method not only operates efficiently but also produces superior cluster quality. The strength of MPHM-SCC is further highlighted in its performance on the RCV1-Large dataset, where it again tops the charts in both metrics. This consistency across different datasets underscores its robustness as a clustering solution. In contrast, the FNMTF method, despite not always achieving top scores, does show the best results in the Amazon dataset for NMI and ARI. This might indicate a niche effectiveness, potentially linked to specific data characteristics or distribution in this dataset. Overall, these tables collectively inform about the trade-offs between performance efficiency and clustering effectiveness, which are key considerations for choosing a suitable method for practical data analysis tasks.
+\Cref{tab:evaluation-metrics}  table contrasts the effectiveness of various co-clustering methods by utilizing two metrics: Normalized Mutual Information (NMI) and Adjusted Rand Index (ARI). These metrics are valuable for assessing the quality of the clusters formed by each method. In the CLASSIC4 dataset, MPHM-SCC achieves the highest NMI and ARI scores, suggesting that this method not only operates efficiently but also produces superior cluster quality. The strength of MPHM-SCC is further highlighted in its performance on the RCV1-Large dataset, where it again tops the charts in both metrics. This consistency across different datasets underscores its robustness as a clustering solution. In contrast, the FNMTF method, despite not always achieving top scores, does show the best results in the Amazon dataset for NMI and ARI. This might indicate niche effectiveness, potentially linked to specific data characteristics or distribution in this dataset. Overall, these tables collectively inform about the trade-offs between performance efficiency and clustering effectiveness, which are key considerations for choosing a suitable method for practical data analysis tasks.
 
 \subsection{Parallel Efficiency Evaluation}
 To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. The efficiency metric was normalized to 1 for a single node and measured for the increased number of nodes. The results, plotted in Figure~\ref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
@@ -735,7 +733,7 @@ The efficiency starts at 1 for a single node and gradually decreases to 0.39 as 
 The efficiency for CLASSIC4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
 
 \subsubsection{RCV1-Large Dataset}
-Starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows a significant efficiency retention at higher node counts, indicating effective parallelization.
+Starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
 
 \subsection{Detailed Analysis}
 
@@ -746,7 +744,7 @@ The results demonstrate that our method effectively scales across multiple nodes
 The differences in efficiency reduction between datasets highlight the influence of dataset characteristics on parallelization. For instance, CLASSIC4 shows a more significant drop, which could be due to its specific data structure or inherent complexity that introduces more overhead when partitioned across nodes. The smoother efficiency decline for Amazon 1000 and RCV1-Large suggests that these datasets are more amenable to parallel processing, possibly due to less inter-node communication or better partitioning.
 
 \subsubsection{Parallel Processing Overhead}
-The observed decrease in efficiency is expected due to the overhead introduced by parallel processing, such as inter-node communication, synchronization, and data partitioning. Our method's design, which includes dynamic partitioning and hierarchical merging, helps mitigate these overheads to a significant extent, as evidenced by the relatively high efficiency retention.
+The observed decrease in efficiency is expected due to the overhead introduced by parallel processing, such as inter-node communication, synchronization, and data partitioning. Our method's design, which includes dynamic partitioning and hierarchical merging, helps mitigate these overheads to a significant extent, as evidenced by the relatively high-efficiency retention.
 
 \subsubsection{Practical Implications}
 Maintaining around 40-50\% efficiency with up to 24 nodes is a strong indicator that our method can handle very large datasets in a distributed computing environment effectively. This efficiency retention is critical for real-world applications where computational resources are distributed across many nodes, and maintaining high performance is essential for timely data processing.
@@ -783,7 +781,7 @@ The significant reduction in computation time as the number of partitions increa
 \subsubsection{Practical Implications}
 The practical implication of these findings is that our proposed method can be effectively tuned for various datasets by adjusting the number of partitions. The theoretical optimal setting at 100 partitions provides a benchmark for achieving the best performance, but the method's flexibility allows for adjustments based on specific dataset characteristics and computational constraints.
 
-These experiments validated that our Matrix Partitioned and Hierarchical Co-Cluster Merging is an efficient and accurate approach to analyze large data matrices. The method's innovative partitioning strategy and ensemble clustering technique offer a new direction for scalable and precise co-clustering in data analysis.
+These experiments validated that our Matrix Partitioned and Hierarchical Co-Cluster Merging is an efficient and accurate approach to analyzing large data matrices. The method's innovative partitioning strategy and ensemble clustering technique offer a new direction for scalable and precise co-clustering in data analysis.
 
 \section{Conclusion}
 \label{sec:conclusion}
