@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Saturday, 8th June 2024 1:43:48 am
+ % Last Modified: Saturday, 8th June 2024 12:50:35 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -53,6 +53,11 @@
 
 % image path: images/
 \graphicspath{ {images/} }
+
+\newcommand{\SCCcite}{\cite{dhillon2001CoclusteringDocumentsWords}}
+\newcommand{\PNMTFcite}{\cite{chen2023ParallelNonNegativeMatrix}}
+\newcommand{\ONMTFcite}{\cite{ding2006OrthogonalNonnegativeMatrix}}
+\newcommand{\FNMTFcite}{\cite{kim2011FastNonnegativeMatrix}}
 
 % bibliography
 \usepackage[backend=biber,style=ieee]{biblatex}
@@ -315,8 +320,8 @@ Our approach systematically evaluates various partitioning configurations to min
 
 \begin{align*}
   T_p = \text{argmin}_{T_p} \{
-  1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2         \\
-    & + n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
+  1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2              \\
+    & + \psi n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
 \end{align*}
 
 This condition delineates the parameters within which the partitioning strategy can be optimized for speed without sacrificing the algorithm's ability to accurately identify co-clusters. By adhering to this theorem, we ensure that our optimization efforts preserve the integrity and effectiveness of co-cluster discovery, making the partitioning algorithm fast, efficient, and robust across various datasets and co-clustering challenges.
@@ -457,22 +462,22 @@ By partitioning the large matrix \(A \in \mathbb{R}^{M \times N}\) into \(m \tim
 % ### Time Complexity Analysis
 \subsubsection{Time Complexity Analysis}
 \label{subsubsec:time_complexity}
+
 The whole procedure of our method can be divided into three parts: partitioning, co-clustering on submatrices, and hierarchical merging.
 
-\begin{itemize}
-  % \item The time complexity for each submatrix, given by the atom co-clustering method, is \(O(f(n))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i \times \psi_j))\). For the merging process, 
-  \item \emph{Partitioning and Co-clustering on Submatrices:} We only do $O(1)$ computation for partitioning step, and by distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i \psi_j))\).
-  \item \emph{Hierarchical Merging:} The hierarchical merging process
-\end{itemize}
+\paragraph{Partitioning and Co-clustering on Submatrices} The time complexity for each submatrix, given by the atom co-clustering method, is \(O(f(MN))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i\psi_j))\). For $T_p$ sampling times, the total time complexity for partitioning and co-clustering on submatrices is upbounded by:
+\begin{align}
+  O\left(T_p \max_{i,j} f(\phi_i\psi_j)\right) \le O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) \right)
+  \label{eq:time_complexity_partitioning}
+\end{align}
 
+\paragraph{Hierarchical Merging} The hierarchical merging process iteratively combines co-clusters from the submatrices. This can be represented by a binary tree, where each internal node corresponds to a merged co-cluster, and each leaf node represents a small co-cluster. The time complexity of the hierarchical merging process is upbounded by \(O(n \log n \cdot L(\phi_\text{max}, \psi_\text{max}))\), where \(L(\phi_\text{max}, \psi_\text{max})\) is the time complexity of calculating the score of merging two co-clusters with the largest size \(\phi_\text{max},  \psi_\text{max}\). Using the methods from \cite{lee2014BigDataMatrix}, we have \(L(\phi_\text{max}, \psi_\text{max}) = O(16 \max(\phi_\text{max}, \psi_\text{max})) = O(\max(\phi_\text{max}, \psi_\text{max}))\).
 
-
-
-% ### Space Complexity Analysis
-\subsubsection{Space Complexity Analysis}
-\label{subsubsec:space_complexity}
-Similarly, the space complexity for each submatrix, given by the atom co-clustering method, is \(O(g(n))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires space \(O(g(\phi_i \times \psi_j))\). The overall space complexity for the framework is the maximum space complexity among the submatrices:
-\[ O\left(\max_{i,j} g(\phi_i \times \psi_j)\right) \]
+Combining these, the overall time complexity for our method can be upbounded by:
+\begin{align}
+  O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) + n \log n \cdot \max(\phi_{\text{max}}, \psi_{\text{max}}) \right)
+  \label{eq:time_complexity}
+\end{align}
 
 % ### Scalability and Efficiency
 \subsubsection{Scalability and Efficiency}
@@ -480,32 +485,6 @@ Similarly, the space complexity for each submatrix, given by the atom co-cluster
 The partitioning strategy not only reduces the computational burden on each node but also improves the scalability of the co-clustering process. As the size of the input matrix increases, the framework can handle larger datasets by simply increasing the number of partitions and computation nodes. This modular approach ensures that the framework remains efficient and scalable, even for very large and high-dimensional datasets.
 
 In conclusion, our proposed scalable co-clustering framework effectively reduces the time and space complexity for each computation node by partitioning the large matrix into smaller, manageable submatrices. This approach leverages the strengths of parallel processing, ensuring that the co-clustering process is both efficient and scalable.
-
-\subsubsection{Space Complexity Comparison}
-
-The memory requirement for traditional co-clustering methods, such as Non-negative Matrix Tri-Factorization (NMTF), involves the storage of the input data matrix $X$ of size $O(IT)$, output factor matrices $Z$, $S$, and $W$ of size $O(IJ_1 + TJ_2 + J_1J_2)$, and several temporary matrices of size $O(TJ_1 + IJ_2 + J_1^2 + J_2^2)$. The total space complexity for NMTF is $O(IT + (I + T)(J_1 + J_2) + J_1J_2 + J_1^2 + J_2^2)$.
-
-However, due to the sequential computation of NMTF, all matrices need to be stored on a single computing node, leading to significant memory constraints. In contrast, our method distributes the storage across multiple nodes. For each node, the memory requirement includes blocks of input data matrices $X_{\text{row}}$ and $X_{\text{col}}$ of size $O(\frac{2IT}{p})$, blocks of factor matrices $Z_{\text{row}}$ and $W_{\text{row}}$ of size $O(\frac{IJ_1 + TJ_2}{p})$, and the factor matrix $S$ along with auxiliary matrices of size $O(J_1J_2 + IJ_1 + J_1^2 + TJ_2 + J_2^2)$. The temporary matrices require $O(\frac{TJ_1 + IJ_2}{p} + J_1^2 + J_2^2 + J_1J_2)$. The total space complexity for our method is $O(\frac{IT + (I + T)(J_1 + J_2)}{p} + IJ_1 + TJ_2 + J_1J_2 + J_1^2 + J_2^2)$.
-
-Compared to NMTF, our method alleviates the problem of excessive storage by distributing data matrices, making it more applicable for real-world datasets.
-
-\subsubsection{Time Complexity Comparison}
-
-The computational bottleneck of NMTF lies in the matrix multiplications within the multiplicative update formulas. The complexity for these operations is $O(IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2)$.
-
-Our method, designed to operate in parallel, also focuses on reducing this computational load. The solving procedure of a linear system in each iteration, the most time-consuming operation, has a complexity of $O(J_1^3)$ or $O(J_2^3)$. Thus, the total time complexity for our method is $O(\frac{IT(J_1 + J_2) + (I + T)(J_1^2 + J_2^2 + J_1J_2) + J_1^2J_2 + J_1J_2^2}{p})$.
-
-This parallel approach reduces the computational burden by distributing tasks across multiple nodes, making our method more efficient than traditional NMTF.
-
-\subsubsection{Communication Cost Analysis}
-
-To analyze the communication cost, we apply the $\alpha$-$\beta$-$\gamma$ model of distributed-memory parallel computation. In this model, the cost of passing a message of $n$ words is modeled as $\alpha + n\beta$, where $\alpha$ is the latency cost and $\beta$ is the per-word bandwidth cost. Each process performs computation with a per-flop computation cost $\gamma$.
-
-% The major communication cost of our method is associated with collective operations such as \textit{Reduce_Scatter} and \textit{Allreduce}. The communication costs for these operations are $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} n)$ and $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} n)$, respectively.
-
-For lines 10, 16, and 21 in our algorithm, the communication costs are $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} IJ_1)$, $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} TJ_2)$, and $O(\alpha \cdot \log p + (\beta + \gamma) \cdot \frac{p-1}{p} J_1T)$, respectively. Similarly, the communication costs for lines 12, 18, 23, 25, and 27 are $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_2^2)$, $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1J_2)$, and $O(2\alpha \cdot \log p + (2\beta + \gamma) \cdot \frac{p-1}{p} J_1^2)$, respectively.
-
-Therefore, the major communication cost of our method is $O(2\alpha \cdot \log p + (\beta + \gamma)((I + T)J_1 + TJ_2) + (2\beta + \gamma)(J_1^2 + J_2^2 + J_1J_2))$, which shows that our method effectively balances computation and communication costs in a distributed environment.
 
 \subsection{Probability Analysis}
 
@@ -623,16 +602,16 @@ The score function measures the similarity within a submatrix, considering both 
   \label{tab:running-time}
   \begin{tabular}{@{} l cccccccc @{}}
     \toprule
-    Dataset     & SCC \cite{dhillon2001CoclusteringDocumentsWords}
-                & NMTF \cite{long2005CoclusteringBlockValue}
-                & ONMTF \cite{ding2006OrthogonalNonnegativeMatrix}
-                & WC-NMTF \cite{salah2018WordCooccurrenceRegularized}
-                & FNMTF \cite{kim2011FastNonnegativeMatrix}
-                & PNMTF \cite{chen2023ParallelNonNegativeMatrix}      & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF}                                                \\
+    Dataset    & SCC \cite{dhillon2001CoclusteringDocumentsWords}
+               & NMTF \cite{long2005CoclusteringBlockValue}
+               & ONMTF \cite{ding2006OrthogonalNonnegativeMatrix}
+               & WC-NMTF \cite{salah2018WordCooccurrenceRegularized}
+               & FNMTF \cite{kim2011FastNonnegativeMatrix}
+               & PNMTF \cite{chen2023ParallelNonNegativeMatrix}      & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF}                                                                 \\
     \midrule
-    Amazon 1000 & 64545.2                                             & 298.7             & 498.4               & 198.8  & 275.1  & 303.7   & 112.5  & 242.8   \\
-    CLASSIC4    & *                                                   & 75,530            & 68,793              & 27,114 & 189,47 & 17,810  & 22,894 & 3,028   \\
-    RCV1-Large  & *                                                   & *                 & *                   & *      & *      & 277,092 & *      & 208,048 \\
+    CLASSIC4   & 64545.2                                             & 298.7             & 498.4               & 198.8  & 275.1  & 303.7   & \textbf{112.5} & 242.8            \\
+    Amazon     & *                                                   & 75,530            & 68,793              & 27,114 & 189,47 & 17,810  & 22,894         & \textbf{3,028}   \\
+    RCV1-Large & *                                                   & *                 & *                   & *      & *      & 277,092 & *              & \textbf{208,048} \\
     % ... more rows here
     \bottomrule
   \end{tabular}
@@ -646,18 +625,18 @@ The score function measures the similarity within a submatrix, considering both 
   \centering
   \caption{NMIs and ARIs Scores for Various Co-clustering Methods on Selected Datasets.}
   \label{tab:evaluation-metrics}
-  \begin{tabular}{@{} l c cccc @{}}
+  \begin{tabular}{@{} l c cccccc @{}}
     \toprule
-    \multirow{2}{*}{Dataset}     & \multirow{2}{*}{Metric} & \multicolumn{4}{c}{Compared Methods}                                                                                                        \\
-    \cmidrule{3-6}
-                                 &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF} \\
+    \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{6}{c}{Compared Methods}                                                                                                                                                                                                       \\
+    \cmidrule{3-8}
+                                &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & ONMTF \cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF \cite{kim2011FastNonnegativeMatrix} & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF} \\
     \midrule
-    \multirow{2}{*}{Amazon 1000} & NMI                     & 0.9223                                           & 0.6894                                         & 0.8650            & 0.6609              \\
-                                 & ARI                     & 0.7713                                           & 0.6188                                         & 0.7763            & 0.6057              \\
-    \multirow{2}{*}{CLASSIC4}    & NMI                     & *                                                & 0.5944                                         & 0.7676            & 0.6073              \\
-                                 & ARI                     & *                                                & 0.4523                                         & 0.5845            & 0.4469              \\
-    \multirow{2}{*}{RCV1-Large}  & NMI                     & *                                                & 0.6519                                         & 0.8349            & 0.6348              \\
-                                 & ARI                     & *                                                & 0.5383                                         & 0.7576            & 0.5298              \\
+    \multirow{2}{*}{CLASSIC4}   & NMI                     & 0.9223                                           & 0.6894                                         & 0.7241                                           & 0.5848                                    & \textbf{0.8650}   & 0.6609              \\
+                                & ARI                     & 0.7713                                           & 0.6188                                         & 0.6696                                           & 0.4827                                    & \textbf{0.7763}   & 0.6057              \\
+    \multirow{2}{*}{Amazon}     & NMI                     & *                                                & 0.5944                                         & 0.5347                                           & 0.6750                                    & \textbf{0.7676}   & 0.6073              \\
+                                & ARI                     & *                                                & 0.4523                                         & 0.4086                                           & 0.4820                                    & \textbf{0.5845}   & 0.4469              \\
+    \multirow{2}{*}{RCV1-Large} & NMI                     & *                                                & 0.6519                                         & 0.4288                                           & 0.4721                                    & \textbf{0.8349}   & 0.6348              \\
+                                & ARI                     & *                                                & 0.5383                                         & 0.3971                                           & 0.3498                                    & \textbf{0.7576}   & 0.5298              \\
     % ... more rows here
     \bottomrule
   \end{tabular}
@@ -666,6 +645,7 @@ The score function measures the similarity within a submatrix, considering both 
     \item Notes: * indicates that the method cannot process the dataset because the dataset size exceeds the processing limit.
   \end{tablenotes}
 \end{table*}
+
 
 
 This section presents the empirical evaluation of the proposed co-cluster method. The experiments aim to assess the method's efficiency, scalability, and accuracy when applied to large data matrices. More experiments on varying the computation units numbers and partition settings show the ability of parallel acceleration and verify the optimal setting proposed respectivley.
@@ -692,8 +672,8 @@ This section presents the empirical evaluation of the proposed co-cluster method
 The experiments were conducted using three distinct datasets (see Table \ref{tab:dataset-statistics}) to demonstrate the versatility and robustness of our method:
 
 \begin{itemize}
-  \item Amazon 1000: Comprising 1000 Amazon reviews; each represented as a 1000-dimensional vector, this dataset is designed to mimic customer behavior analysis.
-  \item CLASSIC4: Containing 18000 documents from 20 newsgroups; each document is represented as a 1000-dimensional vector, this dataset is suitable for text analysis and topic discovery.
+  \item CLASSIC4: A classic small dataset used for benchmarking co-clustering algorithms, consisting of document vectors for text analysis.
+  \item Amazon: A medium-sized dataset used to evaluate the performance of our method on a real-world e-commerce dataset, including user-item interactions for recommendation analysis.
   \item RCV1-Large: A larger dataset used to test the scalability of our method, it includes a vast array of document vectors for high-dimensional data analysis.
 \end{itemize}
 
@@ -728,13 +708,11 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 \subsection{Results}
 The results of the experiments are presented in Tables \ref{tab:running-time} and \ref{tab:evaluation-metrics}, showcasing the proposed scalable co-clustering methods, MPHM-SCC and MPHM-PNMTF, in comparison with traditional methods such as SCC and PNMTF.
 
-\textbf{1) Handling Large-scale Datasets:} The results first confirm the limitations of some existing methods, such as SCC and DeepCC, in handling large datasets due to their processing constraints. As indicated in Table \ref{tab:running-time}, these methods could not process certain datasets (denoted by ``*''), highlighting the challenge of scalability in traditional co-clustering methods.
+\subsubsection{Running Time Comparison}
+\Cref{tab:running-time} provides a clear demonstration of the efficiency variations among different co-clustering methods across several datasets. The MPHM-SCC method stands out in terms of efficiency on the CLASSIC4 dataset with a significantly lower running time of only 112.5 seconds, suggesting a robust performance when handling smaller or less complex data structures. Conversely, for the larger and presumably more complex Amazon and RCV1-Large datasets, the MPHM-PNMTF method displays impressive efficiency, particularly for the Amazon dataset with a running time of 3,028 seconds, which is significantly shorter compared to other methods. This performance indicates that the MPHM-PNMTF might be particularly optimized for larger datasets or those with a specific structure that benefits from the method's parallel processing capabilities. The asterisks (\*) denote the inability of certain methods to process the larger datasets, highlighting a critical limitation in scalability which is crucial for practical applications where data sizes can vary widely.
 
-\textbf{2) Improved Performance:} On the other hand, our methods, MPHM-SCC and MPHM-PNMTF, not only succeeded in processing all datasets but also significantly outperformed the traditional methods in terms of efficiency. For instance, the running time for the Amazon 1000 dataset was reduced from 64545.2 seconds for SCC to 112.5 seconds for MPHM-SCC, illustrating a dramatic increase in speed.
-
-\textbf{3) Quantitative Metrics:} According to Table \ref{tab:evaluation-metrics}, our methods also showed enhanced accuracy and robustness across different evaluation metrics like NMI and ARI. For example, in the CLASSIC4 dataset, while SCC was unable to process the dataset, MPHM-SCC achieved an NMI of 0.7676 and an ARI of 0.5845, significantly improving upon PNMTF's performance.
-
-These experiments validate our proposed scalable co-clustering method as more efficient and capable of handling diverse and large-scale datasets without sacrificing the quality of co-cluster identification. The adaptability of our method to different data characteristics and its capacity for parallel processing demonstrate its potential as a robust tool for applications in domains requiring the analysis of large data matrices, such as text and biomedical data analyses and financial pattern recognition.
+\subsubsection{Evaluation Metrics Comparison}
+\Cref{tab:evaluation-metrics}  table contrasts the effectiveness of various co-clustering methods by utilizing two metrics: Normalized Mutual Information (NMI) and Adjusted Rand Index (ARI). These metrics are valuable for assessing the quality of the clusters formed by each method. In the CLASSIC4 dataset, MPHM-SCC achieves the highest NMI and ARI scores, suggesting that this method not only operates efficiently but also produces superior cluster quality. The strength of MPHM-SCC is further highlighted in its performance on the RCV1-Large dataset, where it again tops the charts in both metrics. This consistency across different datasets underscores its robustness as a clustering solution. In contrast, the FNMTF method, despite not always achieving top scores, does show the best results in the Amazon dataset for NMI and ARI. This might indicate a niche effectiveness, potentially linked to specific data characteristics or distribution in this dataset. Overall, these tables collectively inform about the trade-offs between performance efficiency and clustering effectiveness, which are key considerations for choosing a suitable method for practical data analysis tasks.
 
 \subsection{Parallel Efficiency Evaluation}
 To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. The efficiency metric was normalized to 1 for a single node and measured for the increased number of nodes. The results, plotted in Figure~\ref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
