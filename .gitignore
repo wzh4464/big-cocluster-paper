@@ -5,6 +5,8 @@ main.blg
 main.log
 main.pdf
 main.synctex.gz
-main.synctex(busy)
+main.synctex\(busy\)
 main.bcf
 *ERROR
+*log
+*xml

@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Saturday, 8th June 2024 7:32:27 pm
+ % Last Modified: Thursday, 27th June 2024 11:30:10 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -143,7 +143,7 @@ In multimodal learning, co-clustering can integrate and analyze different types 
     \caption{Co-clustering}
     \label{fig:cocluster}
   \end{subfigure}
-  \caption{An illustration of the differences between (a) Clustering and (b) Co-clustering.}
+  \caption{An illustration of the differences between (a) Clustering and (b) Co-clustering\cite{yan2017CoclusteringMultidimensionalBig}.}
   \label{fig:cocomparison}
 \end{figure}
 
@@ -156,7 +156,7 @@ The proposed co-clustering method begins with our dynamic partitioning algorithm
 
 Then, our hierarchical co-cluster merging algorithm iteratively combines the co-clusters from these submatrices. This process enhances the accuracy and reliability of the final co-clustering results and ensures robust and consistent clustering performance, particularly addressing issues of heterogeneity and model uncertainty. By leveraging a hierarchical merging strategy, we can efficiently integrate co-clusters without overwhelming any single processing unit, thereby maintaining scalability. Our method is modular, allowing any co-clustering method, including those with existing parallel designs, to be integrated seamlessly. This flexibility ensures that our approach can adapt and evolve with advancements in co-clustering techniques.
 
-Our proposed method also includes a Message Passing Interface (MPI) implementation, which allows for effective distribution of the computational load across multiple nodes. The main computation node only needs to compute thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes, making our approach more practical and scalable for large-scale applications. Unlike existing methods that require a high-performance central processing unit, our approach does not demand a supercomputer for the main thread. Additionally, our framework is probabilistically guaranteed to work.
+Our proposed method also includes a Message Passing Interface (MPI) implementation, which allows for effective distribution of the computational load across multiple nodes. The main computation node only needs to compute thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes, making our approach more useful and scalable for large-scale applications. Unlike existing methods that require a high-performance central processing unit, our approach does not demand a supercomputer for the main thread. Additionally, our framework is probabilistically guaranteed to work.
 
 The main contributions of this paper are as follows:
 \begin{enumerate}
@@ -179,7 +179,7 @@ Section \ref{sec:experiment} presents the experimental evaluation of our method.
 \label{sec:related_work}
 \subsection{Co-clustering Models}
 
-The concept of \emph{biclustering}, where both the rows and columns of data are clustered simultaneously, was first introduced by Hartigan \cite{hartigan1972DirectClusteringData} to analyze gene expression data. This pioneering approach recognized the importance of simultaneously considering multiple dimensions of data to uncover more nuanced patterns. Since then, biclustering has expanded to various other areas, giving rise to the broader concept of \emph{co-clustering}, which has led to the development of several models designed to address a range of analytical challenges.
+The concept of \emph{biclustering}, a special case of co-clustering for two-dimensional (2D) data, where both the rows and columns of data are clustered simultaneously, was first introduced by Hartigan \cite{hartigan1972DirectClusteringData} to analyze gene expression data. This pioneering approach recognized the importance of simultaneously considering multiple dimensions of data to uncover more nuanced patterns.
 
 Spectral Co-clustering with Singular Value Decomposition (SVD), introduced by Dhillon \textit{et al.} \cite{dhillon2001CoclusteringDocumentsWords}, became widely adopted due to its straightforward implementation and effectiveness. This method leverages the mathematical properties of SVD to identify clusters by analyzing the principal components of the data matrix. Spectral co-clustering has since become a foundational technique, inspiring two main branches in co-clustering research: graph-based and matrix factorization-based approaches.
 
@@ -294,18 +294,22 @@ The primary challenge in co-clustering large matrices is the risk of losing mean
 Our probabilistic model serves as the cornerstone of the partitioning algorithm. It assures all co-clusters above a demarcated size threshold are identified with a high probability, guiding the partitioning process to minimize the risk of losing critical co-cluster relationships. The model is based on the following assumptions:
 
 In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ is given by \Cref{thm:joint_probability}:
-\begin{align*}
-  P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                                                           \\
-                    & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
-                    & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
-\end{align*}
+\begin{equation}
+  \begin{split}
+    P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                                                           \\
+                      & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
+                      & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
+  \end{split}
+\end{equation}
 where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively.
 
 Thus, $P$, the probability of identifying all co-clusters is given by \Cref{thm:probability_co_cluster_detection}:
 
-\begin{align}
-  P \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \label{eq:prob_of_identifying_all_co_clusters}
-\end{align}
+\begin{equation}
+  \begin{split}
+    P \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\} \label{eq:prob_of_identifying_all_co_clusters}
+  \end{split}
+\end{equation}
 where $P(\omega_k)$ is the probability of the failure of identifying co-cluster $C_k$, $T_p$ is the number of sampling times, $\phi$ and $\psi$ are the row and column block sizes, and $s^{(k)}$ and $t^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$.
 
 \Cref{eq:prob_of_identifying_all_co_clusters} is central to our algorithm for partitioning large matrices for co-clustering, providing a probabilistic model that informs and optimizes our partitioning strategy to preserve co-cluster integrity. It mathematically quantifies the likelihood of identifying all relevant co-clusters within partitioned blocks, guiding us to mitigate risks associated with partitioning that might fragment vital co-cluster relationships.
@@ -318,13 +322,15 @@ Optimizing the partitioning process for computational efficiency is critical in 
 
 Our approach systematically evaluates various partitioning configurations to minimize running time without compromising the integrity and success rate of co-cluster identification. The key condition for optimizing the partitioning algorithm, while maintaining a predetermined success rate \( P \) for co-cluster identification, is given by:
 
-\begin{align*}
-  T_p = \text{argmin}_{T_p} \{
-  1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2              \\
-    & + \psi n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
-\end{align*}
+\begin{equation}
+  \begin{split}
+    T_p = \text{argmin}_{T_p} \{
+    1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2              \\
+      & + \psi n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
+  \end{split}
+\end{equation}
 
-This condition delineates the parameters within which the partitioning strategy can be optimized for speed without sacrificing the algorithm's ability to accurately identify co-clusters. By adhering to this theorem, we ensure that our optimization efforts preserve the integrity and effectiveness of co-cluster discovery, making the partitioning algorithm fast, efficient, and robust across various datasets and co-clustering challenges.
+This condition delineates the parameters within which the partitioning strategy can be optimized for speed without sacrificing the algorithm's ability to accurately identify co-clusters. By adhering to this theorem, we ensure that our optimization procedure preserves the integrity and effectiveness of co-cluster discovery.
 
 \subsubsection{Noisy Case Analysis}
 
@@ -333,9 +339,7 @@ In the presence of noise, the partitioning algorithm must be adapted to account 
 
 \subsubsection{Atom-co-clustering Algorithm}
 
-Our framework, which encompasses both partitioning and ensembling, offers remarkable flexibility, allowing it to
-
-be compatible with a wide range of atom-co-clustering methods. For the sake of making this paper comprehensive and self-contained, we provide an introduction to the atom-co-cluster method herein. The only requirement for an atom-co-clustering method to be compatible with our framework is that it must be able to identify co-clusters under a given criterion with a probability $p$, or more relaxed conditions, has a lower bound estimate of the probability of identifying co-clusters equipped with a validation mechanism.
+Our framework, which encompasses both partitioning and ensembling, offers remarkable flexibility, allowing it to be compatible with a wide range of atom-co-clustering methods. For the sake of making this paper comprehensive and self-contained, we provide an introduction to the atom-co-cluster method herein. The only requirement for an atom-co-clustering method to be compatible with our framework is that it must be able to identify co-clusters under a given criterion with a probability $p$, or more relaxed conditions, has a lower bound estimate of the probability of identifying co-clusters equipped with a validation mechanism.
 
 \subsubsection{Graph-based Spectral Co-clustering Algorithm}
 
@@ -345,7 +349,7 @@ Spectral co-clustering (SCC) stands as one of the most prevalent methods in the 
 
 SCC begins with constructing a bipartite graph $G=(U,V,E)$. Here, $U$ and $V$, both as vertex sets, symbolize the sets corresponding to the rows and columns of the data matrix, respectively. The edges $E$ of this graph are assigned weights reflecting the relationships between rows and columns. Consequently, the graph's weighted adjacency matrix $W$ is defined as:
 
-$$ W = \begin{bmatrix} 0 & A \\ A^T & 0 \end{bmatrix}, $$
+\begin{equation} W = \begin{bmatrix} 0 & A \\ A^T & 0 \end{bmatrix}, \end{equation}
 where $A$ denotes the data matrix, also called the adjacency matrix in the graph context.
 Through this representation, the challenge of co-clustering is reformulated into a graph partitioning task, aiming to segregate the graph into distinct clusters based on the interrelations between the data matrix's rows and columns.
 
@@ -363,11 +367,13 @@ Theorem 4 in \cite{dhillon2001CoclusteringDocumentsWords} states that the eigenv
 \end{equation}
 
 And according to Section 4 of \cite{dhillon2001CoclusteringDocumentsWords}, the singular value decomposition of the normalized matrix $A_n = D^{-1/2} A D^{-1/2}$
-$$A_n = U \Sigma V^T$$
+\begin{equation}
+  A_n = U \Sigma V^T
+\end{equation}
 gives the solution to \Cref{eq:eigenvalue_problem}. To be more specific, the singular vectors corresponding to the second largest singular value of $A_n$ are the eigenvector corresponding to the second smallest eigenvalue of \Cref{eq:eigenvalue_problem}.
 
 The above discussion is under the assumption that the graph has only one connected component. In a more general setting, $\mathbf{u_2}, \mathbf{u_3}, \ldots, \mathbf{u_{l+1}}$ and $\mathbf{v_2}, \mathbf{v_3}, \ldots, \mathbf{v_{l+1}}$ reveal the $k$-modal information of the graph, where $\mathbf{u_k}$ and $\mathbf{v_k}$ are the $k$-th left and right singular vectors of $A_n$, respectively. And for the last step,
-$$ Z = \begin{bmatrix} D_1^{-1/2} \hat{U} \\ D_2^{-1/2} \hat{V} \end{bmatrix} $$
+\begin{equation} Z = \begin{bmatrix} D_1^{-1/2} \hat{U} \\ D_2^{-1/2} \hat{V} \end{bmatrix} \end{equation}
 is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}}]$ and $\hat{V} = [\mathbf{v_2}; \mathbf{v_3}; \ldots; \mathbf{v_{l+1}}]$. The approximation to the graph partitioning optimization problem is then solved by applying a $k$-means algorithm to the rows of $Z$. More details can be found in \cite{dhillon2001CoclusteringDocumentsWords}.
 
 \subsubsection{Hierarchical Co-cluster Merging}
@@ -410,11 +416,11 @@ Hierarchical co-cluster merging is a novel approach that combines the results of
   \end{algorithmic}
 \end{algorithm}
 
-In this algorithm, steps 1 and 2 initialize the final co-cluster set and calculate initial scores for all co-clusters. The while loop iteratively attempts to merge co-clusters until no further merging is possible. Within the loop, the algorithm checks for overlaps and calculates scores for potential merges. If the score of a merged co-cluster does not exceed the scores of its components, the merge is accepted, and the final co-cluster set is updated accordingly. This approach ensures a scalable and efficient merging process while maintaining the integrity and robustness of the co-clustering results.
+In this algorithm, Steps 1 and 2 initialize the final co-cluster set and calculate initial scores for all co-clusters. The while loop iteratively attempts to merge co-clusters until no further merging is possible. Within the loop, the algorithm checks for overlaps and calculates scores for potential merges. If the score of a merged co-cluster does not exceed the scores of its components, the merge is accepted, and the final co-cluster set is updated accordingly. This approach ensures a scalable and efficient merging process while maintaining the integrity and robustness of the co-clustering results.
 
 \subsection{MPI Implementation}
 
-To demonstrate the practical feasibility and performance of our proposed distributed system, we implement it using the Message Passing Interface (MPI) to enable distributed computing across multiple nodes. This implementation allows for effective distribution of the computational load, facilitating parallel processing of submatrices and enhancing the scalability of our method. The main computation node is responsible for computing thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes. This design ensures that our approach is practical and scalable for large-scale applications, without the need for a supercomputer or high-performance central processing unit.
+To demonstrate the practical feasibility and performance of our proposed distributed system, we implement it using the Message Passing Interface (MPI) to enable distributed computing across multiple nodes. This implementation allows for effective distribution of the computational load, facilitating parallel processing of submatrices and enhancing the scalability of our method. The main computation node is responsible for computing thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes. This design ensures that our approach is practical and scalable for large-scale applications, without the need for a supercomputer as a central node.
 More details about the MPI implementation are shown in \Cref{alg:mpi_method}.
 
 In conclusion, our proposed scalable co-clustering method effectively addresses the challenges associated with large-scale data analysis. By leveraging a probabilistic model for optimal partitioning and a hierarchical merging strategy, we ensure that our method is both efficient and robust. The detailed algorithmic framework and theoretical underpinnings provide a solid foundation for further research and development in this field.
@@ -466,18 +472,22 @@ By partitioning the large matrix \(A \in \mathbb{R}^{M \times N}\) into \(m \tim
 The whole procedure of our method can be divided into three parts: partitioning, co-clustering on submatrices, and hierarchical merging.
 
 \paragraph{Partitioning and Co-clustering on Submatrices} The time complexity for each submatrix, given by the atom co-clustering method, is \(O(f(MN))\). By partitioning the matrix and distributing the submatrices across multiple nodes, each node only requires time \(O(f(\phi_i\psi_j))\). For $T_p$ sampling times, the total time complexity for partitioning and co-clustering on submatrices is bounded by:
-\begin{align}
-  O\left(T_p \max_{i,j} f(\phi_i\psi_j)\right) \le O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) \right)
-  \label{eq:time_complexity_partitioning}
-\end{align}
+\begin{equation}
+  \begin{split}
+    O\left(T_p \max_{i,j} f(\phi_i\psi_j)\right) \le O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) \right)
+    \label{eq:time_complexity_partitioning}
+  \end{split}
+\end{equation}
 
 \paragraph{Hierarchical Merging} The hierarchical merging process iteratively combines co-clusters from the submatrices. This can be represented by a binary tree, where each internal node corresponds to a merged co-cluster, and each leaf node represents a small co-cluster. The time complexity of the hierarchical merging process is bounded by \(O(n \log n \cdot L(\phi_\text{max}, \psi_\text{max}))\), where \(L(\phi_\text{max}, \psi_\text{max})\) is the time complexity of calculating the score of merging two co-clusters with the largest size \(\phi_\text{max},  \psi_\text{max}\). Using the methods from \cite{lee2014BigDataMatrix}, we have \(L(\phi_\text{max}, \psi_\text{max}) = O(16 \max(\phi_\text{max}, \psi_\text{max})) = O(\max(\phi_\text{max}, \psi_\text{max}))\).
 
 Combining these, the overall time complexity for our method can be bounded by:
-\begin{align}
-  O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) + n \log n \cdot \max(\phi_{\text{max}}, \psi_{\text{max}}) \right)
-  \label{eq:time_complexity}
-\end{align}
+\begin{equation}
+  \begin{split}
+    O\left( \cfrac{f(\psi_{\text{max}} \phi_{\text{max}})}{\psi_{\text{min}} \phi_{\text{min}}} \log(MN) + n \log n \cdot \max(\phi_{\text{max}}, \psi_{\text{max}}) \right)
+    \label{eq:time_complexity}
+  \end{split}
+\end{equation}
 
 % ### Scalability and Efficiency
 \subsubsection{Scalability and Efficiency}
@@ -503,9 +513,11 @@ In conclusion, our proposed scalable co-clustering framework effectively reduces
 \begin{lemma}[Joint Probability of Co-cluster Size]
   \label{thm:joint_probability}
   Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_m$ rows and $T_n$ columns is given by:
-  \begin{align*}
-    P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) & \le \exp[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j]
-  \end{align*}
+  \begin{equation}
+    \begin{split}
+      P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) & \le \exp[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j]
+    \end{split}
+  \end{equation}
   where $s_i^{(k)} = \cfrac{M^{(k)}}{M}-\cfrac{T_m-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N}-\cfrac{T_n-1}{\psi_j}$.
 \end{lemma}
 
@@ -514,14 +526,18 @@ This lemma provides a mathematical foundation for estimating the likelihood of a
 \begin{theorem}
   \label{thm:probability_co_cluster_detection}
   If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $\mathbf{C}_k$ in any block is $P(\omega_k)$, then
-  \begin{align*}
-    P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
-  \end{align*}
+  \begin{equation}
+    \begin{split}
+      P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
+    \end{split}
+  \end{equation}
   Given $T_p$ times of random sampling, the probability of detecting the co-cluster $C_k$ is
-  \begin{align*}
-    P & = 1 - P(\omega_k)^{T_p}                                                        \\
-      & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
-  \end{align*}
+  \begin{equation}
+    \begin{split}
+      P & = 1 - P(\omega_k)^{T_p}                                                        \\
+        & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
+    \end{split}
+  \end{equation}
 
 \end{theorem}
 
@@ -539,22 +555,26 @@ In the presence of noise, the probability of detecting co-clusters is affected b
 \end{assumption}
 
 \begin{definition}
-  Suppose $\mathbf{A} \in \mathbb{R}^{M \times N}$ is a matrix, and $I \subseteq \{1, 2, \ldots, M\}$ and $J \subseteq \{1, 2, \ldots, N\}$ are two sets of row and column indices.
+  Suppose $\mathbf{A} \in \mathbb{R}^{M \times N}$ is a matrix, and $I \subseteq \{1, 2, \ldots, M\}$ and $J \subseteq \{1, 2, \ldots, N\}$ are two sets of row and column indices\cite{zhao2016IdentifyingMultidimensionalCoclusters}.
   \label{def:co_cluster_score}
   % two definitions: 1. matrix 2. submatrix
   \begin{enumerate}
     \item The co-cluster score function $S(\mathbf{A})$ of a matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$ is defined as
-          \begin{align}
-            S(\mathbf{A}) & = \min(S_{row}(\mathbf{A}), S_{col}(A))                                                                               \\
-            S_{row}(A)    & = \min_{i_1, i_2 \in M} \left(1- \frac{1}{M-1} \sum_{i_2 \in M, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
-            S_{col}(A)    & = \min_{j_1, j_2 \in N} \left(1- \frac{1}{N-1} \sum_{j_2 \in N, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
-          \end{align}
+          \begin{equation}
+            \begin{split}
+              S(\mathbf{A}) & = \min(S_{row}(\mathbf{A}), S_{col}(A))                                                                               \\
+              S_{row}(A)    & = \min_{i_1, i_2 \in M} \left(1- \frac{1}{M-1} \sum_{i_2 \in M, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
+              S_{col}(A)    & = \min_{j_1, j_2 \in N} \left(1- \frac{1}{N-1} \sum_{j_2 \in N, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
+            \end{split}
+          \end{equation}
     \item The co-cluster score function $S(I,J)$ of a submatrix $\mathbf{A}_{I,J}$ is defined as
-          \begin{align}
-            S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                      \\
-            S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
-            S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
-          \end{align}
+          \begin{equation}
+            \begin{split}
+              S(I,J)       & = \min(S_{row}(I,J), S_{col}(I,J))                                                                                      \\
+              S_{row}(I,J) & = \min_{i_1, i_2 \in I} \left(1- \frac{1}{|I|-1} \sum_{i_2 \in I, i_2 \neq i_1} \langle x_{i_1}, x_{i_2}\rangle \right) \\
+              S_{col}(I,J) & = \min_{j_1, j_2 \in J} \left(1- \frac{1}{|J|-1} \sum_{j_2 \in J, j_2 \neq j_1} \langle x_{j_1}, x_{j_2}\rangle \right)
+            \end{split}
+          \end{equation}
   \end{enumerate}
 \end{definition}
 
@@ -563,15 +583,19 @@ The score function measures the similarity within a submatrix, considering both 
 \begin{theorem}
   \label{thm:expected_score}
   Given the hidden co-cluster matrix $A$ and noise matrix $\mathbf{N}$, the observed matrix is $\mathbf{B} = \mathbf{A} + \mathbf{N}$. The expected value and variance of $S_{row}(I,J)$ are:
-  \begin{align*}
-    \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
-    \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
-  \end{align*}
+  \begin{equation}
+    \begin{split}
+      \mathbb{E}(S_{row}(I,J)) & \ge |J||I| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
+      \sigma^2(S_{row}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
+    \end{split}
+  \end{equation}
   Similarly, for $S_{col}(I,J)$:
-  \begin{align*}
-    \mathbb{E}(S_{col}(I,J)) & \ge |I||J| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
-    \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
-  \end{align*}
+  \begin{equation}
+    \begin{split}
+      \mathbb{E}(S_{col}(I,J)) & \ge |I||J| \left(1 - \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)}) \right) \\
+      \sigma^2(S_{col}(I,J))   & \le |I||J| \sigma^2 \exp(-\frac{2}{\alpha \max(||\mathbf{B}||_1, ||\mathbf{B}^\top||_1)})
+    \end{split}
+  \end{equation}
 \end{theorem}
 
 \Cref{thm:expected_score} establishes the expected behavior of the score function $S(I,J)$ under noise, providing insights into how noise impacts the similarity measures used in our co-clustering method.
@@ -579,14 +603,18 @@ The score function measures the similarity within a submatrix, considering both 
 \begin{theorem}
   \label{thm:chernoff_bound}
   According to the Chernoff bound, the probability that $S(I,J)$ is close to its expected value is:
-  \begin{align*}
-    P(S(I,J) \le \mathbb{E}(S(I,J)) - \epsilon)
-     & \ge \exp(-\frac{\epsilon^2}{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda})})
-  \end{align*}
+  \begin{equation}
+    \begin{split}
+      P(S(I,J) \le \mathbb{E}(S(I,J)) - \epsilon)
+       & \ge \exp(-\frac{\epsilon^2}{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda})})
+    \end{split}
+  \end{equation}
   Setting $\epsilon = \sqrt{2|I||J| \sigma^2 \exp(-\frac{2}{\alpha \lambda}) \log(1/\delta)}$, we have:
-  \begin{align*}
-    P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta
-  \end{align*}
+  \begin{equation}
+    \begin{split}
+      P(S(I,J) \ge \mathbb{E}(S(I,J)) - \epsilon) & \ge \delta
+    \end{split}
+  \end{equation}
 
 \end{theorem}
 
