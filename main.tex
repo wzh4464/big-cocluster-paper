@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Thursday, 27th June 2024 11:30:10 am
+ % Last Modified: Tuesday, 2nd July 2024 12:23:17 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -205,9 +205,7 @@ In contrast, our proposed method adopts a divide-and-conquer strategy to overcom
 
 
 \subsection{Mathematical Formulation of Co-clustering}
-Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters\cite{zhao2017DetectionCorrelatedCoclusters}. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters. Note that if we find all low-rank submatrices, and after evaluating its Pearson correlation coefficient, we can find the co-clusters\cite{zhao2016IdentifyingMultidimensionalCoclusters}.
-
-When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a block-diagonal matrix, where each block represents a co-cluster with higher similarity within than between blocks. We define the row and column label sets as \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \), respectively. Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) are used to assign rows and columns to clusters, with the constraints \( \sum_k R_{i,k} = 1 \) and \( \sum_d C_{j,d} = 1 \), ensuring each row and column is assigned to exactly one cluster.
+Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th sample and the $j$-th feature. The primary goal of co-clustering is to identify subsets of rows ($I\subseteq \{1, 2, \ldots, M\}$) and columns ($J\subseteq \{1, 2, \ldots, N\}$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters\cite{zhao2017DetectionCorrelatedCoclusters}. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters. Note that if we find all low-rank submatrices, and after evaluating its Pearson correlation coefficient, we can find the co-clusters\cite{zhao2016IdentifyingMultidimensionalCoclusters}. When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a blocked-matrix, where each block represents a co-cluster with higher similarity within than between blocks as show in \Cref{fig:cocluster}.
 
 To evaluate if a submatrix $\mathbf{A}_{I, J}$ forms a coherent co-cluster, we define a score function \( f(\mathbf{A}_{I, J}) \) that quantifies the homogeneity of the submatrix.
 
