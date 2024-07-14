@@ -4,12 +4,37 @@
 % @Last Modified time: 2024-04-30 23:52:00
 % sectionis/method.tex
 
- \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
+\section{Mathematical Formulation and Problem Statement}\label{sec:formula}
 \subsection{Mathematical Formulation of Co-clustering}
 Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters.
 
 When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a block-diagonal matrix, where each block represents a co-cluster with higher similarity within than between blocks. We define the row and column label sets as \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \), respectively. Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) are used to assign rows and columns to clusters, with the constraints \( \sum_k R_{i,k} = 1 \) and \( \sum_d C_{j,d} = 1 \), ensuring each row and column is assigned to exactly one cluster.
- 
+
+\subsection{Notation Clarification}
+Below is a table summarizing the notations used in the mathematical formulations of our scalable co-clustering method.
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{c|p{10cm}}
+        \hline
+        \textbf{Symbol}        & \textbf{Description}                                                                                                           \\
+        \hline
+        $\mathbf{A}$           & Data matrix of dimensions $M \times N$, where $M$ is the number of rows (features) and $N$ is the number of columns (samples). \\
+        $a_{ij}$               & Element at the $i$-th row and $j$-th column of matrix $\mathbf{A}$.                                                            \\
+        $I, J$                 & Indices of rows and columns selected for co-clustering.                                                                        \\
+        $\mathbf{A}_{I, J}$    & Submatrix containing the rows indexed by $I$ and columns by $J$.                                                               \\
+        $k, d$                 & Number of row clusters and column clusters, respectively.                                                                      \\
+        $R, C$                 & Indicator matrices for row and column cluster assignments.                                                                     \\
+        $\phi_i, \psi_j$       & Block sizes in rows and columns, respectively.                                                                                 \\
+        $s_i^{(k)}, t_j^{(k)}$ & Minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$.                                                         \\
+        $P(\omega_k)$          & Probability of failure to identify co-cluster $C_k$.                                                                           \\
+        $T_p$                  & Number of sampling times or iterations in the probabilistic model.                                                             \\
+        \hline
+    \end{tabular}
+    \caption{Notations used in the mathematical formulation of co-clustering}
+    \label{tab:notations}
+\end{table*}
+
 \subsection{Problem Statement}
 This paper aims to develop a method that efficiently and accurately identifies co-clusters $\mathbf{A}_{I, J}$ within a matrix $\mathbf{A}$ representing large datasets. These co-clusters should exhibit specific structural patterns such as uniformity across elements, consistency along rows or columns, or patterns demonstrating additive or multiplicative coherence. Properly identifying and categorizing these patterns is crucial for understanding the complex data structures inherent in large datasets. This method is intended to improve the detection capabilities of co-clustering, enhancing both the efficiency and precision necessary for handling large-scale data challenges.
 
@@ -31,8 +56,8 @@ Our method involves partitioning large matrices into smaller, manageable submatr
 
 Following the partitioning, each submatrix undergoes a co-clustering process. This is implemented via the application of Singular Value Decomposition (SVD) and $k$-means clustering on the resulting singular vectors. This pivotal step ensures the adaptability of our method, allowing our algorithm to tailor its approach to the unique characteristics of each submatrix, thus optimizing clustering results.
 
-Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all submatrices. This integration provides more fine-grained insight into each submatrix and enhances the overall accuracy and reliability of the co-clustering results. Our method, validated and optimized through a comprehensive process, showed efficiency in handling large-scale datasets that were never reached before.  
- 
+Furthermore, our method integrates a novel hierarchical merging strategy that combines the co-clustering results from all submatrices. This integration provides more fine-grained insight into each submatrix and enhances the overall accuracy and reliability of the co-clustering results. Our method, validated and optimized through a comprehensive process, showed efficiency in handling large-scale datasets that were never reached before.
+
 
 \subsection{Large Matrix Partitioning}
 % Description of the matrix partitioning process and criteria for partitioning.
@@ -47,7 +72,7 @@ In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, ea
     % pq[x_, y_] := Sum[p[a] * q[b], {a, 1, x-1}, {b, 1, y-1}]
                       & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j]
 \end{align*}
-where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively. 
+where $s_i^{(k)}$ and $t_j^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$, the size of the co-cluster $C_k$ is $M^{(k)} \times N^{(k)}$, and $M^{(k)}$ and $N^{(k)}$ are the row and column sizes of co-cluster $C_k$, respectively.
 
 % the size of co-cluster Ck∈RM(k)×N(k)C_k \in \mathbb{R}^{M^{(k)} \times N^{(k)}} that falls into block B(i,j)B_{(i,j)} is M(k)(i,j)×N(k)(i,j)M_{(i,j)}^{(k)} \times N_{(i,j)}^{(k)};
 
@@ -79,9 +104,9 @@ To ensure that our optimization does not sacrifice the quality of co-cluster ide
 
 Under the constraint of maintaining a predetermined success rate $P$ for co-cluster identification, the optimization of the partitioning algorithm with respect to running time must satisfy the following condition:
 \begin{align*}
-    T_p = \text{argmin}_{T_p} \{ 
-     1 &- \exp \{ -2 T_p [\phi m (s^{(k)})^2 \\
-     &+ n (t^{(k)})^2] \} \ge P_{\text{thresh}} \} 
+    T_p = \text{argmin}_{T_p} \{
+    1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2         \\
+      & + n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
 \end{align*}
 
 
