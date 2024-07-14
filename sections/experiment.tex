@@ -1,14 +1,14 @@
 %%%
- % File: /latex/big-cocluster-paper/sections/experiment.tex
- % Created Date: Thursday, July 11th 2024
- % Author: Zihan
- % -----
- % Last Modified: Sunday, 14th July 2024 9:43:45 pm
- % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
- % -----
- % HISTORY:
- % Date      		By   	Comments
- % ----------		------	---------------------------------------------------------
+% File: /latex/big-cocluster-paper/sections/experiment.tex
+% Created Date: Thursday, July 11th 2024
+% Author: Zihan
+% -----
+% Last Modified: Sunday, 14th July 2024 9:43:45 pm
+% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
+% -----
+% HISTORY:
+% Date      		By   	Comments
+% ----------		------	---------------------------------------------------------
 %%%
 
 \begin{table*}[htbp]
@@ -17,11 +17,11 @@
     \label{tab:running-time}
     \begin{tabular}{@{} l cccc @{}}
         \toprule
-        Dataset     & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{MPHM-SCC}  & \textbf{MPHM-PNMTF}   \\
+        Dataset     & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF} \\
         \midrule
-        Amazon 1000 & 64545.2       & 303.7     & 112.5     & 242.8       \\
-        CLASSIC4    & *            & 17,810    & 22,894    & 3,028       \\
-        RCV1-Large  & *             & 277,092   & *         & 208,048     \\
+        Amazon 1000 & 64545.2                                          & 303.7                                          & 112.5             & 242.8               \\
+        CLASSIC4    & *                                                & 17,810                                         & 22,894            & 3,028               \\
+        RCV1-Large  & *                                                & 277,092                                        & *                 & 208,048             \\
         % ... more rows here
         \bottomrule
     \end{tabular}
@@ -37,16 +37,16 @@
     \label{tab:evaluation-metrics}
     \begin{tabular}{@{} l c cccc @{}}
         \toprule
-        \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{4}{c}{Compared Methods}                                                         \\
+        \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{4}{c}{Compared Methods}                                                                                                        \\
         \cmidrule{3-6}
-                                    &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords}                                    & PNMTF \cite{chen2023ParallelNonNegativeMatrix}  & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF} \\
+                                    &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF} \\
         \midrule
-        \multirow{2}{*}{Amazon}     & NMI                     & 0.9223                                      & 0.6894 & 0.8650          & 0.6609            \\
-                                    & ARI                     & 0.7713                                      & 0.6188 & 0.7763          & 0.6057            \\
-        \multirow{2}{*}{CLASSIC4}   & NMI                     & *                                            & 0.5944 & 0.7676          & 0.6073            \\
-                                    & ARI                     & *                                            & 0.4523 & 0.5845          & 0.4469            \\
-        \multirow{2}{*}{RCV1-Large} & NMI                     & *                                            & 0.6519 & 0.8349          & 0.6348            \\
-                                    & ARI                     & *                                            & 0.5383 & 0.7576          & 0.5298            \\
+        \multirow{2}{*}{Amazon}     & NMI                     & 0.9223                                           & 0.6894                                         & 0.8650            & 0.6609              \\
+                                    & ARI                     & 0.7713                                           & 0.6188                                         & 0.7763            & 0.6057              \\
+        \multirow{2}{*}{CLASSIC4}   & NMI                     & *                                                & 0.5944                                         & 0.7676            & 0.6073              \\
+                                    & ARI                     & *                                                & 0.4523                                         & 0.5845            & 0.4469              \\
+        \multirow{2}{*}{RCV1-Large} & NMI                     & *                                                & 0.6519                                         & 0.8349            & 0.6348              \\
+                                    & ARI                     & *                                                & 0.5383                                         & 0.7576            & 0.5298              \\
         % ... more rows here
         \bottomrule
     \end{tabular}
@@ -64,13 +64,13 @@ This section presents the empirical evaluation of the proposed co-cluster method
 The experiments were conducted using three distinct datasets to demonstrate the versatility and robustness of our method:
 
 \begin{itemize}
-    \item Amazon 1000: Comprising 1000 Amazon reviews; each represented as a 1000-dimensional vector, this dataset is designed to mimic customer behavior analysis.
-    \item CLASSIC4: Containing 18000 documents from 20 newsgroups; each document is represented as a 1000-dimensional vector, this dataset is suitable for text analysis and topic discovery.
-    \item RCV1-Large: A larger dataset used to test the scalability of our method, it includes a vast array of document vectors for high-dimensional data analysis.
+    \item Amazon 1000 \cite{ni2019justifying}: Comprising 1000 Amazon reviews; each represented as a 1000-dimensional vector, this dataset is designed to mimic customer behavior analysis.
+    \item CLASSIC4 \cite{reddy2021weclustering}: Containing 18000 documents from 20 newsgroups; each document is represented as a 1000-dimensional vector, this dataset is suitable for text analysis and topic discovery.
+    \item RCV1-Large \cite{lewis2004rcv1}: A larger dataset used to test the scalability of our method, it includes a vast array of document vectors for high-dimensional data analysis.
 \end{itemize}
 
 \textbf{Implementation details.}
-All experiments were performed on a computing cluster with the following specifications: Intel Xeon E5-2670 v3 @ 2.30GHz processors, 128GB RAM, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler. 
+All experiments were performed on a computing cluster with the following specifications: Intel Xeon E5-2670 v3 @ 2.30GHz processors, 128GB RAM, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler.
 
 \textbf{Compared Methods.}
 The experiments followed the procedure outlined in Algorithm \ref{alg:method}. The proposed method was compared with the following state-of-the-art co-clustering methods:
@@ -78,7 +78,7 @@ The experiments followed the procedure outlined in Algorithm \ref{alg:method}. T
 \begin{itemize}
     \item Spectral Co-Clustering (SCC) \cite{dhillon2001CoclusteringDocumentsWords}
     \item Parallel Non-negative Matrix Tri-Factorization (PNMTF)\cite{chen2023ParallelNonNegativeMatrix}
-    \item Deep Co-Clustering (DeepCC)\cite{dongkuanxu2019DeepCoClustering}
+    \item Deep Co-Clustering (DeepCC) \cite{dongkuanxu2019DeepCoClustering}
 \end{itemize}
 
 Notably, 1) PNMTF is one of the most efficient co-clustering algorithms in the state-of-art. 2) All our experiments show that DeepCC cannot process all selected datasets due to the dataset size exceeds DeepCC processing limit.
@@ -107,4 +107,3 @@ The results of the experiments are presented in Tables \ref{tab:running-time} an
 \textbf{3) Quantitative Metrics:} According to Table \ref{tab:evaluation-metrics}, our methods also showed enhanced accuracy and robustness across different evaluation metrics like NMI and ARI. For example, in the CLASSIC4 dataset, while SCC was unable to process the dataset, MPHM-SCC achieved an NMI of 0.7676 and an ARI of 0.5845, significantly improving upon PNMTF's performance.
 
 These experiments validate our proposed scalable co-clustering method as more efficient and capable of handling diverse and large-scale datasets without sacrificing the quality of co-cluster identification. The adaptability of our method to different data characteristics and its capacity for parallel processing demonstrate its potential as a robust tool for applications in domains requiring the analysis of large data matrices, such as text and biomedical data analyses and financial pattern recognition.
- 
