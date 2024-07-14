@@ -1,9 +1,14 @@
+% arara: pdflatex
+% arara: bibtex
+% arara: pdflatex: {synctex: yes}
+% arara: pdflatex: {synctex: yes}
+
 %%%
  % File: /latex/big-cocluster-paper/main.tex
  % Created Date: Thursday, July 11th 2024
  % Author: Zihan
  % -----
- % Last Modified: Sunday, 14th July 2024 9:43:02 pm
+ % Last Modified: Sunday, 14th July 2024 10:52:14 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -39,10 +44,10 @@
 \usepackage{graphicx}
 \usepackage{multirow}       % multirow in table
 % \usepackage[numeric]{natbib}
-\usepackage[backend=biber,style=ieee]{biblatex}
-\bibliography{references}  
-\DeclareFieldFormat{url}{}
-\DeclareFieldFormat{urldate}{}
+% \usepackage[backend=biber,style=ieee]{biblatex}
+% \bibliography{references}  
+% \DeclareFieldFormat{url}{}
+% \DeclareFieldFormat{urldate}{}
 \usepackage{doi}
 \usepackage{threeparttable}
 \usepackage{xcolor}
@@ -128,7 +133,6 @@
 
 % new command
 %% define \cite{} to represent ~\autocite{}
-\renewcommand{\cite}[1]{~\autocite{#1}}
 
 %%% Add PDF metadata to help others organize their library
 %%% Once the PDF is generated, you can check the metadata with
@@ -171,6 +175,8 @@ pdfkeywords={First keyword, Second keyword, More},
 % 	\label{tab:table}
 % \end{table}
 
-\printbibliography
+% \printbibliography
+\bibliographystyle{IEEEtran}
+\bibliography{updated}
 
 \end{document}
