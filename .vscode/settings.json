@@ -1,5 +1,8 @@
 {
     "cSpell.words": [
         "bioinformatics"
-    ]
+    ],
+    "makefile.configureOnOpen": false,
+    // no auto save
+    "files.autoSave": "off"
 }
