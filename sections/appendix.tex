@@ -13,6 +13,25 @@
 
 \newpage
 \appendix
+
+\begin{theorem}
+    \label{thm:probability_co_cluster_detection}
+    If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $\mathbf{C}_k$ in any block is $P(\omega_k)$, then
+    \begin{equation}
+        \begin{split}
+            P(\omega_k) & \le \exp \left\{ -2 [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
+        \end{split}
+    \end{equation}
+    Given $T_p$ times of random sampling, the probability of detecting the co-cluster $C_k$ is
+    \begin{equation}
+        \begin{split}
+            P & = 1 - P(\omega_k)^{T_p}                                                        \\
+              & \ge 1 - \exp \left\{ -2 T_p [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2] \right\}
+        \end{split}
+    \end{equation}
+
+\end{theorem}
+
 % P(Mi<Tm, Ni<Tn for all i in partition j | Qm, Qn, Ms, Ns)
 Consider co-cluster $C_k$,
 % P(M_{(i,j)}^{(k)} = i)

@@ -8,7 +8,7 @@
  % Created Date: Thursday, July 11th 2024
  % Author: Zihan
  % -----
- % Last Modified: Sunday, 14th July 2024 10:52:14 pm
+ % Last Modified: Monday, 15th July 2024 1:41:08 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -26,10 +26,9 @@
 \usepackage{algorithm,algorithmic}
 \usepackage{bm}
 \usepackage{amsmath}
-\usepackage{amssymb}
-% \usepackage{mathptmx} 
-% theorems
-% \usepackage{amsthm}
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -54,9 +53,20 @@
 \usepackage{subcaption}
 
  
-
 % theorems
+% \usepackage{amsthm}
 \newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+
+% Cref for lemma
+\crefname{lemma}{lemma}{lemmas}
+\Crefname{lemma}{Lemma}{Lemmas}
+\crefname{assumption}{assumption}{assumptions}
+\Crefname{assumption}{Assumption}{Assumptions}
+\crefname{definition}{definition}{definitions}
+\Crefname{definition}{Definition}{Definitions}
 
 % set import path of input files
 \makeatletter
@@ -178,5 +188,7 @@ pdfkeywords={First keyword, Second keyword, More},
 % \printbibliography
 \bibliographystyle{IEEEtran}
 \bibliography{updated}
+
+\input{appendix.tex}
 
 \end{document}
