@@ -98,19 +98,18 @@ where $P(\omega_k)$ is the probability of the failure of identifying co-cluster 
 
 \Cref{eq:prob_of_identifying_all_co_clusters} is central to our algorithm for partitioning large matrices for co-clustering, providing a probabilistic model that informs and optimizes our partitioning strategy to preserve co-cluster integrity. It mathematically quantifies the likelihood of identifying all relevant co-clusters within partitioned blocks, guiding us to mitigate risks associated with partitioning that might fragment vital co-cluster relationships.
 
-Based on \Cref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the repartitioning time $Tr$ and the partition solution $Part$, ensuring that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation. The constraints are discussed in appendix due to space limitations.
+Based on \eqref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the repartitioning time $Tr$ and the partition solution $Part$, ensuring that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation. The constraints are discussed in appendix due to space limitations.
 
 \subsubsection{Optimization and Computational Efficiency}
 Optimizing the partitioning process for computational efficiency is paramount in both academic and industrial applications, where running time often serves as the primary bottleneck. Thanks to the flexible framework established by our probabilistic model and the constraints derived in \Cref{thm:probability_co_cluster_detection}, our optimization strategy can be tailored to address the most critical needs of a given context. In this case, we focus on minimizing the running time without compromising the integrity and success rate of co-cluster identification.
-%TODO check the theorem number
 
 Our approach to optimization leverages the probabilistic model to assess various partitioning configurations, balancing the trade-off between computational resource allocation and the need to adhere to theoretical success thresholds. By systematically evaluating the impact of different partitioning schemes on running time, we can identify strategies that not only meet our co-clustering success criteria but also optimize the use of computational resources.
 
-To ensure that our optimization does not sacrifice the quality of co-cluster identification for the sake of efficiency, we introduce a secondary theorem that outlines the conditions under which optimization can be achieved without compromising the success rate of co-cluster discovery. This theorem provides a mathematical basis for optimizing the partitioning algorithm in a manner that maintains a balance between computational efficiency and the fidelity of co-cluster identification.
+To ensure that our optimization does not sacrifice the quality of co-cluster identification for the sake of efficiency, we introduce a set of conditions under which optimization can be achieved without compromising the success rate of co-cluster discovery. These conditions provide a mathematical basis for optimizing the partitioning algorithm in a manner that maintains a balance between computational efficiency and the fidelity of co-cluster identification.
 
-
-Under the constraint of maintaining a predetermined success rate $P$ for co-cluster identification, the optimization of the partitioning algorithm with respect to running time must satisfy the following condition:
+Under the constraint of maintaining a predetermined success rate \(P\) for co-cluster identification, the optimization of the partitioning algorithm with respect to running time must satisfy the following condition:
 \begin{equation}
+    \label{eq:optimization_condition}
     \begin{split}
         T_p = \text{argmin}_{T_p} \{
         1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2         \\
@@ -118,7 +117,7 @@ Under the constraint of maintaining a predetermined success rate $P$ for co-clus
     \end{split}
 \end{equation}
 
-This condition delineates the parameters within which the partitioning strategy can be optimized for speed without detracting from the algorithm's ability to accurately identify co-clusters. By adhering to this theorem, we ensure that our optimization efforts align with the overarching goal of preserving the integrity and effectiveness of co-cluster discovery. This balance is crucial for developing a partitioning algorithm that is not only fast and efficient but also robust and reliable across various data sets and co-clustering challenges.
+This condition delineates the parameters within which the partitioning strategy can be optimized for speed without detracting from the algorithm's ability to accurately identify co-clusters. By adhering to these conditions, we ensure that our optimization efforts align with the overarching goal of preserving the integrity and effectiveness of co-cluster discovery. This balance is crucial for developing a partitioning algorithm that is not only fast and efficient but also robust and reliable across various data sets and co-clustering challenges.
 
 \subsection{Co-clustering on Small Submatrices}
 % Detailed method for co-clustering within each of the submatrices.
@@ -157,7 +156,7 @@ And according to Section 4 of \cite{dhillon2001CoclusteringDocumentsWords}, the 
         A_n = U \Sigma V^T
     \end{split}
 \end{equation}
-gives the solution to \Cref{eq:eigenvalue_problem}. To be more specific, the singular vectors corresponding to the second largest singular value of $A_n$ is the eigenvector corresponding to the second smallest eigenvalue of \Cref{eq:eigenvalue_problem}.
+gives the solution to \eqref{eq:eigenvalue_problem}. To be more specific, the singular vectors corresponding to the second largest singular value of $A_n$ is the eigenvector corresponding to the second smallest eigenvalue of \eqref{eq:eigenvalue_problem}.
 
 The above discussion is under the assumption that the graph has only one connected component. In a more general setting, $\mathbf{u_2}, \mathbf{u_3}, \ldots, \mathbf{u_{l+1}}$ and $\mathbf{v_2}, \mathbf{v_3}, \ldots, \mathbf{v_{l+1}}$ reveal the $k$-modal information of the graph, where $\mathbf{u_k}$ and $\mathbf{v_k}$ are the $k$-th left and right singular vectors of $A_n$, respectively.
 And for the last step,
