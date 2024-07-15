@@ -4,5 +4,25 @@
     ],
     "makefile.configureOnOpen": false,
     // no auto save
-    "files.autoSave": "off"
+    "files.autoSave": "off",
+    // latex build on save
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    // latex first recipe
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "arara",
+            "tools": [
+                "arara"
+            ]
+        }
+    ],
+    "latex-workshop.latex.tools": [
+        {
+            "name": "arara",
+            "command": "arara",
+            "args": [
+                "main.tex"
+            ]
+        }
+    ],
 }
