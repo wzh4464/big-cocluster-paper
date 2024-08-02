@@ -5,13 +5,14 @@
 % sectionis/method.tex
 
 \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
+
 \subsection{Mathematical Formulation of Co-clustering}
-Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th feature and the $j$-th object. The primary goal of co-clustering is to identify subsets of rows ($I$) and columns ($J$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters.
+Co-clustering groups rows and columns of a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ is the number of features and $N$ is the number of samples. Each element $a_{ij}$ represents the relationship between the $i$-th feature and the $j$-th sample. The goal is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, creating $k \times d$ homogeneous submatrices $\mathbf{A}_{I, J}$.
 
-When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a block-diagonal matrix, where each block represents a co-cluster with higher similarity within than between blocks. We define the row and column label sets as \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \), respectively. Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) are used to assign rows and columns to clusters, with the constraints \( \sum_k R_{i,k} = 1 \) and \( \sum_d C_{j,d} = 1 \), ensuring each row and column is assigned to exactly one cluster.
+When optimally reordered, $\mathbf{A}$ forms a block-diagonal structure where each block is a co-cluster with high internal similarity. Row and column labels are \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \). Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) assign rows and columns to clusters, ensuring unique assignments.
 
-\subsection{Notation Clarification}
-Below is a table summarizing the notations used in the mathematical formulations of our scalable co-clustering method.
+\subsection{Problem Statement}
+This paper aims to develop a method to efficiently and accurately identify co-clusters $\mathbf{A}_{I, J}$ in large datasets. These co-clusters should exhibit uniformity, consistency, or specific patterns. Proper identification and categorization of these patterns are crucial for understanding complex data structures. Our method enhances co-clustering detection capabilities, improving efficiency and precision for large-scale data challenges.
 
 \begin{table*}[h]
     \centering
@@ -34,10 +35,6 @@ Below is a table summarizing the notations used in the mathematical formulations
     \caption{Notations used in the mathematical formulation of co-clustering}
     \label{tab:notations}
 \end{table*}
-
-\subsection{Problem Statement}
-This paper aims to develop a method that efficiently and accurately identifies co-clusters $\mathbf{A}_{I, J}$ within a matrix $\mathbf{A}$ representing large datasets. These co-clusters should exhibit specific structural patterns such as uniformity across elements, consistency along rows or columns, or patterns demonstrating additive or multiplicative coherence. Properly identifying and categorizing these patterns is crucial for understanding the complex data structures inherent in large datasets. This method is intended to improve the detection capabilities of co-clustering, enhancing both the efficiency and precision necessary for handling large-scale data challenges.
-
 
 \section{The Scalable Co-clustering Method}
 \label{sec:method}
@@ -95,29 +92,25 @@ and
 \end{equation}
 where $P(\omega_k)$ is the probability of the failure of identifying co-cluster $C_k$, $T_p$ is the number of sampling times, $\phi$ and $\psi$ are the row and column block sizes, and $s^{(k)}$ and $t^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$.
 
+\Cref{eq:prob_of_identifying_all_co_clusters} is central to our algorithm for partitioning large matrices, providing a probabilistic model to optimize our strategy and preserve co-cluster integrity. It quantifies the likelihood of identifying all relevant co-clusters within partitioned blocks, helping mitigate risks of fragmentation.
 
-\Cref{eq:prob_of_identifying_all_co_clusters} is central to our algorithm for partitioning large matrices for co-clustering, providing a probabilistic model that informs and optimizes our partitioning strategy to preserve co-cluster integrity. It mathematically quantifies the likelihood of identifying all relevant co-clusters within partitioned blocks, guiding us to mitigate risks associated with partitioning that might fragment vital co-cluster relationships.
-
-Based on \eqref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the repartitioning time $Tr$ and the partition solution $Part$, ensuring that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation. The constraints are discussed in appendix due to space limitations.
+Using \eqref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the repartitioning time $T_r$ and the partition solution $Part$, ensuring adherence to a predetermined success rate and minimizing the risk of co-cluster fragmentation. Details of these constraints are discussed in the appendix due to space limitations.
 
 \subsubsection{Optimization and Computational Efficiency}
-Optimizing the partitioning process for computational efficiency is paramount in both academic and industrial applications, where running time often serves as the primary bottleneck. Thanks to the flexible framework established by our probabilistic model and the constraints derived in \Cref{thm:probability_co_cluster_detection}, our optimization strategy can be tailored to address the most critical needs of a given context. In this case, we focus on minimizing the running time without compromising the integrity and success rate of co-cluster identification.
+Optimizing the partitioning process for computational efficiency is crucial in both academic and industrial applications. Our optimization strategy focuses on minimizing running time without compromising the integrity of co-cluster identification.
 
-Our approach to optimization leverages the probabilistic model to assess various partitioning configurations, balancing the trade-off between computational resource allocation and the need to adhere to theoretical success thresholds. By systematically evaluating the impact of different partitioning schemes on running time, we can identify strategies that not only meet our co-clustering success criteria but also optimize the use of computational resources.
+We assess various partitioning configurations to balance computational resource allocation and success rate adherence. By evaluating the impact of different schemes, we identify strategies that meet co-clustering criteria and optimize resource use.
 
-To ensure that our optimization does not sacrifice the quality of co-cluster identification for the sake of efficiency, we introduce a set of conditions under which optimization can be achieved without compromising the success rate of co-cluster discovery. These conditions provide a mathematical basis for optimizing the partitioning algorithm in a manner that maintains a balance between computational efficiency and the fidelity of co-cluster identification.
+To ensure efficiency without sacrificing quality, we introduce conditions for optimization that maintain co-cluster identification success. These conditions provide a mathematical basis for balancing computational efficiency and co-cluster identification fidelity.
 
-Under the constraint of maintaining a predetermined success rate \(P\) for co-cluster identification, the optimization of the partitioning algorithm with respect to running time must satisfy the following condition:
+The optimization must satisfy:
 \begin{equation}
     \label{eq:optimization_condition}
-    \begin{split}
-        T_p = \text{argmin}_{T_p} \{
-        1 & - \exp \{ -2 T_p [\phi m (s^{(k)})^2         \\
-          & + n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
-    \end{split}
+    T_p = \text{argmin}_{T_p} \{
+    1 - \exp \{ -2 T_p [\phi m (s^{(k)})^2 + n (t^{(k)})^2] \} \ge P_{\text{thresh}} \}
 \end{equation}
 
-This condition delineates the parameters within which the partitioning strategy can be optimized for speed without detracting from the algorithm's ability to accurately identify co-clusters. By adhering to these conditions, we ensure that our optimization efforts align with the overarching goal of preserving the integrity and effectiveness of co-cluster discovery. This balance is crucial for developing a partitioning algorithm that is not only fast and efficient but also robust and reliable across various data sets and co-clustering challenges.
+Adhering to these conditions ensures our optimization efforts preserve the effectiveness of co-cluster discovery, making the partitioning algorithm fast, efficient, and robust across various datasets and challenges.
 
 \subsection{Co-clustering on Small Submatrices}
 % Detailed method for co-clustering within each of the submatrices.
@@ -125,45 +118,15 @@ This condition delineates the parameters within which the partitioning strategy 
 \subsubsection{Atom-co-clustering Algorithm}
 Our framework, which encompasses both partitioning and ensembling, offers remarkable flexibility, allowing it to be compatible with a wide range of atom-co-clustering methods. For the sake of making this paper comprehensive and self-contained, we provide an introduction to the atom-co-cluster method herein. The only requirement for an atom-co-clustering method to be compatible with our framework is that it must be able to identify co-clusters under a given criterion with a probability $p$, or more relaxed conditions, has a lower bound estimate of the probability of identifying co-clusters equipped with a validation mechanism.
 
+\subsubsection{Atom-co-clustering Algorithm}
+Our framework's flexibility allows it to be compatible with various atom-co-clustering methods. For an atom-co-clustering method to integrate with our framework, it must identify co-clusters under a given criterion with a certain probability $p$ or provide a lower bound estimate of this probability with a validation mechanism.
+
 \subsubsection{Graph-based Spectral Co-clustering Algorithm}
+Spectral co-clustering (SCC) is widely used for high-dimensional data due to its effectiveness in partitioning data into clusters based on graph Laplacian eigenvectors \cite{vonluxburg2007TutorialSpectralClustering}. SCC constructs a bipartite graph $G=(U,V,E)$ from the data matrix $A$, where $U$ and $V$ represent rows and columns, respectively, and $E$ are weighted edges indicating relationships.
 
-Spectral co-clustering (SCC) stands as one of the most prevalent methods in the realm of co-clustering today\cite{vonluxburg2007TutorialSpectralClustering}, primarily due to its adeptness in unraveling the complexities of high-dimensional data. At its core, this method harnesses the power of spectral clustering principles, focusing on the utilization of a graph's Laplacian matrix eigenvectors for effectively partitioning data into distinct clusters. This approach is exceptionally beneficial for analyzing data that naturally forms a bipartite graph structure, including applications in text-document analysis, social network modeling, and gene expression studies.
+The Laplacian matrix $L = D - W$ is computed, where $D$ is the degree matrix, and $W$ is the weighted adjacency matrix. Eigenvectors of the smallest positive eigenvalues of $L$ are used to partition the graph. The normalized matrix $A_n = D^{-1/2} A D^{-1/2}$ is factorized using singular value decomposition (SVD), and the resulting singular vectors are used for clustering.
 
-
-\paragraph{Graph Construction in Co-clustering Expanded}
-
-SCC begins with constructing a bipartite graph $G=(U,V,E)$. Here, $U$ and $V$, both as vertex sets, symbolize the sets corresponding to the rows and columns of the data matrix, respectively. The edges $E$ of this graph are assigned weights reflecting the relationships between rows and columns. Consequently, the graph's weighted adjacency matrix $W$ is defined as:
-
-\begin{equation} W = \begin{bmatrix} 0 & A \\ A^T & 0 \end{bmatrix}, \end{equation}
-
-where $A$ denotes the data matrix, also called adjacency matrix in the graph context.
-Through this representation, the challenge of co-clustering is reformulated into a graph partitioning task, aiming to segregate the graph into distinct clusters based on the interrelations between the data matrix's rows and columns.
-
-\paragraph{Laplacian Matrix}
-
-The graph's Laplacian matrix $L$ is computed as $L=D-W$, with $D$ being the graph's degree matrix—a diagonal matrix whose entries equal the sum of the weights of the edges incident to each node. The Laplacian matrix plays a crucial role in identifying the graph's cluster structure. It does so by facilitating the calculation of eigenvectors associated with its smallest positive eigenvalues, which in turn, guide the partitioning of the graph into clusters.
-
-\paragraph{Graph Partitioning and Singular Value Decomposition}
-Theorem 4 in \cite{dhillon2001CoclusteringDocumentsWords} states that the eigenvector corresponding to the second smallest eigenvalue of the following eigenvalue problem gives the generalized partition vectors for the graph:
-
-\begin{equation}
-    L \mathbf{v} = \lambda D \mathbf{v}
-    \label{eq:eigenvalue_problem}
-\end{equation}
-
-And according to Section 4 of \cite{dhillon2001CoclusteringDocumentsWords}, the singular value decomposition of the normalized matrix $A_n = D^{-1/2} A D^{-1/2}$
-\begin{equation}
-    \begin{split}
-        A_n = U \Sigma V^T
-    \end{split}
-\end{equation}
-gives the solution to \eqref{eq:eigenvalue_problem}. To be more specific, the singular vectors corresponding to the second largest singular value of $A_n$ is the eigenvector corresponding to the second smallest eigenvalue of \eqref{eq:eigenvalue_problem}.
-
-The above discussion is under the assumption that the graph has only one connected component. In a more general setting, $\mathbf{u_2}, \mathbf{u_3}, \ldots, \mathbf{u_{l+1}}$ and $\mathbf{v_2}, \mathbf{v_3}, \ldots, \mathbf{v_{l+1}}$ reveal the $k$-modal information of the graph, where $\mathbf{u_k}$ and $\mathbf{v_k}$ are the $k$-th left and right singular vectors of $A_n$, respectively.
-And for the last step,
-\begin{equation} Z = \begin{bmatrix} D_1^{-1/2} \hat{U} \\ D_2^{-1/2} \hat{V} \end{bmatrix} \end{equation}
-
-is stacked where $\hat{U} = [\mathbf{u_2}; \mathbf{u_3}; \ldots; \mathbf{u_{l+1}}]$ and $\hat{V} = [\mathbf{v_2}; \mathbf{v_3}; \ldots; \mathbf{v_{l+1}}]$. The approximation to the graph partitioning optimization problem is then solved by applying a $k$-means algorithm to the rows of $Z$. More details can be found in \cite{dhillon2001CoclusteringDocumentsWords}.
+For co-clustering, we apply $k$-means to the rows of the matrix formed by stacking the left and right singular vectors of $A_n$. This method effectively identifies clusters in high-dimensional data, making it suitable for our framework \cite{dhillon2001CoclusteringDocumentsWords}.
 
 \subsection{Hierarchical Co-cluster Merging}
 % Explanation of how co-clustered results from submatrices are aggregated.
@@ -181,7 +144,7 @@ is an advanced algorithm designed for efficient co-clustering of large data matr
     \begin{algorithmic}[1]
         \REQUIRE{Data matrix $A \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
         \ENSURE{Co-clustered result $\mathcal{C}$;}
-        \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
+        \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ on $\phi_i$ and $\psi_j$
         \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
         \FOR{$k=1$ to $K$}
         \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$

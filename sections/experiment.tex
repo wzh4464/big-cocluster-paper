@@ -55,9 +55,9 @@
         \item Notes: * indicates that the method cannot process the dataset because the dataset size exceeds the processing limit.
     \end{tablenotes}
 \end{table*}
+
 \section{Experiment Evaluation}
 \label{sec:experiment}
-This section presents the empirical evaluation of the proposed co-cluster method. The experiments aim to assess the method's efficiency, scalability, and accuracy when applied to large data matrices.
 \subsection{Experiment Setup}
 
 \textbf{Datasets.}
@@ -98,12 +98,12 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 \end{itemize}
 
 \subsection{Results}
-The results of the experiments are presented in Tables \ref{tab:running-time} and \ref{tab:evaluation-metrics}, showcasing the proposed scalable co-clustering methods, MPHM-SCC and MPHM-PNMTF, in comparison with traditional methods such as SCC and PNMTF.
+The experimental results are presented in Tables \ref{tab:running-time} and \ref{tab:evaluation-metrics}, comparing our methods, MPHM-SCC and MPHM-PNMTF, with traditional methods SCC and PNMTF.
 
-\textbf{1) Handling Large-scale Datasets:} The results first confirm the limitations of some existing methods, such as SCC and DeepCC, in handling large datasets due to their processing constraints. As indicated in Table \ref{tab:running-time}, these methods could not process certain datasets (denoted by "*"), highlighting the challenge of scalability in traditional co-clustering methods.
+\textbf{1) Handling Large-scale Datasets:} The results highlight the limitations of traditional methods like SCC and DeepCC in processing large datasets, as shown by their inability to handle certain datasets (denoted by "*"). This underscores the scalability challenges in existing co-clustering methods.
 
-\textbf{2) Improved Performance:} On the other hand, our methods, MPHM-SCC and MPHM-PNMTF, not only succeeded in processing all datasets but also significantly outperformed the traditional methods in terms of efficiency. For instance, the running time for the Amazon 1000 dataset was reduced from 64545.2 seconds for SCC to 112.5 seconds for MPHM-SCC, illustrating a dramatic increase in speed.
+\textbf{2) Improved Performance:} Our methods successfully processed all datasets and significantly outperformed traditional methods in efficiency. For example, the running time for the Amazon 1000 dataset was reduced from 64545.2 seconds (SCC) to 112.5 seconds (MPHM-SCC), demonstrating a substantial increase in speed.
 
-\textbf{3) Quantitative Metrics:} According to Table \ref{tab:evaluation-metrics}, our methods also showed enhanced accuracy and robustness across different evaluation metrics like NMI and ARI. For example, in the CLASSIC4 dataset, while SCC was unable to process the dataset, MPHM-SCC achieved an NMI of 0.7676 and an ARI of 0.5845, significantly improving upon PNMTF's performance.
+\textbf{3) Quantitative Metrics:} As shown in Table \ref{tab:evaluation-metrics}, our methods also improved accuracy and robustness. For instance, in the CLASSIC4 dataset, MPHM-SCC achieved an NMI of 0.7676 and an ARI of 0.5845, outperforming PNMTF.
 
-These experiments validate our proposed scalable co-clustering method as more efficient and capable of handling diverse and large-scale datasets without sacrificing the quality of co-cluster identification. The adaptability of our method to different data characteristics and its capacity for parallel processing demonstrate its potential as a robust tool for applications in domains requiring the analysis of large data matrices, such as text and biomedical data analyses and financial pattern recognition.
+These results validate our scalable co-clustering method as more efficient and capable of handling diverse, large-scale datasets without compromising co-cluster identification quality. The adaptability and parallel processing capabilities of our method demonstrate its potential for various applications, including text and biomedical data analysis and financial pattern recognition.
