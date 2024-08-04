@@ -7,7 +7,7 @@
 \section{Mathematical Formulation and Problem Statement}\label{sec:formula}
 
 \subsection{Mathematical Formulation of Co-clustering}
-Co-clustering groups rows and columns of a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ is the number of features and $N$ is the number of samples. Each element $a_{ij}$ represents the relationship between the $i$-th feature and the $j$-th sample. The goal is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, creating $k \times d$ homogeneous submatrices $\mathbf{A}_{I, J}$.
+Co-clustering groups rows and columns of a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ is the number of features and $N$ is the number of samples. Each element $a_{ij}$ represents the $i$-th feature of the $j$-th sample. The goal is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, creating $k \times d$ homogeneous submatrices $\mathbf{A}_{I, J}$.
 
 When optimally reordered, $\mathbf{A}$ forms a block-diagonal structure where each block is a co-cluster with high internal similarity. Row and column labels are \( u \in \{1,\dots,k\}^M \) and \( v \in \{1,\dots,d\}^N \). Indicator matrices \( R \in \mathbb{R}^{M \times k} \) and \( C \in \mathbb{R}^{N \times d} \) assign rows and columns to clusters, ensuring unique assignments.
 
@@ -24,7 +24,6 @@ This paper aims to develop a method to efficiently and accurately identify co-cl
         $a_{ij}$               & Element at the $i$-th row and $j$-th column of matrix $\mathbf{A}$.                                                            \\
         $I, J$                 & Indices of rows and columns selected for co-clustering.                                                                        \\
         $\mathbf{A}_{I, J}$    & Submatrix containing the rows indexed by $I$ and columns by $J$.                                                               \\
-        $k, d$                 & Number of row clusters and column clusters, respectively.                                                                      \\
         $R, C$                 & Indicator matrices for row and column cluster assignments.                                                                     \\
         $\phi_i, \psi_j$       & Block sizes in rows and columns, respectively.                                                                                 \\
         $s_i^{(k)}, t_j^{(k)}$ & Minimum row and column sizes of co-cluster $C_k$ in block $B_{(i,j)}$.                                                         \\
@@ -58,7 +57,7 @@ Furthermore, our method integrates a novel hierarchical merging strategy that co
 
 \subsection{Large Matrix Partitioning}
 % Description of the matrix partitioning process and criteria for partitioning.
-The primary challenge in co-clustering large matrices is the risk of losing meaningful co-cluster relationships when the matrix is partitioned into smaller submatrices. To address this, we introduce an optimal partitioning algorithm underpinned by a probabilistic model. This model is meticulously designed to navigate the complexities of partitioning, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. The objective of this algorithm is twofold: to determine the optimal partitioning strategy that minimizes the risk of fragmenting significant co-clusters and to define the appropriate number of repartitioning iterations needed to achieve a desired success rate of co-cluster identification.
+The primary challenge in co-clustering large matrices is the risk of losing co-clusters when the matrix is partitioned into smaller submatrices. To address this, we introduce an optimal partitioning algorithm underpinned by a probabilistic model. This model is meticulously designed to navigate the complexities of partitioning, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. The objective of this algorithm is twofold: to determine the optimal partitioning strategy that minimizes the risk of fragmenting significant co-clusters and to define the appropriate number of repartitioning iterations needed to achieve a desired success rate of co-cluster identification.
 
 \subsubsection{Partitioning and Repartitioning Strategy based on the Probabilistic Model}
 Our probabilistic model serves as the cornerstone of the partitioning algorithm. It evaluates potential partitioning schemes based on their ability to preserve meaningful co-cluster structures within smaller submatrices. The model operates under the premise that each atom-co-cluster (the smallest identifiable co-cluster within a submatrix) can be identified with a probability $p$. This probabilistic model allows us to estimate the likelihood of successfully identifying all relevant co-clusters across the partitioned submatrices.
