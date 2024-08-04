@@ -191,8 +191,7 @@ For co-clustering, we apply $k$-means to the rows of the matrix formed by stacki
 \subsection{Hierarchical Co-cluster Merging}
 % Explanation of how co-clustered results from submatrices are aggregated.
 
-Hierarchical co-cluster merging is a novel approach that combines the results of co-clustering on submatrices to produce a final co-clustered result.
-The merging method is designed to enhance the accuracy and robustness of the co-clustering outcome by leveraging the design of the partitioning algorithm. The hierarchical merging process iteratively combines the co-clusters from each submatrix, ensuring that the final co-clustered result is comprehensive and consistent across all submatrices. This iterative merging process is crucial for addressing issues of heterogeneity and model uncertainty, ensuring that the final co-clustering results are reliable and robust.
+With the co-clustering results from each submatrix in hand, the next step is to merge these results to form the final co-clustered output. This merging process employs a hierarchical strategy that starts with the most closely related clusters, gradually integrating broader groups to maintain consistency and reduce redundancy. Throughout this process, the algorithm assesses and recalibrates the similarity thresholds necessary to ensure clusters are combined appropriately, thus accommodating the diverse nature of the data. By iteratively refining the merging criteria, the framework can adaptively reconcile differences among submatrix clusters, resulting in a robust and coherent final clustering solution that reflects the inherent structure of the entire dataset. This approach not only preserves the detailed information within each subcluster but also enhances the overall clustering accuracy and reliability.
 
 \subsection{Algorithmic Description}
 % Step-by-step algorithmic description of the process in pseudocode.
