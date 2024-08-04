@@ -17,7 +17,7 @@
     \label{tab:running-time}
     \begin{tabular}{@{} l cccc @{}}
         \toprule
-        Dataset     & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF} \\
+        Dataset     & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{LAMC-SCC} & \textbf{LAMC-PNMTF} \\
         \midrule
         Amazon 1000 & 64545.2                                          & 303.7                                          & 112.5             & 242.8               \\
         CLASSIC4    & *                                                & 17,810                                         & 22,894            & 3,028               \\
@@ -39,7 +39,7 @@
         \toprule
         \multirow{2}{*}{Dataset}     & \multirow{2}{*}{Metric} & \multicolumn{4}{c}{Compared Methods}                                                                                                        \\
         \cmidrule{3-6}
-                                     &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{MPHM-SCC} & \textbf{MPHM-PNMTF} \\
+                                     &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{LAMC-SCC} & \textbf{LAMC-PNMTF} \\
         \midrule
         \multirow{2}{*}{Amazon 1000} & NMI                     & 0.9223                                           & 0.6894                                         & 0.8650            & 0.6609              \\
                                      & ARI                     & 0.7713                                           & 0.6188                                         & 0.7763            & 0.6057              \\
@@ -85,8 +85,8 @@ Notably, 1) PNMTF is one of the most efficient co-clustering algorithms in the s
 
 \textbf{Our Methods.} Our proposed scalable co-cluster method is applied along with the SCC and PNMTF to demonstrate the enhanced performance and capability of handling large datasets:
 \begin{itemize}
-    \item Matrix Partitioned and Hierarchical Co-Cluster Merging with Spectral Co-Clustering (MPHM-SCC)
-    \item Matrix Partitioned and Hierarchical Co-Cluster Merging with Parallel Non-negative Matrix Tri-Factorization (MPHM-PNMTF)
+    \item Matrix Partitioned and Hierarchical Co-Cluster Merging with Spectral Co-Clustering (LAMC-SCC)
+    \item Matrix Partitioned and Hierarchical Co-Cluster Merging with Parallel Non-negative Matrix Tri-Factorization (LAMC-PNMTF)
 \end{itemize}
 
 \textbf{Evaluation Metrics.}
@@ -98,12 +98,12 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 \end{itemize}
 
 \subsection{Results}
-The experimental results are presented in Tables \ref{tab:running-time} and \ref{tab:evaluation-metrics}, comparing our methods, MPHM-SCC and MPHM-PNMTF, with traditional methods SCC and PNMTF.
+The experimental results are presented in Tables \ref{tab:running-time} and \ref{tab:evaluation-metrics}, comparing our methods, LAMC-SCC and LAMC-PNMTF, with traditional methods SCC and PNMTF.
 
-\textbf{1) Handling Large-scale Datasets:} The results highlight the limitations of traditional methods like SCC and DeepCC in processing large datasets, as shown by their inability to handle certain datasets (denoted by "*"). This underscores the scalability challenges in existing co-clustering methods.
+\subsubsection{Handling Large-scale Datasets} The results highlight the limitations of traditional methods like SCC and DeepCC in processing large datasets, as shown by their inability to handle certain datasets (denoted by "*"). This underscores the scalability challenges in existing co-clustering methods.
 
-\textbf{2) Improved Performance:} Our methods successfully processed all datasets and significantly outperformed traditional methods in efficiency. For example, the running time for the Amazon 1000 dataset was reduced from 64545.2 seconds (SCC) to 112.5 seconds (MPHM-SCC), demonstrating a substantial increase in speed.
+\subsubsection{Improved Performance} Our methods successfully processed all datasets and significantly outperformed traditional methods in efficiency. For example, the running time for the Amazon 1000 dataset was reduced from 64545.2 seconds (SCC) to 112.5 seconds (LAMC-SCC), demonstrating a substantial increase in speed.
 
-\textbf{3) Quantitative Metrics:} As shown in Table \ref{tab:evaluation-metrics}, our methods also improved accuracy and robustness. For instance, in the CLASSIC4 dataset, MPHM-SCC achieved an NMI of 0.7676 and an ARI of 0.5845, outperforming PNMTF.
+\subsubsection{Quantitative Metrics} As shown in Table \ref{tab:evaluation-metrics}, our methods also improved accuracy and robustness. For instance, in the CLASSIC4 dataset, LAMC-SCC achieved an NMI of 0.7676 and an ARI of 0.5845, outperforming PNMTF.
 
 These results validate our scalable co-clustering method as more efficient and capable of handling diverse, large-scale datasets without compromising co-cluster identification quality. The adaptability and parallel processing capabilities of our method demonstrate its potential for various applications, including text and biomedical data analysis and financial pattern recognition.

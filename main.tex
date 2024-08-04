@@ -8,7 +8,7 @@
  % Created Date: Thursday, July 11th 2024
  % Author: Zihan
  % -----
- % Last Modified: Friday, 2nd August 2024 12:24:10 pm
+ % Last Modified: Sunday, 4th August 2024 11:02:16 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -18,7 +18,7 @@
 
 \documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
 %\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
-% \IEEEoverridecommandlockouts                              % This command is only needed if 
+\IEEEoverridecommandlockouts                              % This command is only needed if 
                                                           % you want to use the \thanks command
 \overrideIEEEmargins                                      % Needed to meet printer requirements.
 
@@ -78,80 +78,25 @@
 
 \title{\LARGE \bf Scalable Co-Clustering for Large-Scale Data through Dynamic Partitioning and Hierarchical Merging}
 
-% Here you can change the date presented in the paper title
-%\date{September 9, 1985}
-% Or remove it
-%\date{}
-
-% \newif\ifuniqueAffiliation
-% % Uncomment to use multiple affiliations variant of author block 
-% \uniqueAffiliationtrue
-
-% \ifuniqueAffiliation % Standard variant of author block
-\author{ 
-	% \href{https://orcid.org/0000-0000-0000-0000}{\includegraphics[scale=0.06]{orcid.pdf}\hspace{1mm}David S.~Hippocampus}\thanks{Use footnote for providing further
-	% 	information about author (webpage, alternative
-	% 	address)---\emph{not} for acknowledging funding agencies.} \\
-	% Department of Computer Science\\
-	% Cranberry-Lemon University\\
-	% Pittsburgh, PA 15213 \\
-	% \texttt{hippo@cs.cranberry-lemon.edu} \\
-	% %% examples of more authors
-	% \And
-	% \href{https://orcid.org/0000-0000-0000-0000}{\includegraphics[scale=0.06]{orcid.pdf}\hspace{1mm}Elias D.~Striatum} \\
-	% Department of Electrical Engineering\\
-	% Mount-Sheikh University\\
-	% Santa Narimana, Levand \\
-	% \texttt{stariate@ee.mount-sheikh.edu} \\
-	% \AND
-	% Coauthor \\
-	% Affiliation \\
-	% Address \\
-	% \texttt{email} \\
-	% \And
-	% Coauthor \\
-	% Affiliation \\
-	% Address \\
-	% \texttt{email} \\
-	% \And
-	% Coauthor \\
-	% Affiliation \\
-	% Address \\
-	% \texttt{email} \\
+\author{Zihan Wu$^{1}$, Zhaoke Huang$^{2}$, and Hong Yan$^{3}$% <-this % stops a space
+\thanks{This work is supported by Hong Kong Innovation and
+Technology Commission (InnoHK Project CIMDA) and Hong
+Kong Research Grants Council (Project CityU 11204821).}% <-this % stops a space
+\thanks{$^{1}$Zihan Wu (Corresponding Author) is with the Department of Electrical Engineering,
+        City University of Hong Kong, Hong Kong
+        {\tt\small zihan.wu@my.cityu.edu.hk}}%
+\thanks{$^{2}$Zhaoke Huang is with the Department of Electrical Engineering,
+        City University of Hong Kong, Hong Kong
+        {\tt\small Z.Huang@cityu.edu.hk}}%
+\thanks{$^{3}$Hong Yan is with the Department of Electrical Engineering,
+        City University of Hong Kong, Hong Kong
+        {\tt\small h.yan@cityu.edu.hk}}%
 }
-% \else
-% Multiple affiliations variant of author block
-% \usepackage{authblk}
-% \renewcommand\Authfont{\bfseries}
-% \setlength{\affilsep}{0em}
-% % box is needed for correct spacing with authblk
-% \newbox{\orcid}\sbox{\orcid}{\includegraphics[scale=0.06]{orcid.pdf}} 
-% \author[1]{%
-% 	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}David S.~Hippocampus\thanks{\texttt{hippo@cs.cranberry-lemon.edu}}}%
-% }
-% \author[1,2]{%
-% 	\href{https://orcid.org/0000-0000-0000-0000}{\usebox{\orcid}\hspace{1mm}Elias D.~Striatum\thanks{\texttt{stariate@ee.mount-sheikh.edu}}}%
-% }
-% \affil[1]{Department of Computer Science, Cranberry-Lemon University, Pittsburgh, PA 15213}
-% \affil[2]{Department of Electrical Engineering, Mount-Sheikh University, Santa Narimana, Levand}
-% \fi
-
-% Uncomment to override  the `A preprint' in the header
-%\renewcommand{\headeright}{Technical Report}
-%\renewcommand{\undertitle}{Technical Report}
-% \renewcommand{\shorttitle}{\textit{arXiv} Template}
-
-% new command
-%% define \cite{} to represent ~\autocite{}
-
-%%% Add PDF metadata to help others organize their library
-%%% Once the PDF is generated, you can check the metadata with
-%%% ```pdfinfo template.pdf```
 \hypersetup{
-pdftitle={A template for the arxiv style},
-pdfsubject={q-bio.NC, q-bio.QM},
-pdfauthor={Zihan Wu},
-pdfkeywords={First keyword, Second keyword, More},
+pdftitle={Scalable Co-Clustering for Large-Scale Data through Dynamic Partitioning and Hierarchical Merging},
+pdfsubject={Artificial Intelligence, Machine Learning, Data Mining},
+pdfauthor={Zihan Wu, Zhaoke Huang, Hong Yan},
+pdfkeywords={Co-clustering, Large-scale data, Matrix partitioning, Hierarchical merging},
 }
 
 \begin{document}
@@ -168,10 +113,10 @@ pdfkeywords={First keyword, Second keyword, More},
 \input{conclusion.tex}
 % \input{appendix.tex}
 
-\section*{Acknowledgment}
-This work is supported by Hong Kong Innovation and Technology
-Commission (InnoHK Project CIMDA) and Hong Kong Research Grants
-Council (Project CityU 11204821).
+% \section*{Acknowledgment}
+% This work is supported by Hong Kong Innovation and Technology
+% Commission (InnoHK Project CIMDA) and Hong Kong Research Grants
+% Council (Project CityU 11204821).
 
 % \begin{table}[b]
 % 	\caption{Sample table title}
