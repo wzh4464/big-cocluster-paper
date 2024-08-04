@@ -44,7 +44,7 @@ This paper aims to develop a method to efficiently and accurately identify co-cl
 \begin{figure*}[htbp]
     \centering
     \includegraphics[width=0.8\linewidth]{workflow.png}
-    \caption{Workflow of our proposed Large-scale Adaptive Matrix Co-clustering for large matrices.}
+    \caption{Workflow of our proposed AHPM for large matrices.}
     \label{fig:workflow}
 \end{figure*}
 This paper presents a novel and scalable co-cluster method specifically designed for large matrices, as shown in \Cref{fig:workflow}. This method applies a probabilistic model-based optimal partitioning algorithm, which not only predicts the ideal number and sequence of partitions for maximizing computational efficiency but also ensures the effectiveness of the co-clustering process.
@@ -152,7 +152,7 @@ For co-clustering, we apply $k$-means to the rows of the matrix formed by stacki
     \label{tab:running-time}
     \begin{tabular}{@{} l cccc @{}}
         \toprule
-        Dataset     & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{LAMC-SCC} & \textbf{LAMC-PNMTF} \\
+        Dataset     & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{AHPM-SCC} & \textbf{AHPM-PNMTF} \\
         \midrule
         Amazon 1000 & 64545.2                                          & 303.7                                          & 112.5             & 242.8               \\
         CLASSIC4    & *                                                & 17,810                                         & 22,894            & 3,028               \\
@@ -174,7 +174,7 @@ For co-clustering, we apply $k$-means to the rows of the matrix formed by stacki
         \toprule
         \multirow{2}{*}{Dataset}     & \multirow{2}{*}{Metric} & \multicolumn{4}{c}{Compared Methods}                                                                                                        \\
         \cmidrule{3-6}
-                                     &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{LAMC-SCC} & \textbf{LAMC-PNMTF} \\
+                                     &                         & SCC \cite{dhillon2001CoclusteringDocumentsWords} & PNMTF \cite{chen2023ParallelNonNegativeMatrix} & \textbf{AHPM-SCC} & \textbf{AHPM-PNMTF} \\
         \midrule
         \multirow{2}{*}{Amazon 1000} & NMI                     & 0.9223                                           & 0.6894                                         & 0.8650            & 0.6609              \\
                                      & ARI                     & 0.7713                                           & 0.6188                                         & 0.7763            & 0.6057              \\
