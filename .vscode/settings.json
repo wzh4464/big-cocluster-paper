@@ -21,7 +21,7 @@
             "name": "arara",
             "command": "arara",
             "args": [
-                "main.tex"
+                "root.tex"
             ]
         }
     ],

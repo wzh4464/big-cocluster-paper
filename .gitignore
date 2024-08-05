@@ -241,4 +241,4 @@ TSWLatexianTemp*
 # generated if using elsarticle.cls
 *.spl
 
-main.pdf
+root.pdf
