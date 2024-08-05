@@ -170,13 +170,23 @@
   booktitle = {Multi-Disciplinary Trends in Artificial Intelligence: 16th International Conference, MIWAI 2023, Hyderabad, India, July 21-22, 2023, Proceedings}
 }
 
+
 @inproceedings{long2005CoclusteringBlockValue,
-  author    = {Long, Bo and Zhang, Zhongfei and Yu, Philip S},
-  booktitle = {Proceedings of the eleventh ACM SIGKDD international conference on Knowledge discovery in data mining},
-  year      = {2005},
+  address   = {New York, NY, USA},
+  series    = {{KDD} '05},
+  title     = {Co-clustering by block value decomposition},
+  isbn      = {978-1-59593-135-1},
   doi       = {10.1145/1081870.1081949},
+  abstract  = {Dyadic data matrices, such as co-occurrence matrix, rating matrix, and proximity matrix, arise frequently in various important applications. A fundamental problem in dyadic data analysis is to find the hidden block structure of the data matrix. In this paper, we present a new co-clustering framework, block value decomposition(BVD), for dyadic data, which factorizes the dyadic data matrix into three components, the row-coefficient matrix R, the block value matrix B, and the column-coefficient matrix C. Under this framework, we focus on a special yet very popular case -- non-negative dyadic data, and propose a specific novel co-clustering algorithm that iteratively computes the three decomposition matrices based on the multiplicative updating rules. Extensive experimental evaluations also demonstrate the effectiveness and potential of this framework as well as the specific algorithms for co-clustering, and in particular, for discovering the hidden block structure in the dyadic data.动态数据矩阵，如共同发生矩阵、评级矩阵和接近矩阵，在各种重要应用中经常出现。动态数据分析的一个基本问题是找到数据矩阵的隐藏块结构。在本文中，我们提出了一个新的协同聚类框架，即针对动态数据的块值分解（BVD），它将动态数据矩阵分解为三个部分，即行系数矩阵R、块值矩阵B和列系数矩阵C。在这个框架下，我们专注于一个特殊但非常流行的情况--非负的动态数据，并提出了一个具体的新型共聚算法，该算法基于乘法更新规则，迭代计算三个分解矩阵。广泛的实验评估也证明了这一框架以及共同聚类的具体算法的有效性和潜力，特别是在发现动态数据中的隐藏块结构方面。},
+  language  = {en},
+  urldate   = {2023-05-02},
+  booktitle = {Proceedings of the eleventh {ACM} {SIGKDD} {International} {Conference} on {Knowledge} {Discovery} in {Data} {Mining}},
+  publisher = {Association for Computing Machinery},
+  author    = {Long, Bo and Zhang, Zhongfei and Yu, Philip S.},
+  year      = {2005},
+  keywords  = {block value decomposition (BVD), clustering, co-clustering, dyadic data, hidden block structure, matrix decomposition, non-negative block value decomposition (NBVD), TODO},
   pages     = {635--640},
-  title     = {Co-clustering by block value decomposition}
+  file      = {Full Text PDF:/Volumes/Mac_Ext/Zotero/storage/U95TA7PH/Long et al. - 2005 - Co-clustering by block value decomposition.pdf:application/pdf}
 }
 
 @article{madeira2004BiclusteringAlgorithmsBiological,
@@ -341,20 +351,23 @@
 }
 
 
-@inproceedings{pan2008CRDFastCoclusteringa,
+@inproceedings{pan2008CRDFastCoclustering,
   address    = {Vancouver Canada},
-  title      = {{CRD}: {Fast} co-clustering on large datasets utilizing sampling-based matrix decomposition},
+  title      = {{CRD}: fast co-clustering on large datasets utilizing sampling-based matrix decomposition},
   volume     = {2008},
   isbn       = {978-1-60558-102-6},
   shorttitle = {{CRD}},
   doi        = {10.1145/1376616.1376637},
   abstract   = {The problem of simultaneously clustering columns and rows (coclustering) arises in important applications, such as text data mining, microarray analysis, and recommendation system analysis. Compared with the classical clustering algorithms, co-clustering algorithms have been shown to be more effective in discovering hidden clustering structures in the data matrix. The complexity of previous co-clustering algorithms is usually O(m × n), where m and n are the numbers of rows and columns in the data matrix respectively. This limits their applicability to data matrices involving a large number of columns and rows. Moreover, some huge datasets can not be entirely held in main memory during co-clustering which violates the assumption made by the previous algorithms. In this paper, we propose a general framework for fast co-clustering large datasets, CRD. By utilizing recently developed sampling-based matrix decomposition methods, CRD achieves an execution time linear in m and n. Also, CRD does not require the whole data matrix be in the main memory. We conducted extensive experiments on both real and synthetic data. Compared with previous co-clustering algorithms, CRD achieves competitive accuracy but with much less computational cost.},
   language   = {en},
-  urlyear    = {2024},
-  booktitle  = {Proceedings of the 2008 {ACM} {SIGMOD} international conference on {Management} of data},
+  urldate    = {2024-08-05},
+  booktitle  = {Proceedings of the 2008 {ACM} {SIGMOD} {International} {Conference} on {Management} of {Data}},
+  publisher  = {ACM},
   author     = {Pan, Feng and Zhang, Xiang and Wang, Wei},
   month      = jun,
-  year       = {2008}
+  year       = {2008},
+  pages      = {173--184},
+  file       = {PDF:/Volumes/Mac_Ext/Zotero/storage/MBKVIGDM/1376616.pdf:application/pdf;Snapshot:/Volumes/Mac_Ext/Zotero/storage/47DE3CRR/crd-fast-co-clustering-on-large-datasets-utilizing-sampling-8b4fbqhqye.html:text/html}
 }
 
 @article{lewis2004rcv1,
@@ -367,11 +380,19 @@
 }
 
 @inproceedings{ni2019justifying,
+  address   = {Hong Kong, China},
   title     = {Justifying recommendations using distantly-labeled reviews and fine-grained aspects},
+  doi       = {10.18653/v1/D19-1018},
+  abstract  = {Several recent works have considered the problem of generating reviews (or ‘tips’) as a form of explanation as to why a recommendation might match a user’s interests. While promising, we demonstrate that existing approaches struggle (in terms of both quality and content) to generate justiﬁcations that are relevant to users’ decision-making process. We seek to introduce new datasets and methods to address this recommendation justiﬁcation task. In terms of data, we ﬁrst propose an ‘extractive’ approach to identify review segments which justify users’ intentions; this approach is then used to distantly label massive review corpora and construct largescale personalized recommendation justiﬁcation datasets. In terms of generation, we design two personalized generation models with this data: (1) a reference-based Seq2Seq model with aspect-planning which can generate justiﬁcations covering different aspects, and (2) an aspect-conditional masked language model which can generate diverse justiﬁcations based on templates extracted from justiﬁcation histories. We conduct experiments on two real-world datasets which show that our model is capable of generating convincing and diverse justiﬁcations.},
+  language  = {en},
+  urldate   = {2024-06-06},
+  booktitle = {Proceedings of the 2019 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing} and the 9th {International} {Joint} {Conference} on {Natural} {Language} {Processing} ({EMNLP}-{IJCNLP})},
+  publisher = {Association for Computational Linguistics},
   author    = {Ni, Jianmo and Li, Jiacheng and McAuley, Julian},
-  booktitle = {Proceedings of the 2019 conference on empirical methods in natural language processing and the 9th international joint conference on natural language processing (EMNLP-IJCNLP)},
+  year      = {2019},
+  keywords  = {/unread},
   pages     = {188--197},
-  year      = {2019}
+  file      = {emnlp19a.pdf:/Volumes/Mac_Ext/Zotero/storage/DRPUMQIP/emnlp19a.pdf:application/pdf}
 }
 
 @article{reddy2021weclustering,
