@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import sys
 
 def extract_input_path(latex_content):
     r"""Extract the input path defined by \def\input@path{}."""
@@ -84,6 +85,10 @@ def process_latex_file(main_tex_path):
     print(f"Expanded LaTeX content has been written to {temp_tex_path}")
 
 if __name__ == "__main__":
-    main_tex_path = 'main.tex'  # Path to your main LaTeX file
+    args = sys.argv[1:]
+    if len(args) != 1:
+        print("Usage: python merge_latex.py <main_tex_path>")
+        sys.exit(1)
+    main_tex_path = args[0]
     
     process_latex_file(main_tex_path)
