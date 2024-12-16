@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 2nd July 2024 12:23:17 pm
+ % Last Modified: Monday, 16th December 2024 10:04:38 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -116,7 +116,7 @@
 \maketitle
 
 \begin{abstract}
-  Co-clustering algorithms are effective at uncovering complex multi-dimensional data patterns by concurrently grouping rows and columns. However, they are limited by scalability challenges and high computational complexity. We present a novel and scalable co-clustering method designed to handle large-scale data efficiently. First, we propose a dynamic partitioning algorithm that divides large data matrices into smaller submatrices, facilitating parallel processing and significantly reducing computational and storage demands. The configurations of the submatrices are optimal based on a probabilistic model, guaranteeing convergence with iterations determined by the data matrix's scale. Besides, we develop a hierarchical co-cluster merging algorithm that iteratively combines co-clusters from submatrices, ensuring robust and consistent clustering performance. The proposed framework also supports integration with various co-clustering techniques and does not require specialized main thread performance, making it practical for real-world applications. Experimental evaluations demonstrate that our method outperforms existing solutions in scalability, efficiency, and co-cluster identification quality, particularly in high-dimensional and heterogeneous data scenarios. Specifically, our extensive evaluations show that \emph{MPHMCo} achieves substantial improvements, with a significant reduction in computation time—approximately 83\% for dense matrices and up to 30\% for sparse matrices.
+  Co-clustering algorithms are effective at uncovering complex multi-dimensional data patterns by concurrently grouping rows and columns. However, they are limited by scalability challenges and high computational complexity. We present a novel and scalable co-clustering method designed to handle large-scale data efficiently. First, we propose a dynamic partitioning algorithm that divides large data matrices into smaller submatrices, facilitating parallel processing and significantly reducing computational and storage demands. The configurations of the submatrices are optimal based on a probabilistic model, guaranteeing convergence with iterations determined by the data matrix's scale. Besides, we develop a hierarchical co-cluster merging algorithm that iteratively combines co-clusters from submatrices, ensuring robust and consistent clustering performance. The proposed framework also supports integration with various co-clustering techniques and does not require specialized main thread performance, making it useful for real-world applications. Experimental evaluations demonstrate that our method outperforms existing solutions in scalability, efficiency, and co-cluster identification quality, particularly in high-dimensional and heterogeneous data scenarios. Specifically, our extensive evaluations show that \emph{MPHMCo} achieves substantial improvements, with a significant reduction in computation time—approximately 83\% for dense matrices and up to 30\% for sparse matrices.
 \end{abstract}
 
 \begin{IEEEkeywords}
