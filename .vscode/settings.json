@@ -24,6 +24,13 @@
                 "pdflatex",
                 "pdflatex"
             ]
+        },
+        {
+            "name": "pdf-pdflatex",
+            "tools": [
+                "pdflatex",
+                "pdflatex"
+            ]
         }
     ],
     "latex-workshop.latex.tools": [
