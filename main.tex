@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Thursday, 6th February 2025 10:13:32 am
+ % Last Modified: Friday, 7th February 2025 8:52:20 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -186,66 +186,83 @@ In summary, the main contributions of this paper are:
 The remainder of this paper is organized as follows. Section \Cref{sec:related_work} discusses related work in the field of co-clustering and parallel computing. Section \Cref{sec:problem_formulation} presents the mathematical formulation and problem statement of co-clustering. Section \Cref{sec:proposed_model} details our proposed scalable co-clustering method.
 Section \Cref{sec:experiment} presents the experimental evaluation of our method. Section \Cref{sec:conclusion} concludes the paper and outlines future research directions. The theoretical analysis, including error bounds, complexity analysis, and optimality conditions, is provided in \Cref{sec:appendix_theoretical_analysis}.
 
-
-\section{Problem Formulation}
+\section{Preliminaries and Problem Statement}
 \label{sec:problem_formulation}
+\subsection{Preliminaries}
+Co-clustering, also known as biclustering, discovers coherent substructures by simultaneously grouping rows and columns in data matrices. This technique has broad applications in recommendation systems, gene expression analysis, and document clustering, where identifying underlying local patterns is crucial for understanding complex relationships in the data.
 
-\subsection{Notations and Definitions}
-Let $\mathbf{A} \in \mathbb{R}^{m \times n}$ be a data matrix, where $m$ and $n$ denote the number of samples and features, respectively. We assume that there are $k$ row clusters and $d$ column clusters to be identified simultaneously, resulting in $k \times d$ co-clusters. Each element $a_{ij}$ represents the interaction (or similarity) between the $i$-th sample and the $j$-th feature.
+Given a data matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$ where $m$ and $n$ denote the number of samples and features respectively, each element $a_{ij}$ represents the interaction between the $i$-th sample and $j$-th feature. We denote the sets of row and column indices as $I = \{1,2,\ldots,m\}$ and $J = \{1,2,\ldots,n\}$ respectively. The set of discovered co-clusters is represented as $\mathcal{C} = \{\mathbf{C}_k\}_{k=1}^K$, where each $\mathbf{C}_k \subseteq I \times J$ represents a submatrix exhibiting coherent patterns. For any matrix $\mathbf{A}$, its Frobenius norm is defined as $\|\mathbf{A}\|_F = \sqrt{\sum_{i=1}^m \sum_{j=1}^n a_{ij}^2}$.
 
-We define:
-\begin{itemize}
-    \item $I = \{1,2,\ldots,m\}$ and $J = \{1,2,\ldots,n\}$ as the sets of row and column indices.
-    \item $\mathcal{C} = \{\mathbf{C}_1, \mathbf{C}_2, \ldots, \mathbf{C}_K\}$ as the set of discovered co-clusters, where each $\mathbf{C}_k \subseteq I \times J$ is a submatrix that exhibits coherent patterns.
-    \item $\mathbf{Y} \in \mathbb{R}^{n \times c}$ as the indicator matrix, where each row contains exactly one element equal to 1 and all other elements equal to 0.
-    \item $\|\mathbf{A}\|_F = \sqrt{\sum_{i=1}^m \sum_{j=1}^n a_{ij}^2}$ as the Frobenius norm of matrix $\mathbf{A}$.
-\end{itemize}
+Our approach is grounded in two fundamental theorems from matrix analysis that establish the theoretical basis for discovering co-clusters through matrix partitioning. The first theorem, Low-Rank Approximation, establishes that co-clusters, as coherent substructures, can be effectively approximated by low-rank matrices:
 
-\subsection{Mathematical Formulation of Co-clustering}
-Co-clustering is a method designed to simultaneously group a set of rows and columns in a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, where $M$ denotes the number of features or variables and $N$ denotes the number of samples or objects. Each element $a_{ij}$ in the matrix at the $(i, j)$-th position represents the relationship or measurement between the $i$-th sample and the $j$-th feature. The primary goal of co-clustering is to identify subsets of rows ($I\subseteq \{1, 2, \ldots, M\}$) and columns ($J\subseteq \{1, 2, \ldots, N\}$) into homogenous submatrices, $\mathbf{A}_{I, J}$, that exhibit distinctive patterns or uniform characteristics, thus forming coherent co-clusters~\cite{zhao2017DetectionCorrelatedCoclusters}. The objective is to partition $\mathbf{A}$ into $k$ row clusters and $d$ column clusters, resulting in $k \times d$ distinct co-clusters. Note that if we find all low-rank submatrices, and after evaluating its Pearson correlation coefficient, we can find the co-clusters~\cite{zhao2016IdentifyingMultidimensionalCoclusters}. When rows and columns are optimally reordered, $\mathbf{A}$ can be visualized as a blocked-matrix, where each block represents a co-cluster with higher similarity within than between blocks as show in \Cref{fig:cocluster}.
+\begin{theorem}[Low-Rank Approximation\cite{eckart1936ApproximationOneMatrix}]
+    For any matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$, its best rank-r approximation in Frobenius norm is given by truncating its singular value decomposition to the top r singular values:
+    \begin{equation}
+        \min_{\text{rank}(\hat{\mathbf{A}})=r} \|\mathbf{A} - \hat{\mathbf{A}}\|_F = \|\mathbf{A} - \sum_{i=1}^r \sigma_i \mathbf{u}_i\mathbf{v}_i^T\|_F
+    \end{equation}
+    where $\sigma_i$, $\mathbf{u}_i$, and $\mathbf{v}_i$ are the i-th singular value and vectors of $\mathbf{A}$.
+\end{theorem}
 
-To evaluate if a submatrix $\mathbf{A}_{I, J}$ forms a coherent co-cluster, we define a score function \( f(\mathbf{A}_{I, J}) \) that quantifies the homogeneity of the submatrix.
+The second theorem, Rank Monotonicity, guarantees that low-rank structures (co-clusters) are preserved in submatrices, providing the theoretical foundation for our divide-and-conquer approach:
+
+\begin{theorem}[Rank Monotonicity\cite{horn1985MatrixAnalysis}] \label{thm:rank_monotonicity}
+    For any matrix $\mathbf{A}$ and its submatrix $\mathbf{A}'$, we have:
+    \begin{equation}
+        \text{rank}(\mathbf{A}') \leq \text{rank}(\mathbf{A})
+    \end{equation}
+\end{theorem}
+
+This property provides a theoretical guarantee that when we partition a matrix containing low-rank structures, these patterns remain discoverable within the resulting submatrices. Building on this foundation, co-clustering aims to identify groups of rows and columns that form relatively low-rank submatrices in a data matrix. Such submatrices, which we refer to as co-clusters, often represent the core relationships or patterns within high-dimensional datasets. In practice, however, large and intricate data can obscure these low-rank structures, making them challenging to detect through a single global procedure. Dividing the dataset into smaller submatrices can be highly beneficial for revealing localized low-rank patterns, since each submatrix—being smaller—tends to have an even lower rank (or be easier to approximate by low-rank factors). Many existing techniques, such as singular value decomposition or non-negative matrix factorizations, work more efficiently and accurately on these smaller blocks.
+
+To quantify the coherence of potential co-clusters and guide the discovery process, we introduce the Singular Value Ratio Score:
 
 \begin{definition}[Singular Value Ratio Score]
-    \label{def:co_cluster}
-    Consider a matrix \(\mathbf{A} \in \mathbb{R}^{M \times N}\). The Singular Value Ratio Score is defined as follows:
-    \begin{itemize}
-        \item For a given submatrix \(\mathbf{A}\), the Singular Value Ratio Score is given by:
-              \begin{equation}
-                  s(\mathbf{A}) = \frac{s_1}{s_2},
-              \end{equation}
-              where \(s_1\) is the largest singular value of \(\mathbf{A}\) and \(s_2\) is the second largest singular value of \(\mathbf{A}\).
-        \item For a given submatrix \(\mathbf{A}\), the normalized Singular Value Ratio Score is defined as:
-              \begin{equation}
-                  S(\mathbf{A}) = \frac{s(\mathbf{A})}{\|\mathbf{A}\|_F},
-              \end{equation}
-              where \(\|\mathbf{A}\|_F\) denotes the Frobenius norm of \(\mathbf{A}\).
-    \end{itemize}
+    For a matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, the score measures the dominance of the primary singular value:
+    \begin{equation}
+        s(\mathbf{A}) = \frac{s_1}{s_2}
+    \end{equation}
+    where $s_1$, $s_2$ are the largest and second largest singular values. The normalized score accounts for matrix size:
+    \begin{equation}
+        S(\mathbf{A}) = \frac{s(\mathbf{A})}{\|\mathbf{A}\|_F}
+    \end{equation}
+    A higher score indicates stronger co-cluster coherence.
 \end{definition}
 
-\subsection{Original Co-Clustering Problem}
-Co-clustering can be formulated as a constrained optimization problem. Given a normalized similarity matrix $\mathbf{S}$ derived from $\mathbf{A}$, we seek to minimize:
-\begin{equation}
-    \label{eq:objective}
-    \min_{\mathbf{F}^T \mathbf{F} = \mathbf{I}} J(\mathbf{F}) = -\text{Tr}\left(\mathbf{F}^T \mathbf{D}_{\mathbf{A}}^{-1/2}\mathbf{A}\mathbf{D}_{\mathbf{A}}^{-1/2}\mathbf{F}\right)
-\end{equation}
-where:
-\begin{itemize}
-    \item $\mathbf{D}_{\mathbf{A}}$ is a degree-like diagonal matrix
-    \item $\mathbf{F}$ is the cluster indicator matrix subject to orthogonality constraints
-    \item $\text{Tr}(\cdot)$ denotes the matrix trace operator
-\end{itemize}
+\subsection{Problem Statement}
+Modern applications increasingly involve massive datasets where both dimensions exceed millions ($m,n \gg 10^6$). At this scale, traditional co-clustering methods become computationally infeasible due to their inherent complexity. Computing and manipulating the similarity matrix requires $O(mn)$ memory, while the eigendecomposition demands $O(mn\min(m,n))$ operations.
 
-The objective seeks a partitioning that maximizes coherence within co-clusters while minimizing inter-cluster overlaps. This can be equivalently expressed as a graph partitioning problem:
+The fundamental challenge lies in developing a scalable co-clustering framework that maintains solution quality while operating within practical computational constraints. Formally, given a large-scale data matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$, our objective is to discover a set of co-clusters $\mathcal{C} = \{\mathbf{C}_k\}_{k=1}^K$ that satisfies:
+
 \begin{equation}
-    \min_{\mathbf{Y} \in \text{Ind}} \sum_{l=1}^c \frac{\mathbf{y}_l^T \mathbf{L}_\mathbf{A}\mathbf{y}_l}{\mathbf{y}_l^T \mathbf{D}_\mathbf{A} \mathbf{y}_l},
+    \begin{aligned}
+        \min_{\mathcal{C}} & \sum_{k=1}^K \|\mathbf{A}_{I_k,J_k} - \mathbf{U}_k\mathbf{V}_k^T\|_F^2 \\
+        \text{s.t.}        & \quad S(\mathbf{C}_k) > \tau, \quad \forall k                          \\
+                           & \quad |I_k| \geq T_m, |J_k| \geq T_n, \quad \forall k                  \\
+                           & \quad \|\mathbf{A} - \hat{\mathbf{A}}\|_F \leq \delta                  \\
+                           & \quad P(\text{preserve significant co-clusters}) \geq 1 - \alpha
+    \end{aligned}
 \end{equation}
-where $\mathbf{L}_\mathbf{A} = \mathbf{D}_\mathbf{A} - \mathbf{A}$ is the graph Laplacian matrix.
+
+In this formulation, $I_k \subseteq \{1,...,m\}$ and $J_k \subseteq \{1,...,n\}$ index the rows and columns of co-cluster $k$, while $\mathbf{U}_k\mathbf{V}_k^T$ represents its low-rank approximation. The parameter $\tau$ ensures co-cluster quality through the singular value ratio score, and $T_m$, $T_n$ prevent trivial solutions by imposing minimum size requirements. The global approximation error between the original matrix $\mathbf{A}$ and its reconstructed approximation $\hat{\mathbf{A}}$ is bounded by $\delta$, while $\alpha$ represents the probability of failing to preserve significant co-clusters during the partitioning process.
+
+This formulation addresses three key aspects: solution quality through explicit error bounds and minimum co-cluster scores, theoretical guarantees on co-cluster preservation with probability at least $1-\alpha$, and scalability by enabling block matrix computation while maintaining proven error bounds. The optimization balances reconstruction accuracy with computational feasibility, ensuring the discovered co-clusters capture meaningful patterns in large-scale data.
 
 \section{The Scalable Co-clustering Method}
 \label{sec:proposed_model}
 
-In this section, we propose a scalable co-clustering method, called \emph{Divide-and-Merge Co-Clustering } (DiMergeCo), which is designed to handle large datasets by dividing the original matrix into smaller submatrices and subsequently merging local co-clustering results. The approach addresses the two core challenges of large-scale data analysis: scalability and accuracy. \Cref{fig:DiMergeCo_pipeline} shows a conceptual illustration of the framework, where each large dataset is split into multiple blocks for efficient parallel co-clustering. Once local results are obtained, a hierarchical merging step refines and unifies these partial solutions into a globally consistent set of co-clusters.
+\subsection{Overview}
+\label{subsec:overview}
+We propose DiMergeCo to address the fundamental challenges of analyzing large-scale datasets. Our approach is grounded in the observation that co-clusters represent low-rank substructures within the data matrix, capturing core relationships or patterns within high-dimensional datasets. While splitting a large matrix into smaller blocks might potentially fragment co-clusters, our framework effectively addresses this challenge through a carefully designed probabilistic partitioning strategy with theoretical guarantees for preserving co-cluster structures across multiple scales.
+
+\Cref{fig:DiMergeCo_pipeline} shows the conceptual pipeline of our framework. The method consists of three key components, each designed to address specific challenges while maintaining theoretical guarantees.
+
+First, we introduce a probabilistic matrix partitioning algorithm that divides large matrices into smaller, manageable submatrices. This algorithm is meticulously designed to ensure co-cluster integrity during division, addressing the risk of missing small or intricate co-clusters by estimating the likelihood of their identification. The model guarantees comprehensive data coverage and robust clustering results through theoretical bounds on detection probability.
+
+Second, each submatrix undergoes independent co-clustering analysis. Our framework is modular, allowing the integration of any advanced co-clustering technique that can reliably identify co-clusters above a certain size. This flexibility ensures that the method can be tailored to the unique characteristics of each submatrix, optimizing clustering results while maintaining theoretical guarantees of comprehensive and accurate clustering outcomes.
+
+Finally, we develop a novel hierarchical merging strategy that combines the co-clustering results from all submatrices into a coherent global solution. Unlike existing methods such as Non-negative Matrix Tri-Factorization (NMTF) or alternating row and column optimization approaches~\cite{wang2011FastNonnegativeMatrix}, our merging process has a bounded iteration count determined by the data size. This bounding leads to a predictable time frame for achieving the ideal result, ensuring both computational efficiency and solution quality.
+
+The complete procedure is detailed in \Cref{alg:method}. In the following sections, we detail these three core components: the large matrix partitioning algorithm (\Cref{subsec:large_matrix_partitioning}), the local co-clustering method (\Cref{subsec:local_co_clustering}), and the hierarchical merging strategy (\Cref{subsec:hierarchical_merging}). The theoretical foundations supporting these components are then presented in \Cref{sec:theoretical_foundations}, including convergence analysis and error bounds. Finally, we demonstrate the practical effectiveness of our approach through an MPI implementation for distributed computing environments in \Cref{subsec:mpi_implementation}.
 
 \begin{figure*}[t]
     \centering
@@ -254,35 +271,6 @@ In this section, we propose a scalable co-clustering method, called \emph{Divide
     \label{fig:DiMergeCo_pipeline}
 \end{figure*}
 
-\subsection{Motivation}
-\label{subsec:motivation}
-
-Our approach is grounded in a fundamental property of matrix algebra: any submatrix necessarily inherits a rank no greater than its parent matrix~\cite{horn1985MatrixAnalysis}. Formally, this can be stated as:
-
-\begin{theorem}[Rank Monotonicity of Submatrices]
-    \label{thm:rank_monotonicity}
-    For any matrix $A \in \mathbb{R}^{m \times n}$ and its submatrix $A'$, we have $\text{rank}(A') \leq \text{rank}(A)$.
-\end{theorem}
-
-This property provides a theoretical guarantee that when we partition a matrix containing low-rank structures, these patterns remain discoverable within the resulting submatrices. Building on this foundation, co-clustering aims to identify groups of rows and columns that form relatively low-rank submatrices in a data matrix. Such submatrices, which we refer to as co-clusters, often represent the core relationships or patterns within high-dimensional datasets. In practice, however, large and intricate data can obscure these low-rank structures, making them challenging to detect through a single global procedure. Dividing the dataset into smaller submatrices can be highly beneficial for revealing localized low-rank patterns, since each submatrix—being smaller—tends to have an even lower rank (or be easier to approximate by low-rank factors). Many existing techniques, such as singular value decomposition or non-negative matrix factorizations, work more efficiently and accurately on these smaller blocks.
-
-Although splitting the matrix might initially risk cutting through a co-cluster, our framework mitigates this concern by probabilistically ensuring that any sufficiently large or dense co-cluster remains intact in at least one block with high probability. This probabilistic assurance aligns with recent advances in dynamic partitioning strategies for distributed systems~\cite{huang2024EnergyAwareIntegratedNeural}, where adaptive resource allocation has proven critical for maintaining structural integrity under resource constraints. After local low-rank submatrices are discovered, a hierarchical merging procedure effectively reassembles partial co-clusters into cohesive global structures. This combination step reclaims the larger low-rank patterns and produces final co-clusters that capture coherent relationships across the original dataset. By coordinating local discovery of smaller low-rank blocks and merging them to form full co-clusters, the proposed approach both preserves essential structure and scales to large data.
-
-Unlike Co-ClusterD~\cite{cheng2015CoClusterDDistributedFramework}, which statically partitions matrices risking co-cluster fragmentation,.\emph{DiMergeCo}'s adaptive resizing (Lines 7--9, \Cref{alg:partitioning}) dynamically adjusts block dimensions to preserve co-clusters with probabilistic guarantees (\Cref{thm:probability_co_cluster_detection}).
-
-\subsection{Overview}
-\label{subsec:overview}
-Our method involves partitioning large matrices into smaller, manageable submatrices guided by a probabilistic model. This ensures that co-cluster integrity is maintained during division, addressing the risk of missing small or intricate co-clusters by estimating the likelihood of their identification. Consequently, the model guarantees comprehensive data coverage and robust clustering results.
-
-Each submatrix then undergoes independent co-clustering analysis. Our framework is modular, allowing the integration of any advanced co-clustering technique that can reliably identify co-clusters above a certain size. This flexibility ensures that the method can be tailored to the unique characteristics of each submatrix, optimizing clustering results.
-
-Additionally, a crucial theorem underpins our approach by guaranteeing the success probability of the framework. As long as the chosen co-clustering method effectively identifies all co-clusters above the specified size with high probability, our overall method maintains its theoretical guarantees of comprehensive and accurate clustering outcomes.
-
-Finally, a novel hierarchical merging strategy combines the co-clustering results from all submatrices into a coherent global solution. This integration provides fine-grained insights into each submatrix and enhances the overall accuracy and reliability of the co-clustering results.
-
-The hierarchical merging process iteratively combines co-clusters from the submatrices, ensuring that the final result is both comprehensive and consistent across the entire dataset. Unlike existing methods such as Non-negative Matrix Tri-Factorization (NMTF) or alternating row and column optimization approaches~\cite{wang2011FastNonnegativeMatrix}, our merging process has a bounded iteration count determined by the data size. This bounding leads to a predictable time frame for achieving the ideal result, ensuring computational efficiency.
-
-This multi-step approach not only improves scalability but also guarantees that the final co-clustering results are robust and reliable, even for very large datasets. The complete procedure is detailed in \Cref{alg:method}.
 
 \begin{algorithm}[!t]
     \caption{Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:method}
@@ -302,13 +290,14 @@ This multi-step approach not only improves scalability but also guarantees that 
     \end{algorithmic}
 \end{algorithm}
 
-In \Cref{sec:proposed_model}, we detail the three core components of DiMergeCo: the large matrix partitioning algorithm (\Cref{subsec:large_matrix_partitioning}), the local co-clustering method (\Cref{subsec:local_co_clustering}), and the hierarchical merging strategy (\Cref{subsec:hierarchical_merging}). Each component is designed to address specific challenges in large-scale co-clustering while maintaining theoretical guarantees. For completeness, we also present a graph-based spectral co-clustering variant that can be seamlessly integrated into our framework. The theoretical foundations supporting these components are then presented in \Cref{sec:theoretical_foundations}, including convergence analysis and error bounds. Finally, we demonstrate the practical effectiveness of our approach through an MPI implementation for distributed computing environments in \Cref{subsec:mpi_implementation}.
 
 \subsection{Large Matrix Partitioning}
 \label{subsec:large_matrix_partitioning}
 The primary challenge in co-clustering large matrices is the risk of losing meaningful co-cluster relationships when the matrix is partitioned into smaller submatrices. To address this, we introduce an optimal partitioning algorithm underpinned by a probabilistic model. This model is meticulously designed to navigate the complexities of partitioning, ensuring that the integrity of co-clusters is maintained even as the matrix is divided. The objective of this algorithm is twofold: to determine the optimal partitioning strategy that minimizes the risk of fragmenting significant co-clusters and to define the appropriate number of repartitioning iterations needed to achieve a desired success rate of co-cluster identification.
 
-\subsubsection{Partitioning and Repartitioning Strategy based on the Probabilistic Model}
+Our solution comprises three key components: a fundamental partitioning strategy based on probabilistic modeling, theoretical foundations ensuring detection guarantees, and a practical implementation framework. We present these components in the following subsections.
+
+\subsubsection{Partitioning Strategy based on the Probabilistic Model}
 
 Our probabilistic model serves as the cornerstone of the partitioning algorithm. It assures all co-clusters above a demarcated size threshold are identified with a high probability, guiding the partitioning process to minimize the risk of losing critical co-cluster relationships. The model is based on the following assumptions:
 
@@ -334,6 +323,8 @@ where $P(\omega_k)$ is the probability of the failure of identifying co-cluster 
 \Cref{eq:prob_of_identifying_all_co_clusters} is central to our algorithm for partitioning large matrices for co-clustering, providing a probabilistic model that informs and optimizes our partitioning strategy to preserve co-cluster integrity. It mathematically quantifies the likelihood of identifying all relevant co-clusters within partitioned blocks, guiding us to mitigate risks associated with partitioning that might fragment vital co-cluster relationships.
 
 Based on \Cref{eq:prob_of_identifying_all_co_clusters}, we can establish a constraint between the partitioning time $T_p$ and the partition solution $Par(\{\phi_i\}_{i=1}^m, \{\psi_j\}_{j=1}^n)$, ensuring that the partitioning strategy adheres to a predetermined tolerance success rate, thereby minimizing the risk of co-cluster fragmentation.
+
+Having established the basic probability bounds, we now present the theoretical foundations that guarantee the effectiveness of our partitioning approach.
 
 \subsubsection{Probabilistic Model for Partitioning}
 \label{subsec:probabilistic_model}
@@ -361,10 +352,12 @@ Building on \Cref{thm:joint_probability}, this theorem provides a robust framewo
 
 These theoretical results directly inform our partitioning strategy by providing a mathematical foundation for selecting block sizes and determining the number of required partitioning iterations. As guaranteed by \Cref{thm:rank_monotonicity}, this partitioning strategy preserves the essential low-rank structures within the data, while the probabilistic bounds derived from \Cref{thm:probability_co_cluster_detection} ensure that co-clusters are detected with high probability.
 
+With these theoretical guarantees in place, we now turn to the practical implementation of our partitioning strategy.
+
+
 \subsubsection{Practical Implementation of the Partitioning Strategy}
 \label{subsec:practical_implementation}
-
-The probabilistic model in \Cref{eq:prob_of_identifying_all_co_clusters} governs the trade-off between partitioning parameters and co-cluster detection reliability. To operationalize this, we formulate a constrained optimization problem:
+The probabilistic model in \Cref{eq:prob_of_identifying_all_co_clusters} governs the trade-off between partitioning parameters and co-cluster detection reliability. To operationalize this, we first formulate a constrained optimization problem:
 \begin{equation}
     \begin{aligned}
          & \underset{\{\phi_i\}, \{\psi_j\}, T_p}{\text{Maximize}}
@@ -403,11 +396,19 @@ where $\epsilon = 0.01$ prevents degenerate blocks, $\phi = \frac{1}{m}\sum \phi
     \end{algorithmic}
 \end{algorithm}
 
-The algorithm begins by initializing the minimum number of blocks ($m,n$) required to prevent co-cluster fragmentation below size $T_m \times T_n$ (Line 1). Uniform block sizes are set as $\lceil M/m \rceil \times \lceil N/n \rceil$ (Line 2). Detectability parameters $s^{(k)}, t^{(k)}$ are computed for each co-cluster using \Cref{thm:joint_probability} (Line 3), and the initial detection probability $P$ is calculated (Line 4).
+To solve this optimization problem efficiently, we propose an adaptive matrix partitioning algorithm that iteratively refines the partition parameters. The algorithm begins with an initialization phase where we initialize the minimum number of blocks ($m,n$) required to prevent co-cluster fragmentation below size $T_m \times T_n$ (Line 1). Uniform block sizes are set as $\lceil M/m \rceil \times \lceil N/n \rceil$ (Line 2). Detectability parameters $s^{(k)}, t^{(k)}$ are computed for each co-cluster using \Cref{thm:joint_probability} (Line 3), and the initial detection probability $P$ is calculated (Line 4).
 
-The core loop (Lines 5--15) iteratively adjusts block sizes to meet the success probability threshold $P_{\text{thresh}}$. For each co-cluster $C_k$ exceeding size $T_m \times T_n$, overlapping blocks $\mathcal{B}_k$ are identified (Line 7), and their dimensions are expanded proportionally to $C_k$'s size relative to the full matrix (Lines 8--9). Block sizes are then redistributed proportionally to maintain $\sum \phi_i = M$ and $\sum \psi_j = N$ (Line 10). If $P$ remains below $P_{\text{thresh}}$, $T_p$ is increased by the minimum $\Delta T$ required to close the gap (Lines 12--13).
 
-The $\mathcal{O}(T_p \cdot \max(m,n))$ complexity arises from dynamic programming in block redistribution (Line 10), where residual dimensions are allocated iteratively. Parallel processing distributes submatrix co-clustering across blocks, leveraging the independence of local optimizations. By \Cref{thm:probability_co_cluster_detection}, the probability that any co-cluster exceeding $T_m \times T_n$ is preserved in at least one of $T_p$ iterations is $1 - (1 - P)^K$, making fragmentation exponentially unlikely as $T_p$ grows. This enables efficient analysis of $10^6 \times 10^6$ matrices by balancing probabilistic safety with computational tractability.
+During the main optimization phase, the core loop iteratively adjusts block sizes to meet the success probability threshold $P_{\text{thresh}}$. For each co-cluster $C_k$ exceeding size $T_m \times T_n$, overlapping blocks $\mathcal{B}_k$ are identified (Line 7), and their dimensions are expanded proportionally to $C_k$'s size relative to the full matrix (Lines 8--9).
+
+The final phase focuses on convergence and probability optimization. After each adjustment cycle, the algorithm redistributes block sizes to maintain the original matrix dimensions and updates the detection probability. If the probability remains below the desired threshold $P_{\text{thresh}}$, the sampling iterations $T_p$ are incrementally increased, but bounded by $T_{\text{max}}$ to ensure computational feasibility(Lines 12--13).
+
+
+The algorithm achieves $\mathcal{O}(T_p \cdot \max(m,n))$ complexity through efficient dynamic programming in the block redistribution step. When implemented in a parallel processing environment, the submatrix co-clustering can be distributed across multiple processors, leveraging the independence of local optimizations.
+By \Cref{thm:probability_co_cluster_detection}, we can guarantee that the probability that any co-cluster exceeding $T_m \times T_n$ is preserved in at least one of $T_p$ iterations is $1 - (1 - P)^K$, making fragmentation exponentially unlikely as $T_p$ grows. This enables efficient analysis of $10^6 \times 10^6$ matrices by balancing probabilistic safety with computational tractability.
+
+Having established an efficient partitioning strategy, we next explore how these partitioned submatrices are processed through local co-clustering methods to identify meaningful patterns within each block.
+
 
 \subsection{Local Co-clustering on Submatrices}
 \label{subsec:local_co_clustering}
@@ -433,6 +434,7 @@ The pseudocode for this process can be formalized as follows:
         \RETURN Local co-clusters with scores $\{(\mathbf{C}_k, s_k)\}$
     \end{algorithmic}
 \end{algorithm}
+
 
 The effectiveness of this local co-clustering step is supported by matrix approximation theory. When a large matrix exhibits natural block structures or can be approximated by such structures, processing smaller submatrices independently while maintaining solution quality becomes theoretically justified. The local co-clustering produces solutions that are $\epsilon_{(i,j)}$-optimal relative to their local optima, contributing to the global approximation guarantees established in the theoretical foundations.
 
@@ -489,21 +491,24 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
     \end{algorithmic}
 \end{algorithm}
 
-\section{Theoretical Foundations}
+\section{Theoretical Analysis}
 \label{sec:theoretical_foundations}
 DiMergeCo's partition-then-merge approach is supported by matrix approximation theory, probabilistic guarantees, and convergence arguments. First, if each submatrix reliably approximates the original data in its corresponding region, the aggregate of local solutions will reconstruct global structures with bounded error. Second, repeating or refining the partition helps ensure that large or dense co-clusters appear intact in at least one block with high probability. Finally, the merging process converges because it only combines co-clusters if their union does not reduce the overall quality; this monotonic improvement criterion forces a finite number of merges, thus stabilizing at a locally optimal solution.
 Throughout this section, $\delta_{(i,j)}$ denotes the maximum Frobenius-norm difference between the true submatrix $\mathbf{A}\lbrack I_i,J_j\rbrack $ and its local approximation $\mathbf{B}_{(i,j)}$. Formally, $\|\mathbf{A}\lbrack I_i, J_j\rbrack - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$. Meanwhile, $\epsilon_{(i,j)}$ captures the suboptimality of the local co-clustering objective relative to the local optimum, i.e., $J(\mathbf{F}_{(i,j)}) \leq J(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$, where $\mathbf{F}_{(i,j)}^*$ is the local optimal cluster indicator for block $(i,j)$.
+
 \subsection{Matrix Approximation Theory}
 The cornerstone of our approach lies in matrix approximation theory, which provides mathematical guarantees for our divide-and-conquer strategy. When a large matrix exhibits natural block structures or can be approximated by such structures, we can process smaller submatrices independently while maintaining solution quality.
 \begin{theorem}[Block Matrix Approximation]
     For any $\delta > 0$, there exists a partitioning scheme dividing $\mathbf{A}$ into $p \times q$ blocks ${\mathbf{B}{(i,j)}}$ such that each block $\mathbf{B}{(i,j)}$ captures the local structure of $\mathbf{A}$, and the reconstructed approximation $\hat{\mathbf{A}}$ satisfies $|\mathbf{A} - \hat{\mathbf{A}}|_F \le \delta$ where $\hat{\mathbf{A}}$ is reconstructed from the merged local solutions.
 \end{theorem}
 Proof Sketch: Consider a low-rank approximation $\mathbf{A} \approx \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ from truncated SVD. By selecting appropriate partition dimensions $(\phi_i \times \psi_j)$, we ensure each co-cluster appears substantially intact in at least one block. The Davis-Kahan theorem and matrix perturbation theory then yield the error bound. Full proof appears in Appendix A.
+
 \subsection{Error Bounds for Submatrix Co-Clustering}
 \begin{theorem}[Local Solution Quality]
     Let each block $\mathbf{B}{(i,j)}$ yield a local solution $\mathbf{F}{(i,j)}$ with $\epsilon_{(i,j)}$-optimality relative to its local optimum. If $|\mathbf{A}\lbrack I_i,J_i\rbrack - \mathbf{B}{(i,j)}|F \le \delta{(i,j)}$ for each block, then the merged global solution $\mathbf{F}'$ satisfies $|\mathbf{F}' - \mathbf{F}^*|F \le \sum{i,j} \epsilon{(i,j)} + g({\delta_{(i,j)}})$, where $\mathbf{F}^*$ is the global optimal indicator matrix and $g$ is a mild function depending on approximation qualities of all blocks.
 \end{theorem}
 Proof Sketch: Consider global objective $J(\mathbf{F})$ and its minimizer $\mathbf{F}^*$. The local optimality condition and block approximation error bounds combine via triangle inequality to yield the global deviation bound. Full proof appears in Appendix B.
+
 \subsection{Convergence Analysis}
 \begin{theorem}[Global Convergence]
     Under mild conditions on local solution quality and partitioning, with probability at least $1-\alpha$, the iterative merging converges to a local minimum of the original objective, and the probability of missing any significant co-cluster (larger than $T_m \times T_n$) is bounded by $P(\text{miss}) \le \exp(-\gamma T_p)$ where $T_p$ is the number of random partitions and $\gamma > 0$ depends on the partition parameters.
@@ -562,7 +567,7 @@ The proposed DiMergeCo framework offers a scalable and robust solution for co-cl
     \end{tabular}
 \end{table}
 
-\textbf{Datasets.}
+\subsubsection{Datasets}
 The experiments were conducted using three distinct datasets (see \Cref{tab:dataset-statistics}) to demonstrate the versatility and robustness of our method:
 \begin{itemize}
     \item \textbf{CLASSIC4}: A classic small dataset used for benchmarking co-clustering algorithms, consisting of document vectors for text analysis.
@@ -570,40 +575,42 @@ The experiments were conducted using three distinct datasets (see \Cref{tab:data
     \item \textbf{RCV1-Large}: A larger dataset used to test the scalability of our method, including a vast array of document vectors for high-dimensional data analysis.
 \end{itemize}
 
-\textbf{Implementation Details.}
+\subsubsection{Implementation Details.}
 All experiments were performed on a computing cluster with the following specifications: \texttt{Intel Xeon E5-2670 v3 @ 2.30GHz processors, 128GB RAM}, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler.
 
-\textbf{Compared Methods.}
-The experiments followed the procedure outlined in \Cref{alg:method}. The proposed method was compared with the following state-of-the-art co-clustering methods:
+\subsubsection{Compared Methods}
+Our experimental evaluation compares six co-clustering methods, each with distinct characteristics and capabilities:
+
 \begin{itemize}
-    \item \textbf{Spectral Co-Clustering (SCC)}~\cite{dhillon2001CoclusteringDocumentsWords}
-    \item \textbf{Parallel Non-negative Matrix Tri-Factorization (PNMTF)}~\cite{chen2023ParallelNonNegativeMatrix}
-    \item \textbf{Deep Co-Clustering (DeepCC)}~\cite{dongkuanxu2019DeepCoClustering}
+    \item \textbf{Spectral Co-Clustering (SCC)}~\cite{dhillon2001CoclusteringDocumentsWords}:
+          A classical approach using singular value decomposition. While effective for moderate-sized matrices, SCC faces scalability challenges with large-scale data due to its $O(mn)$ computational complexity.
+
+    \item \textbf{Parallel Non-negative Matrix Tri-Factorization (PNMTF)}~\cite{chen2023ParallelNonNegativeMatrix}:
+          A distributed computing approach that decomposes co-clustering into parallel subproblems, representing current state-of-the-art in parallel processing capabilities for large-scale matrices.
+
+    \item \textbf{Orthogonal Non-negative Matrix Tri-Factorization (ONMTF)}~\cite{ding2006OrthogonalNonnegativeMatrix}:
+          Enforces orthogonality constraints in matrix factorization, providing interpretable clustering results while maintaining computational efficiency.
+
+    \item \textbf{Fast Non-negative Matrix Tri-Factorization (FNMTF)}~\cite{kim2011FastNonnegativeMatrix}:
+          Accelerates NMTF through optimized update rules, achieving faster convergence on moderate-scale datasets.
+
+    \item \textbf{DiMergeCo-SCC}:
+          Our proposed method DiMergeCo combining matrix partitioning with spectral co-clustering. It extends SCC through probabilistic partitioning and hierarchical merging, enabling parallel processing while preserving co-cluster integrity.
+
+    \item \textbf{DiMergeCo-PNMTF}:
+          Our proposed method DiMergeCo combining with PNMTF. It achieves enhanced parallelization through two-level distribution, particularly effective for large-scale datasets.
 \end{itemize}
 
-Notably:
-\begin{enumerate}
-    \item PNMTF is one of the most efficient co-clustering algorithms in the state-of-the-art.
-    \item All our experiments show that DeepCC cannot process all selected datasets because the dataset size exceeds DeepCC's processing limit.
-\end{enumerate}
-
-\textbf{Our Methods.} Our proposed scalable co-cluster method is applied along with SCC and PNMTF to demonstrate the enhanced performance and capability of handling large datasets:
-\begin{itemize}
-    \item \textbf{Matrix Partitioned and Hierarchical Co-Cluster Merging with Spectral Co-Clustering (DiMergeCo-SCC)}
-    \item \textbf{Matrix Partitioned and Hierarchical Co-Cluster Merging with Parallel Non-negative Matrix Tri-Factorization (DiMergeCo-PNMTF)}
-\end{itemize}
-
-\textbf{Evaluation Metrics.}
+\subsubsection{Evaluation Metrics}
 The effectiveness of the co-clustering was measured using two widely accepted metrics:
 \begin{itemize}
     \item \textbf{Normalized Mutual Information (NMI)}: Quantifies the mutual information between the co-clusters obtained and the ground truth, normalized to \(\lbrack 0,1 \rbrack \) range, where 1 indicates perfect overlap.
     \item \textbf{Adjusted Rand Index (ARI)}: Adjusts the Rand Index for chance, providing a measure of the agreement between two clusters, with values ranging from $-1$ (complete disagreement) to 1 (perfect agreement).
 \end{itemize}
 
-\subsection{Results}
-The results of the experiments are presented in \Cref{tab:running-time} and \Cref{tab:evaluation-metrics}, showcasing the proposed scalable co-clustering methods, DiMergeCo-SCC and DiMergeCo-PNMTF, in comparison with traditional methods such as SCC and PNMTF.
 
-\subsubsection{Running Time Comparison}
+\subsection{Effectiveness Analysis}
+\subsubsection{Computational Efficiency Comparison}
 \Cref{tab:running-time} provides a clear demonstration of the efficiency variations among different co-clustering methods across several datasets. The DiMergeCo-SCC method stands out in terms of efficiency on the CLASSIC4 dataset with a significantly lower running time of only 112.5 seconds, representing an 83\% reduction compared to the SCC method. This suggests a robust performance when handling smaller or less complex data structures. Conversely, for the larger and presumably more complex Amazon and RCV1-Large datasets, the DiMergeCo-PNMTF method displays impressive efficiency, particularly for the Amazon dataset with a running time of 3,028 seconds, achieving a 30\% reduction in computation time compared to other methods. This performance indicates that the DiMergeCo-PNMTF might be particularly optimized for larger datasets or those with a specific structure that benefits from the method's parallel processing capabilities. The asterisks (*) denote the inability of certain methods to process the larger datasets, highlighting a critical limitation in scalability which is crucial for practical applications where data sizes can vary widely.
 
 
@@ -632,10 +639,12 @@ The results of the experiments are presented in \Cref{tab:running-time} and \Cre
     \end{tablenotes}
 \end{table*}
 
-\subsubsection{Evaluation Metrics Comparison}
-\Cref{tab:evaluation-metrics} contrasts the effectiveness of various co-clustering methods by utilizing two metrics: Normalized Mutual Information (NMI) and Adjusted Rand Index (ARI). These metrics are valuable for assessing the quality of the clusters formed by each method. In the CLASSIC4 dataset, DiMergeCo-SCC achieves the highest NMI and ARI scores, suggesting that this method not only operates efficiently but also produces superior cluster quality. The strength of DiMergeCo-SCC is further highlighted in its performance on the RCV1-Large dataset, where it again tops the charts in both metrics. This consistency across different datasets underscores its robustness as a clustering solution. In contrast, the FNMTF method, despite not always achieving top scores, does show the best results in the Amazon dataset for NMI and ARI. This might indicate niche effectiveness, potentially linked to specific data characteristics or distribution in this dataset. Overall, these tables collectively inform about the trade-offs between performance efficiency and clustering effectiveness, which are key considerations for choosing a suitable method for practical data analysis tasks.
 
-\subsection{Parallel Efficiency Evaluation}
+\subsubsection{Clustering Quality Comparison}
+Our experimental evaluation compares the effectiveness of different co-clustering methods using two widely accepted metrics: NMI and ARI (\Cref{tab:evaluation-metrics}). On the CLASSIC4 dataset, DiMergeCo-SCC achieves superior performance with the highest NMI (0.8650) and ARI (0.7763) scores, demonstrating its effectiveness on moderate-sized datasets. The method's strength is further validated on the larger RCV1-Large dataset, where it maintains high performance (NMI: 0.8349, ARI: 0.7576), significantly outperforming other methods. For the Amazon dataset, DiMergeCo-SCC again shows strong performance (NMI: 0.7676, ARI: 0.5845), indicating its robustness across different data scales and types.
+
+
+\subsection{Scalability Analysis}
 To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000~\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large~\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. The efficiency metric was normalized to 1 for a single node and measured for the increased number of nodes. The results, plotted in \Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
 
 % include images/efficiency.jpg
@@ -648,20 +657,16 @@ To evaluate the efficiency of our proposed co-clustering method, we conducted ex
 
 \Cref{fig:efficiency} presents the efficiency of our proposed co-clustering method across different datasets as the number of nodes increases. The datasets considered are Amazon 1000, CLASSIC4, and RCV1-Large. The x-axis represents the number of nodes, while the y-axis indicates the efficiency, normalized to the baseline (single node) efficiency of 1.
 
-\subsubsection{Amazon 1000 Dataset}
-The efficiency starts at 1 for a single node and gradually decreases to 0.39 as the number of nodes increases to 24. The decrease in efficiency is relatively smooth, indicating that our method scales well but exhibits some overhead as more nodes are added. Despite the reduction in efficiency, the method maintains more than 39\% efficiency with 24 nodes, highlighting the robustness of the algorithm even at higher parallelization levels.
 
-\subsubsection{CLASSIC4 Dataset}
-The efficiency for CLASSIC4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
+For Amazon 1000 Dataset, the efficiency starts at 1 for a single node and gradually decreases to 0.39 as the number of nodes increases to 24. The decrease in efficiency is relatively smooth, indicating that our method scales well but exhibits some overhead as more nodes are added. Despite the reduction in efficiency, the method maintains more than 39\% efficiency with 24 nodes, highlighting the robustness of the algorithm even at higher parallelization levels.
 
-\subsubsection{RCV1-Large Dataset}
-Starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
+For CLASSIC4 Dataset, the efficiency for CLASSIC4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
 
-\subsection{Optimal Partitioning}
+For RCV1-Large Dataset, starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
 
-We further analyzed the optimization of partition settings to determine the ideal balance between the number of partitions, the number of repetitions, and the computation time. The datasets were divided into varying numbers of partitions: 25, 36, 49, 81, 100, and 121. For each partition setting, the required number of repetitions and the corresponding computation time (in seconds) were recorded. The experiment aimed to identify the optimal partition setting that minimizes computation time while maintaining a feasible number of repetitions. The results, shown in \Cref{fig:optimisation}, highlight the optimal setting at 100 partitions, where computation time is minimized, and the number of repetitions remains stable.
+\subsection{Partitioning Parameter Analysis}
+We analyzed the optimization of partition settings to determine the ideal balance between the number of partitions, the number of repetitions, and the computation time. The datasets were divided into varying numbers of partitions: 25, 36, 49, 81, 100, and 121. For each partition setting, the required number of repetitions and the corresponding computation time (in seconds) were recorded. The experiment aimed to identify the optimal partition setting that minimizes computation time while maintaining a feasible number of repetitions. The results, shown in \Cref{fig:optimisation}, highlight the optimal setting at 100 partitions, where computation time is minimized, and the number of repetitions remains stable.
 
-%include images/optimisation.jpg
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\linewidth]{optimisation.jpg}
@@ -669,33 +674,29 @@ We further analyzed the optimization of partition settings to determine the idea
     \label{fig:optimisation}
 \end{figure}
 
-\Cref{fig:optimisation} illustrates the relationship between the number of partitions, the number of repetitions, and the computation time (in seconds). The x-axis represents the number of partitions, while the primary y-axis indicates the number of repetitions, and the secondary y-axis shows the computation time in seconds. The plot provides valuable insights into how our proposed method performs under varying partition settings.
+\subsubsection{Parameter Settings and Optimization}
+\Cref{fig:optimisation} illustrates the relationship between the number of partitions, the number of repetitions, and the computation time (in seconds). The x-axis represents the number of partitions, while the primary y-axis indicates the number of repetitions, and the secondary y-axis shows the computation time in seconds.
 
-\subsubsection{Repetition Count}
 The blue line represents the number of repetitions needed for different partition counts. As the number of partitions increases from 25 to 121, the number of repetitions initially rises, peaking at 4 for partitions 49, 81, and 100 before slightly increasing to 5 at 121 partitions. This trend suggests that more partitions generally require a higher number of repetitions to achieve optimal co-clustering, but there is a point of diminishing returns.
 
-\subsubsection{Computation Time}
 The orange line shows the computation time corresponding to different partition counts. There is a noticeable decrease in computation time as the number of partitions increases from 25 to 100, with the time dropping from 3,701 seconds to 512 seconds. However, the computation time slightly increases to 665 seconds at 121 partitions. This indicates that while increasing the number of partitions initially improves computational efficiency, beyond a certain point, the overhead of managing more partitions outweighs the benefits.
 
-\subsubsection{Optimal Partition Setting}
+\subsubsection{Performance Impact Analysis}
 The red dashed line at 100 partitions highlights the theoretical optimal setting, where the computation time is minimized. At this setting, the number of repetitions required is stable at 4, and the computation time is at its lowest. This confirms that our theoretical analysis aligns with empirical results, validating the effectiveness of our partitioning strategy.
 
-\subsubsection{Balancing Partitions and Repetitions}
 The results indicate that there is an optimal balance between the number of partitions and the number of repetitions required. Too few partitions result in higher computation times due to the increased complexity within each partition, while too many partitions lead to increased overhead from managing numerous small partitions.
 
-\subsubsection{Efficiency and Scalability}
 The significant reduction in computation time as the number of partitions increases up to 100 demonstrates the scalability of our method. This efficiency gain is crucial for processing large-scale datasets, where computational resources and time are often limiting factors. The slight increase in computation time beyond 100 partitions suggests that there is an optimal range for partition counts that maximizes efficiency without incurring excessive overhead.
 
-\subsubsection{Practical Implications}
 The practical implication of these findings is that our proposed method can be effectively tuned for various datasets by adjusting the number of partitions. The theoretical optimal setting at 100 partitions provides a benchmark for achieving the best performance, but the method's flexibility allows for adjustments based on specific dataset characteristics and computational constraints.
 
 These experiments validated that our Matrix Partitioned and Hierarchical Co-Cluster Merging is an efficient and accurate approach to analyzing large data matrices. The method's innovative partitioning strategy and ensemble clustering technique offer a new direction for scalable and precise co-clustering in data analysis.
 
+
 \section{Related Work}
 \label{sec:related_work}
-\subsection{Co-clustering Models}
-
-The concept of \emph{biclustering}, a special case of co-clustering for two-dimensional (2D) data, where both the rows and columns of data are clustered simultaneously, was first introduced by Hartigan~\cite{hartigan1972DirectClusteringData} to analyze gene expression data. This pioneering approach recognized the importance of simultaneously considering multiple dimensions of data to uncover more nuanced patterns.
+\subsection{Classical Co-clustering Methods}
+The concept of \emph{biclustering}, a special case of co-clustering for two-dimensional data, where both the rows and columns of data are clustered simultaneously, was first introduced by Hartigan~\cite{hartigan1972DirectClusteringData} to analyze gene expression data. This pioneering approach recognized the importance of simultaneously considering multiple dimensions of data to uncover more nuanced patterns.
 
 Spectral Co-clustering with Singular Value Decomposition (SVD), introduced by Dhillon \textit{et al.}~\cite{dhillon2001CoclusteringDocumentsWords}, became widely adopted due to its straightforward implementation and effectiveness. This method leverages the mathematical properties of SVD to identify clusters by analyzing the principal components of the data matrix. Spectral co-clustering has since become a foundational technique, inspiring two main branches in co-clustering research: graph-based and matrix factorization-based approaches.
 
@@ -705,28 +706,26 @@ In contrast, Non-negative Matrix Tri-Factorization (NMTF)~\cite{long2005Cocluste
 
 Another innovative method, Deep Co-Clustering (DeepCC)~\cite{dongkuanxu2019DeepCoClustering}, combines the power of deep learning with traditional clustering techniques. DeepCC integrates deep autoencoders with Gaussian Mixture Models to improve the clustering of complex data. The autoencoders reduce the dimensionality of the data while preserving essential features, and the Gaussian Mixture Models identify clusters within this reduced space. Despite its advancements, DeepCC struggles with computational efficiency, particularly with diverse data types and iterative processes dependent on data sparsity. The deep learning components introduce additional layers of computation, which can be resource-intensive and time-consuming.
 
-\subsection{Parallelizing Co-clustering}
+\subsection{Scalable Co-clustering Methods}
+The emergence of big data has necessitated scalable co-clustering solutions, leading to developments in both distributed frameworks and parallel processing approaches. These advances aim to address the computational challenges inherent in processing massive datasets while maintaining clustering quality.
 
-To address the significant computational challenges posed by big data, parallel co-clustering methods have emerged as a vital solution. Parallelization leverages distributed computing frameworks to divide the computational load across multiple processors or machines, thereby improving scalability and efficiency.
+Co-ClusterD~\cite{cheng2015CoClusterDDistributedFramework} pioneered distributed co-clustering through Alternating Minimization Co-clustering (AMCC). While this approach enables parallel processing of data chunks, it faces fundamental challenges in maintaining convergence guarantees across distributed updates. The sequential dependencies in AMCC create processing bottlenecks, and communication overhead increases substantially with data dimensionality, limiting its effectiveness for very large datasets.
 
-Cheng \textit{et al.}~\cite{cheng2015CoClusterDDistributedFramework} introduced a distributed co-clustering framework, Co-ClusterD, which utilizes an Alternating Minimization Co-clustering (AMCC) algorithm with sequential updates. Co-ClusterD partitions the data into smaller chunks, which are processed in parallel, and then combines the results. However, this method faces challenges with guaranteed convergence. The iterative nature of AMCC, coupled with the need for sequential updates, can lead to inefficiencies and bottlenecks, particularly as the size and complexity of the data increase.
+Parallel Non-negative Matrix Tri-Factorization (PNMTF)~\cite{chen2023ParallelNonNegativeMatrix} represents a significant advancement in parallel co-clustering by distributing matrix factorization across computing nodes. However, several critical limitations persist in PNMTF and similar approaches. The reliance on centralized control threads creates processing bottlenecks, while synchronization requirements introduce significant communication overhead. Moreover, the number of potential relationships to evaluate grows exponentially with data size, further challenging scalability.
 
-While matrix factorization techniques have shown promise for co-clustering large datasets, scaling these algorithms for massive high-dimensional data remains an open challenge. Chen \textit{et al.}~\cite{chen2023ParallelNonNegativeMatrix} proposed a parallel non-negative matrix tri-factorization (PNMTF) method that distributes computation across multiple nodes to accelerate factorizations. PNMTF decomposes the original matrix into simpler, non-negative components, which are then processed in parallel. However, even these advanced methods encounter difficulties with extremely large datasets. The need to broadcast intermediate results and synchronize updates across nodes introduces significant communication overhead, which can negate the benefits of parallelization.
+Existing co-clustering algorithms~\cite{chen2023ParallelNonNegativeMatrix, cheng2015CoClusterDDistributedFramework} commonly rely on centralized processing for managing co-cluster statistics, creating bottlenecks that significantly limit their scalability. The dual-focus nature of co-clustering, which requires simultaneous optimization of row and column clusters, compounds these challenges by necessitating extensive relationship evaluations across the entire dataset.
 
-Existing co-clustering algorithms~\cite{chen2023ParallelNonNegativeMatrix, cheng2015CoClusterDDistributedFramework} rely on a central processing thread to handle complex tasks like managing co-cluster statistics. This centralization creates a bottleneck, significantly limiting their scalability and making them impractical for large-scale datasets. Additionally, the dual-focus analysis of co-clustering, which simultaneously optimizes row and column clusters, requires evaluating a vast number of potential relationships. This complexity can grow exponentially with the size of the data, making it impractical for large-scale applications.
+Our work addresses these limitations through a novel divide-and-conquer strategy that fundamentally differs from existing approaches. By employing probabilistically-guided matrix partitioning, we preserve co-cluster integrity while enabling fully distributed processing with minimal synchronization requirements. Our hierarchical merging strategy maintains global structure while operating locally, effectively eliminating centralized bottlenecks while maintaining theoretical guarantees for co-cluster preservation. This approach provides a scalable solution that maintains clustering quality even for extremely large datasets.
 
-In contrast, our proposed method adopts a divide-and-conquer strategy to overcome these limitations. By partitioning the input matrix into smaller submatrices, we reduce the dimensionality of each individual task, making them more manageable. Each submatrix is co-clustered in parallel, leveraging distributed computing resources to expedite the process. This technique reduces the complexity imposed by high dimensionality and minimizes the communication overhead associated with broadcasting and synchronization. The separate co-clustering results from each submatrix are then combined using a hierarchical merging algorithm to form the final co-clusters. This novel approach addresses the computational challenges inherent in co-clustering large-scale data and introduces a scalable solution tailored for big data.
 
 
 \section{Conclusion}
 \label{sec:conclusion}
-This paper presents a novel and scalable co-clustering method for large-scale datasets, leveraging a divide-and-conquer strategy to partition the input matrix into smaller submatrices for parallel processing, thereby significantly reducing computational overhead. Each submatrix is co-clustered independently using a probabilistic model-based optimal partitioning algorithm, ensuring the integrity of co-clusters, and the results are combined using a hierarchical co-cluster merging algorithm to enhance accuracy and reliability. Our implementation using the Message Passing Interface (MPI) distributes the computational load across multiple nodes, improving scalability and making the approach practical for large-scale applications without requiring specialized performance from any single node. Experimental results demonstrate substantial improvements in computational efficiency and scalability, confirming the method's effectiveness for diverse and extensive datasets. This work addresses the challenges of co-clustering large-scale data by integrating efficient partitioning, parallel processing, and robust merging techniques, setting a new benchmark for scalable co-clustering and paving the way for future research in scalable data analysis technologies.
+We presented DiMergeCo, a scalable co-clustering method for large-scale datasets, leveraging a divide-and-conquer strategy to partition the input matrix into smaller submatrices for parallel processing, thereby significantly reducing computational overhead. Each submatrix is co-clustered independently using a probabilistic model-based optimal partitioning algorithm, ensuring the integrity of co-clusters, and the results are combined using a hierarchical co-cluster merging algorithm to enhance accuracy and reliability. Our implementation using MPI distributes the computational load across multiple nodes, improving scalability and making the approach practical for large-scale applications without requiring specialized performance from any single node. Experimental results demonstrate substantial improvements in computational efficiency and scalability, confirming the method's effectiveness for diverse and extensive datasets. This work addresses the challenges of co-clustering large-scale data by integrating efficient partitioning, parallel processing, and robust merging techniques, setting a new benchmark for scalable co-clustering and paving the way for future research in scalable data analysis technologies.
 
 \printbibliography
 
-\onecolumn
 \newpage
-% one column
 \appendix
 \section{Additional Theoretical Analysis}
 \label{sec:appendix_theoretical_analysis}
