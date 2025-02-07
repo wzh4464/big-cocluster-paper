@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Friday, 7th February 2025 8:52:20 pm
+ % Last Modified: Friday, 7th February 2025 8:54:30 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -195,7 +195,7 @@ Given a data matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$ where $m$ and $n$ d
 
 Our approach is grounded in two fundamental theorems from matrix analysis that establish the theoretical basis for discovering co-clusters through matrix partitioning. The first theorem, Low-Rank Approximation, establishes that co-clusters, as coherent substructures, can be effectively approximated by low-rank matrices:
 
-\begin{theorem}[Low-Rank Approximation\cite{eckart1936ApproximationOneMatrix}]
+\begin{theorem}[Low-Rank Approximation~\cite{eckart1936ApproximationOneMatrix}]
     For any matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$, its best rank-r approximation in Frobenius norm is given by truncating its singular value decomposition to the top r singular values:
     \begin{equation}
         \min_{\text{rank}(\hat{\mathbf{A}})=r} \|\mathbf{A} - \hat{\mathbf{A}}\|_F = \|\mathbf{A} - \sum_{i=1}^r \sigma_i \mathbf{u}_i\mathbf{v}_i^T\|_F
