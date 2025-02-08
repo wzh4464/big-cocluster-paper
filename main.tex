@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Friday, 7th February 2025 9:00:41 pm
+ % Last Modified: Saturday, 8th February 2025 10:47:47 pm
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -229,23 +229,14 @@ To quantify the coherence of potential co-clusters and guide the discovery proce
 \end{definition}
 
 \subsection{Problem Statement}
-Modern applications increasingly involve massive datasets where both dimensions exceed millions ($m,n \gg 10^6$). At this scale, traditional co-clustering methods become computationally infeasible due to their inherent complexity. Computing and manipulating the similarity matrix requires $O(mn)$ memory, while the eigendecomposition demands $O(mn\min(m,n))$ operations.
+\label{subsec:problem_statement}
+Modern applications increasingly involve massive datasets where both dimensions exceed millions ($m, n \gg 10^6$). At this scale, traditional co-clustering methods become computationally infeasible due to the significant complexity of managing and processing such data. In particular, computing and storing the similarity matrix requires $O(mn)$ memory, and performing the corresponding eigendecomposition demands $O(mn\min(m,n))$ computational operations. The fundamental challenge, therefore, is to develop a scalable co-clustering framework that maintains high solution quality under practical computational constraints.
 
-The fundamental challenge lies in developing a scalable co-clustering framework that maintains solution quality while operating within practical computational constraints. Formally, given a large-scale data matrix $\mathbf{A} \in \mathbb{R}^{m \times n}$, our objective is to discover a set of co-clusters $\mathcal{C} = \{\mathbf{C}_k\}_{k=1}^K$ that satisfies:
-
+Formally, the co-clustering objective is defined as
 \begin{equation}
-    \begin{aligned}
-        \min_{\mathcal{C}} & \sum_{k=1}^K \|\mathbf{A}_{I_k,J_k} - \mathbf{U}_k\mathbf{V}_k^T\|_F^2 \\
-        \text{s.t.}        & \quad S(\mathbf{C}_k) > \tau, \quad \forall k                          \\
-                           & \quad |I_k| \geq T_m, |J_k| \geq T_n, \quad \forall k                  \\
-                           & \quad \|\mathbf{A} - \hat{\mathbf{A}}\|_F \leq \delta                  \\
-                           & \quad P(\text{preserve significant co-clusters}) \geq 1 - \alpha
-    \end{aligned}
+    J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
 \end{equation}
-
-In this formulation, $I_k \subseteq \{1,...,m\}$ and $J_k \subseteq \{1,...,n\}$ index the rows and columns of co-cluster $k$, while $\mathbf{U}_k\mathbf{V}_k^T$ represents its low-rank approximation. The parameter $\tau$ ensures co-cluster quality through the singular value ratio score, and $T_m$, $T_n$ prevent trivial solutions by imposing minimum size requirements. The global approximation error between the original matrix $\mathbf{A}$ and its reconstructed approximation $\hat{\mathbf{A}}$ is bounded by $\delta$, while $\alpha$ represents the probability of failing to preserve significant co-clusters during the partitioning process.
-
-This formulation addresses three key aspects: solution quality through explicit error bounds and minimum co-cluster scores, theoretical guarantees on co-cluster preservation with probability at least $1-\alpha$, and scalability by enabling block matrix computation while maintaining proven error bounds. The optimization balances reconstruction accuracy with computational feasibility, ensuring the discovered co-clusters capture meaningful patterns in large-scale data.
+which, together with probabilistic guarantees (i.e., \(P(\text{preserve significant co-clusters}) \geq 1 - \alpha\)), ensures that the framework reliably captures the intrinsic structure of the data.
 
 \section{The Scalable Co-clustering Method}
 \label{sec:proposed_model}
