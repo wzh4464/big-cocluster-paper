@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 11th February 2025 10:26:48 am
+ % Last Modified: Tuesday, 11th February 2025 11:25:47 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -35,14 +35,21 @@
 \usepackage{color}
 \usepackage{csquotes}
 % theorems
-\usepackage{amsthm}
+% \usepackage{amsthm}
 \usepackage{enumitem}
+% \theoremstyle{plain} % Bold title, italic body
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
-\newtheorem{definition}{Definition}
-\newtheorem{assumption}{Assumption}
-\newtheorem{corollary}{Corollary}
 \newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+
+% \theoremstyle{definition} % Bold title, normal body
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+
+% \theoremstyle{remark} % Italic title, normal body
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
 
 % Cref for lemma
 \crefname{lemma}{lemma}{lemmas}
@@ -170,7 +177,7 @@ In multimodal learning, co-clustering facilitates the integration of diverse dat
 
 While co-clustering has great potential, existing co-clustering algorithms face significant challenges when applied to large-scale datasets\cite{cheng2015CoClusterDDistributedFramework}. This challenge arises from the need to simultaneously optimize both row and column clusters, turning the problem into a multi-objective optimization task. This task involves minimizing multiple loss functions concurrently, often leading to conflicting gradients and optimization paths. These conflicts complicate the convergence process, making it difficult to achieve efficient and effective clustering\cite{coello2007EvolutionaryAlgorithmsSolving}. Recent research has attempted to address these challenges through distributed computing approaches. Parallel Non-negative Matrix Tri-Factorization (PNMTF)\cite{chen2023ParallelNonNegativeMatrix} employs parallelization but requires broadcasting large matrices across nodes and lacks guaranteed iteration bounds. Similarly, Co-ClusterD\cite{cheng2015CoClusterDDistributedFramework} introduces a distributed framework but relies on its main thread to process complex co-cluster statistics, creating a central bottleneck that constrains overall system performance.
 
-In this paper, we propose DiMergeCo, an efficient co-clustering method for analyzing large-scale matrices. Our approach is grounded in two fundamental theoretical properties. First, co-clusters manifest as low-rank submatrices in the data, representing highly correlated row-column groups\cite{zhao2016IdentifyingMultidimensionalCoclusters}. Second, matrix algebra proves that any submatrix's rank is bounded by its parent matrix's rank\cite{horn1985MatrixAnalysis}, ensuring the preservation of low-rank structures in submatrices. These properties reveal that preserving local co-cluster structures during partitioning enables their discovery through independent analysis of smaller submatrices. Therefore, the key challenge becomes developing an effective matrix partitioning strategy that preserves significant co-clusters during the division process.
+In this paper, we propose DiMergeCo, an efficient co-clustering method for analyzing large-scale matrices. Our approach is grounded in two fundamental theoretical properties. First, co-clusters manifest as low-rank submatrices in the data, representing highly correlated row-column groups\cite{zhao2016IdentifyingMultidimensionalCoclusters,wu2024ScalableCoClusteringLargeScale}. Second, matrix algebra proves that any submatrix's rank is bounded by its parent matrix's rank\cite{horn1985MatrixAnalysis}, ensuring the preservation of low-rank structures in submatrices. These properties reveal that preserving local co-cluster structures during partitioning enables their discovery through independent analysis of smaller submatrices. Therefore, the key challenge becomes developing an effective matrix partitioning strategy that preserves significant co-clusters during the division process.
 
 To address this challenge, we introduce three key innovations. First, we develop a probabilistic partitioning algorithm with theoretical guarantees to preserve co-clusters during division, successfully transforming the global co-clustering problem into independent local problems while maintaining all significant patterns. Second, to effectively combine these local solutions, we design a binary tree-based hierarchical merging strategy that eliminates the central coordinator bottleneck by enabling nodes to communicate only with immediate neighbors, reducing per-node communication complexity from $O(n)$ to $O(\log n)$. Third, we develop an efficient distributed implementation through Message Passing Interface (MPI). This implementation processes million-dimensional matrices efficiently, with the main node only responsible for computing initial partitioning thresholds through a logarithmic-time algorithm.
 
@@ -183,7 +190,7 @@ In summary, the main contributions of this paper are:
     \item \textbf{Scalable Implementation and Empirical Validation:} We implement DiMergeCo through MPI with a distributed architecture that processes million-dimensional matrices efficiently. Extensive experiments on real-world datasets demonstrate that our method significantly outperforms state-of-the-art approaches in both scalability and clustering quality.
 \end{enumerate}
 
-The remainder of this paper is organized as follows. \Cref{sec:related_work} discusses related work in the field of co-clustering and parallel computing. \Cref{sec:problem_formulation} presents the mathematical formulation and problem statement of co-clustering. \Cref{sec:proposed_model} details our proposed scalable co-clustering method. \Cref{sec:theoretical_foundations} provides the theoretical foundations of our method, including convergence analysis and error bounds. \Cref{sec:experiment} presents the experimental evaluation of our method. \Cref{sec:conclusion} concludes the paper and outlines future research directions. The theoretical analysis, including error bounds, complexity analysis, and optimality conditions, is provided in~\Cref{sec:appendix_theoretical_analysis}.
+The remainder of this paper is organized as follows. \Cref{sec:related_work} discusses related work in the field of co-clustering and parallel computing. \Cref{sec:problem_formulation} presents the mathematical formulation and problem statement of co-clustering. \Cref{sec:proposed_model} details our proposed scalable co-clustering method. \Cref{sec:theoretical_foundations} provides the theoretical foundations of our method, including convergence analysis and error bounds. \Cref{sec:experiment} presents the experimental evaluation of our method. \Cref{sec:conclusion} concludes the paper and outlines future research directions. The theoretical analysis, including error bounds, complexity analysis, and optimality conditions, is provided in~\Cref{app}.
 
 \section{Related Work}
 \label{sec:related_work}
@@ -515,21 +522,21 @@ The cornerstone of our approach lies in matrix approximation theory, which provi
 \begin{theorem}[Block Matrix Approximation]
     For any $\delta > 0$, there exists a partitioning scheme dividing $\mathbf{A}$ into $p \times q$ blocks ${\mathbf{B}{(i,j)}}$ such that each block $\mathbf{B}{(i,j)}$ captures the local structure of $\mathbf{A}$, and the reconstructed approximation $\hat{\mathbf{A}}$ satisfies $|\mathbf{A} - \hat{\mathbf{A}}|_F \le \delta$ where $\hat{\mathbf{A}}$ is reconstructed from the merged local solutions.
 \end{theorem}
-Proof Sketch: Consider a low-rank approximation $\mathbf{A} \approx \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ from truncated SVD. By selecting appropriate partition dimensions $(\phi_i \times \psi_j)$, we ensure each co-cluster appears substantially intact in at least one block. The Davis-Kahan theorem\cite{stewart1993MatrixPerturbationTheory} and matrix perturbation theory then yield the error bound. Full proof appears in~\Cref{sec:appendix_theoretical_analysis}.
+Proof Sketch: Consider a low-rank approximation $\mathbf{A} \approx \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ from truncated SVD. By selecting appropriate partition dimensions $(\phi_i \times \psi_j)$, we ensure each co-cluster appears substantially intact in at least one block. The Davis-Kahan theorem\cite{stewart1993MatrixPerturbationTheory} and matrix perturbation theory then yield the error bound. Full proof appears in~\Cref{app}.
 
 \subsection{Error Bounds for Submatrix Co-Clustering}
 \begin{theorem}[Local Solution Quality]
     Let each block $\mathbf{B}{(i,j)}$ yield a local solution $\mathbf{F}{(i,j)}$ with $\epsilon_{(i,j)}$-optimality relative to its local optimum. If $|\mathbf{A}\lbrack I_i,J_i\rbrack - \mathbf{B}{(i,j)}|F \le \delta{(i,j)}$ for each block, then the merged global solution $\mathbf{F}'$ satisfies $|\mathbf{F}' - \mathbf{F}^*|F \le \sum{i,j} \epsilon{(i,j)} + g({\delta_{(i,j)}})$, where $\mathbf{F}^*$ is the global optimal indicator matrix and $g$ is a mild function depending on approximation qualities of all blocks.
 \end{theorem}
-Proof Sketch: Consider global objective $J(\mathbf{F})$ and its minimizer $\mathbf{F}^*$. The local optimality condition and block approximation error bounds combine via triangle inequality to yield the global deviation bound. Full proof appears in~\Cref{sec:appendix_theoretical_analysis}.
+Proof Sketch: Consider global objective $J(\mathbf{F})$ and its minimizer $\mathbf{F}^*$. The local optimality condition and block approximation error bounds combine via triangle inequality to yield the global deviation bound. Full proof appears in~\Cref{app}.
 
 \subsection{Convergence Analysis}
 \begin{theorem}[Global Convergence]
     Under mild conditions on local solution quality and partitioning, with probability at least $1-\alpha$, the iterative merging converges to a local minimum of the original objective, and the probability of missing any significant co-cluster (larger than $T_m \times T_n$) is bounded by $P(\text{miss}) \le \exp(-\gamma T_p)$ where $T_p$ is the number of random partitions and $\gamma > 0$ depends on the partition parameters.
 \end{theorem}
-Proof Sketch: Using Chernoff-type bounds, we show the detection probability for each significant co-cluster is high in a single partition attempt. The union bound over multiple attempts establishes the global detection guarantee. Since the objective is bounded below and merges are monotonic, convergence to a local minimum follows. Full proof appears in~\Cref{sec:appendix_theoretical_analysis}.
+Proof Sketch: Using Chernoff-type bounds, we show the detection probability for each significant co-cluster is high in a single partition attempt. The union bound over multiple attempts establishes the global detection guarantee. Since the objective is bounded below and merges are monotonic, convergence to a local minimum follows. Full proof appears in~\Cref{app}.
 
-These theoretical results establish that our divide-and-conquer approach can reliably detect significant co-clusters, provide quantifiable approximation guarantees, ensure convergence to meaningful local optima, and scale efficiently with problem size through parallelization. The detailed mathematical proofs of all theorems, including explicit error bounds and Chernoff-type tail inequalities, are provided in~\Cref{sec:appendix_theoretical_analysis} to maintain readability of the main text.
+These theoretical results establish that our divide-and-conquer approach can reliably detect significant co-clusters, provide quantifiable approximation guarantees, ensure convergence to meaningful local optima, and scale efficiently with problem size through parallelization. The detailed mathematical proofs of all theorems, including explicit error bounds and Chernoff-type tail inequalities, are provided in~\Cref{app} to maintain readability of the main text.
 
 \subsection{Conclusion and Practical Considerations}
 
@@ -716,6 +723,7 @@ We presented DiMergeCo, a scalable co-clustering method for large-scale datasets
 \onecolumn
 \newpage
 \appendix
+\label{app}
 \section{Additional Theoretical Analysis}
 \label{sec:appendix_theoretical_analysis}
 
@@ -859,20 +867,20 @@ We assume \(\mathbf{A}\in \mathbb{R}^{M\times N}\) is partitioned into \(m\times
 
 We now present selected technical proofs referenced in the main text and earlier sections of this appendix.
 
-\subsubsection{Proof of Lemma \ref{lem:computational_complexity}}
-\begin{proof}
+% \subsubsection{Proof of Lemma \ref{lem:computational_complexity}}
+\begin{IEEEproof}[Proof of Lemma \ref{lem:computational_complexity}]
     Assume an algorithm $\mathcal{L}$ for local co-clustering has worst-case complexity $O\bigl(f(\phi_{\max},\psi_{\max})\bigr)$, where $\phi_{\max}$ and $\psi_{\max}$ are maximum block dimensions. Since the matrix is partitioned into at most $p\times q$ blocks, each block is processed independently. Hence, the total computational cost is bounded by $p\times q \times O\bigl(f(\phi_{\max},\psi_{\max})\bigr)$ if done sequentially, or $O\bigl(\max f(\phi_i,\psi_j)\bigr)$ if done fully in parallel. Balancing the partition ensures a similar scale of submatrix for each node, yielding the stated complexity.
-\end{proof}
+\end{IEEEproof}
 
-\subsubsection{Proof of Theorem \ref{thm:communication_overhead}}
-\begin{proof}
+% \subsubsection{Proof of Theorem \ref{thm:communication_overhead}}
+\begin{IEEEproof}[Proof of Theorem \ref{thm:communication_overhead}]
     Communication cost arises primarily from merging partial co-clusters. If $K$ is the total number of partial co-clusters across blocks, each merge step involves comparing pairs or updating metadata in a priority queue. The maximum number of merges is $K-1$. Each merge can be handled in $O(\log K)$ if using a balanced tree or heap structure. Hence, $O(K\log K)$ is the dominating cost. We do not transmit large factorization data or entire blocks, only summary statistics, which remains $O(1)$ or $O(\log K)$ per merge. Thus, the overall communication overhead is $O(K\log K)$.
-\end{proof}
+\end{IEEEproof}
 
-\subsubsection{Proof of Lemma \ref{lemma:joint_prob_size}}
-\begin{proof}
+% \subsubsection{Proof of Lemma \ref{lemma:joint_prob_size}}
+\begin{IEEEproof}[Proof of Lemma \ref{lemma:joint_prob_size}]
     We define $\phi_i,\psi_j$ as the block dimensions. By modeling the row and column assignments as Bernoulli trials and applying standard Chernoff/Hoefding bounds, we get the probability that a co-cluster $\mathbf{C}_k$ remains wholly or partially in $\mathbf{B}_{(i,j)}$. The result follows by bounding the overlap probabilities and simplifying via the exponential expression in the lemma statement.
-\end{proof}
+\end{IEEEproof}
 
 \noindent \textbf{(Further proofs and additional lemmas can follow similarly.)}
 
@@ -892,7 +900,7 @@ We now present selected technical proofs referenced in the main text and earlier
     \end{equation}
 \end{theorem}
 
-\begin{proof}
+\begin{IEEEproof}
     Consider co-cluster $C_k$ with dimensions $M^{(k)} \times N^{(k)}$ falling into a block $B_{(i,j)}$ of size $\phi_i \times \psi_j$. The probability of co-cluster $C_k$ being fragmented (i.e., not entirely contained within any single block) in a single partitioning attempt is denoted by $P(\omega_k)$.
 
     The preservation probability for co-cluster $C_k$ in a specific block $B_{(i,j)}$ is determined by the likelihood that all rows and columns of $C_k$ are captured within that block. Using Chernoff-type bounds, we derive the upper bound for the failure probability as follows:
@@ -913,6 +921,6 @@ We now present selected technical proofs referenced in the main text and earlier
     \end{equation}
 
     This inequality ensures that by selecting appropriate values for \(m, n, \phi_i, \psi_j,\) and \(T_p\), the probability \(P\) of detecting co-cluster \(C_k\) meets or exceeds a desired threshold \(P_{\text{thresh}}\).
-\end{proof}
+\end{IEEEproof}
 
 \end{document}
