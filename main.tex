@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 11th February 2025 11:39:50 am
+ % Last Modified: Tuesday, 11th February 2025 11:39:00 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -296,7 +296,7 @@ The complete procedure is detailed in~\Cref{alg:method}. In the following sectio
 \begin{algorithm}[!t]
     \caption{Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:method}
     \begin{algorithmic}[1]
-        \REQUIRE{Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_M$, $T_N$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
+        \REQUIRE{Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$;}
         \ENSURE{Co-clustered result $\mathcal{C}$;}
         \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
         \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
@@ -325,8 +325,8 @@ Our probabilistic model serves as the cornerstone of the partitioning algorithm.
 In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ is given by~\Cref{thm:joint_probability}:
 \begin{equation}
     \begin{split}
-        P(M_{(i,j)}^{(k)} & < T_M, N_{(i,j)}^{(k)} < T_N)                                                                           \\
-                          & = \sum_{\alpha=1}^{T_M-1} \sum_{\beta=1}^{T_N-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
+        P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                                                           \\
+                          & = \sum_{\alpha=1}^{T_m-1} \sum_{\beta=1}^{T_n-1} P(M_{(i,j)}^{(k)} = \alpha) P(N_{(i,j)}^{(k)} = \beta) \\
                           & \le \exp[-2 (s_i^{(k)})^2 \phi_i + -2 (t_j^{(k)})^2 \psi_j\rbrack
     \end{split}
 \end{equation}
@@ -351,11 +351,11 @@ Having established the basic probability bounds, we now present the theoretical 
 \label{subsec:probabilistic_model}
 \begin{lemma}[Joint Probability of Co-cluster Size]
     \label{thm:joint_probability}
-    Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_M$ rows and $T_N$ columns is given by:
+    Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_m$ rows and $T_n$ columns is given by:
     \begin{equation}
-        P(M_{(i,j)}^{(k)} < T_M, N_{(i,j)}^{(k)} < T_N) \leq \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
+        P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) \leq \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
     \end{equation}
-    where $s_i^{(k)} = \cfrac{M^{(k)}}{M} - \cfrac{T_M-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N} - \cfrac{T_N-1}{\psi_j}$.
+    where $s_i^{(k)} = \cfrac{M^{(k)}}{M} - \cfrac{T_m-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N} - \cfrac{T_n-1}{\psi_j}$.
 \end{lemma}
 
 This lemma quantifies the likelihood that a co-cluster will remain sufficiently large within a given block, thereby preserving its detectability. By bounding the joint probability of both row and column dimensions of a co-cluster being below specified thresholds, we can systematically determine optimal block sizes that minimize the risk of fragmenting significant co-clusters.
@@ -385,26 +385,26 @@ The probabilistic model in~\Cref{eq:prob_of_identifying_all_co_clusters} governs
          &                                                         & P = 1 - \exp\left( -2 T_p \left[ \phi m (s^{(k)})^2 + \psi n (t^{(k)})^2 \right] \right)                                                                                                  \\
          & \text{subject to}
          &                                                         & T_p \leq T_{\text{max}}, \quad \sum_{i=1}^m \phi_i = M, \quad \sum_{j=1}^n \psi_j = N,                                                                                                    \\
-         &                                                         &                                                                                          & \phi_i \geq \max(T_M, \epsilon M), \quad \psi_j \geq \max(T_N, \epsilon N), \quad \forall i,j,
+         &                                                         &                                                                                          & \phi_i \geq \max(T_m, \epsilon M), \quad \psi_j \geq \max(T_n, \epsilon N), \quad \forall i,j,
     \end{aligned}
 \end{equation}
-where $\epsilon = 0.01$ prevents degenerate blocks, $\phi = \frac{1}{m}\sum \phi_i$ and $\psi = \frac{1}{n}\sum \psi_j$ are average block dimensions, and $s^{(k)} = \min_i \left( \frac{M^{(k)}}{M} - \frac{T_M-1}{\phi_i} \right)$, $t^{(k)} = \min_j \left( \frac{N^{(k)}}{N} - \frac{T_N-1}{\psi_j} \right)$ enforce detectability.
+where $\epsilon = 0.01$ prevents degenerate blocks, $\phi = \frac{1}{m}\sum \phi_i$ and $\psi = \frac{1}{n}\sum \psi_j$ are average block dimensions, and $s^{(k)} = \min_i \left( \frac{M^{(k)}}{M} - \frac{T_m-1}{\phi_i} \right)$, $t^{(k)} = \min_j \left( \frac{N^{(k)}}{N} - \frac{T_n-1}{\psi_j} \right)$ enforce detectability.
 
 \begin{algorithm}[!t]
     \caption{Adaptive Matrix Partitioning for Co-Cluster Preservation}
     \label{alg:partitioning}
     \begin{algorithmic}[1]
-        \REQUIRE{$M, N, T_M, T_N, T_{\text{max}}, P_{\text{thresh}}$}
+        \REQUIRE{$M, N, T_m, T_n, T_{\text{max}}, P_{\text{thresh}}$}
         \ENSURE{$\{\phi_i\}, \{\psi_j\}, T_p$}
-        \STATE Initialize $m \gets \lceil M / T_M \rceil$, $n \gets \lceil N / T_N \rceil$ \COMMENT{Minimum blocks to avoid fragmentation}
+        \STATE Initialize $m \gets \lceil M / T_m \rceil$, $n \gets \lceil N / T_n \rceil$ \COMMENT{Minimum blocks to avoid fragmentation}
         \STATE $\phi_i \gets \lceil M/m \rceil$, $\psi_j \gets \lceil N/n \rceil$ $\forall i,j$ \COMMENT{Uniform initialization}
         \STATE Compute $s^{(k)}, t^{(k)}$ via~\Cref{thm:joint_probability} for all $C_k$
         \STATE Calculate $P \gets 1 - \exp\left( -2 T_p \left[ \phi m (s^{(k)})^2 + \psi n (t^{(k)})^2 \right] \right)$
         \WHILE{$P < P_{\text{thresh}}$ \AND $T_p \leq T_{\text{max}}$}
-        \FOR{each $C_k$ where $M^{(k)} \geq T_M$ \AND $N^{(k)} \geq T_N$}
+        \FOR{each $C_k$ where $M^{(k)} \geq T_m$ \AND $N^{(k)} \geq T_n$}
         \STATE Identify blocks overlapping $C_k$ as $\mathcal{B}_k$
-        \STATE $\phi_i \gets \max\left( \phi_i, \left\lceil \frac{M^{(k)} T_M}{M s^{(k)}} \right\rceil \right)$ $\forall B_{(i,j)} \in \mathcal{B}_k$
-        \STATE $\psi_j \gets \max\left( \psi_j, \left\lceil \frac{N^{(k)} T_N}{N t^{(k)}} \right\rceil \right)$ $\forall B_{(i,j)} \in \mathcal{B}_k$
+        \STATE $\phi_i \gets \max\left( \phi_i, \left\lceil \frac{M^{(k)} T_m}{M s^{(k)}} \right\rceil \right)$ $\forall B_{(i,j)} \in \mathcal{B}_k$
+        \STATE $\psi_j \gets \max\left( \psi_j, \left\lceil \frac{N^{(k)} T_n}{N t^{(k)}} \right\rceil \right)$ $\forall B_{(i,j)} \in \mathcal{B}_k$
         \ENDFOR
         \STATE Redistribute $\phi_i, \psi_j$ s.t. $\sum \phi_i = M$, $\sum \psi_j = N$ via proportional scaling
         \STATE Update $s^{(k)}, t^{(k)}, P$ using current $\phi_i, \psi_j$
@@ -417,16 +417,16 @@ where $\epsilon = 0.01$ prevents degenerate blocks, $\phi = \frac{1}{m}\sum \phi
     \end{algorithmic}
 \end{algorithm}
 
-To solve this optimization problem efficiently, we propose an adaptive matrix partitioning algorithm that iteratively refines the partition parameters. The algorithm begins with an initialization phase where we initialize the minimum number of blocks ($m,n$) required to prevent co-cluster fragmentation below size $T_M \times T_N$ (Line 1). Uniform block sizes are set as $\lceil M/m \rceil \times \lceil N/n \rceil$ (Line 2). Detectability parameters $s^{(k)}, t^{(k)}$ are computed for each co-cluster using~\Cref{thm:joint_probability} (Line 3), and the initial detection probability $P$ is calculated (Line 4).
+To solve this optimization problem efficiently, we propose an adaptive matrix partitioning algorithm that iteratively refines the partition parameters. The algorithm begins with an initialization phase where we initialize the minimum number of blocks ($m,n$) required to prevent co-cluster fragmentation below size $T_m \times T_n$ (Line 1). Uniform block sizes are set as $\lceil M/m \rceil \times \lceil N/n \rceil$ (Line 2). Detectability parameters $s^{(k)}, t^{(k)}$ are computed for each co-cluster using~\Cref{thm:joint_probability} (Line 3), and the initial detection probability $P$ is calculated (Line 4).
 
 
-During the main optimization phase, the core loop iteratively adjusts block sizes to meet the success probability threshold $P_{\text{thresh}}$. For each co-cluster $C_k$ exceeding size $T_M \times T_N$, overlapping blocks $\mathcal{B}_k$ are identified (Line 7), and their dimensions are expanded proportionally to $C_k$'s size relative to the full matrix (Lines 8--9).
+During the main optimization phase, the core loop iteratively adjusts block sizes to meet the success probability threshold $P_{\text{thresh}}$. For each co-cluster $C_k$ exceeding size $T_m \times T_n$, overlapping blocks $\mathcal{B}_k$ are identified (Line 7), and their dimensions are expanded proportionally to $C_k$'s size relative to the full matrix (Lines 8--9).
 
 The final phase focuses on convergence and probability optimization. After each adjustment cycle, the algorithm redistributes block sizes to maintain the original matrix dimensions and updates the detection probability. If the probability remains below the desired threshold $P_{\text{thresh}}$, the sampling iterations $T_p$ are incrementally increased, but bounded by $T_{\text{max}}$ to ensure computational feasibility(Lines 12--13).
 
 
 The algorithm achieves $\mathcal{O}(T_p \cdot \max(m,n))$ complexity through efficient dynamic programming in the block redistribution step. When implemented in a parallel processing environment, the submatrix co-clustering can be distributed across multiple processors, leveraging the independence of local optimizations.
-By~\Cref{thm:probability_co_cluster_detection}, we can guarantee that the probability that any co-cluster exceeding $T_M \times T_N$ is preserved in at least one of $T_p$ iterations is $1 - (1 - P)^K$, making fragmentation exponentially unlikely as $T_p$ grows. This enables efficient analysis of $10^6 \times 10^6$ matrices by balancing probabilistic safety with computational tractability.
+By~\Cref{thm:probability_co_cluster_detection}, we can guarantee that the probability that any co-cluster exceeding $T_m \times T_n$ is preserved in at least one of $T_p$ iterations is $1 - (1 - P)^K$, making fragmentation exponentially unlikely as $T_p$ grows. This enables efficient analysis of $10^6 \times 10^6$ matrices by balancing probabilistic safety with computational tractability.
 
 Having established an efficient partitioning strategy, we next explore how these partitioned submatrices are processed through local co-clustering methods to identify meaningful patterns within each block.
 
@@ -485,7 +485,7 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 \begin{algorithm}[!t]
     \caption{MPI-based Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}\label{alg:mpi_method}
     \begin{algorithmic}[1]
-        \REQUIRE{Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_M$, $T_N$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$, Number of processors $P$;}
+        \REQUIRE{Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$, Number of processors $P$;}
         \ENSURE{Co-clustered result $\mathcal{C}$;}
         \STATE Initialize MPI environment
         \STATE Determine rank and size using \texttt{MPI\_Comm\_rank} and \texttt{MPI\_Comm\_size}
@@ -532,7 +532,7 @@ Proof Sketch: Consider global objective $J(\mathbf{F})$ and its minimizer $\math
 
 \subsection{Convergence Analysis}
 \begin{theorem}[Global Convergence]
-    Under mild conditions on local solution quality and partitioning, with probability at least $1-\alpha$, the iterative merging converges to a local minimum of the original objective, and the probability of missing any significant co-cluster (larger than $T_M \times T_N$) is bounded by $P(\text{miss}) \le \exp(-\gamma T_p)$ where $T_p$ is the number of random partitions and $\gamma > 0$ depends on the partition parameters.
+    Under mild conditions on local solution quality and partitioning, with probability at least $1-\alpha$, the iterative merging converges to a local minimum of the original objective, and the probability of missing any significant co-cluster (larger than $T_m \times T_n$) is bounded by $P(\text{miss}) \le \exp(-\gamma T_p)$ where $T_p$ is the number of random partitions and $\gamma > 0$ depends on the partition parameters.
 \end{theorem}
 Proof Sketch: Using Chernoff-type bounds, we show the detection probability for each significant co-cluster is high in a single partition attempt. The union bound over multiple attempts establishes the global detection guarantee. Since the objective is bounded below and merges are monotonic, convergence to a local minimum follows. Full proof appears in~\Cref{app}.
 
@@ -820,13 +820,13 @@ Although global optimality cannot be guaranteed for this non-convex co-clusterin
 The probability analysis clarifies how large co-clusters remain intact within at least one submatrix. Below, we restate crucial lemmas and assumptions used in our proofs.
 
 \noindent\textbf{Notations.}
-We assume \(\mathbf{A}\in \mathbb{R}^{M\times N}\) is partitioned into \(m\times n\) blocks of size \(\phi_i\times\psi_j\), forming block set \(\{\mathbf{B}_{(i,j)}\}\). Each co-cluster \(\mathbf{C}_k\) spans rows \(\{I_k\}\) and columns \(\{J_k\}\). Thresholds \(T_M\) and \(T_N\) denote minimum row and column sizes of interest, respectively.
+We assume \(\mathbf{A}\in \mathbb{R}^{M\times N}\) is partitioned into \(m\times n\) blocks of size \(\phi_i\times\psi_j\), forming block set \(\{\mathbf{B}_{(i,j)}\}\). Each co-cluster \(\mathbf{C}_k\) spans rows \(\{I_k\}\) and columns \(\{J_k\}\). Thresholds \(T_m\) and \(T_n\) denote minimum row and column sizes of interest, respectively.
 
 \begin{lemma}[Joint Probability of Co-Cluster Size]
     \label{lemma:joint_prob_size}
-    For a co-cluster \(\mathbf{C}_k\) in block \(\mathbf{B}_{(i,j)}\), the probability that \(\mathbf{C}_k\) is smaller than \(T_M\) in rows and \(T_N\) in columns within \(\mathbf{B}_{(i,j)}\) is bounded by
+    For a co-cluster \(\mathbf{C}_k\) in block \(\mathbf{B}_{(i,j)}\), the probability that \(\mathbf{C}_k\) is smaller than \(T_m\) in rows and \(T_n\) in columns within \(\mathbf{B}_{(i,j)}\) is bounded by
     \begin{equation}
-        P\bigl(M_{(i,j)}^{(k)} < T_M,\; N_{(i,j)}^{(k)} < T_N \bigr)\;\;\le\;\; \exp\bigl\lbrack -2(\phi_i\,m\,(s^{(k)})^2\;+\;\psi_j\,n\,(t^{(k)})^2)\bigr\rbrack ,
+        P\bigl(M_{(i,j)}^{(k)} < T_m,\; N_{(i,j)}^{(k)} < T_n \bigr)\;\;\le\;\; \exp\bigl\lbrack -2(\phi_i\,m\,(s^{(k)})^2\;+\;\psi_j\,n\,(t^{(k)})^2)\bigr\rbrack ,
     \end{equation}
     where \(s^{(k)}\) and \(t^{(k)}\) denote normalized cluster dimensions.
 \end{lemma}
@@ -909,8 +909,8 @@ We now present selected technical proofs referenced in the main text and earlier
     \end{equation}
     where:
     \begin{align*}
-        s^{(k)} & = \frac{M^{(k)}}{M} - \frac{T_M - 1}{\phi_i}, \\
-        t^{(k)} & = \frac{N^{(k)}}{N} - \frac{T_N - 1}{\psi_j}.
+        s^{(k)} & = \frac{M^{(k)}}{M} - \frac{T_m - 1}{\phi_i}, \\
+        t^{(k)} & = \frac{N^{(k)}}{N} - \frac{T_n - 1}{\psi_j}.
     \end{align*}
 
     Here, \(s^{(k)}\) and \(t^{(k)}\) represent the normalized minimum row and column sizes required for co-cluster \(C_k\) to be preserved within a block.
