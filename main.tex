@@ -7,7 +7,7 @@
  % Created Date: Monday, May 6th 2024
  % Author: Zihan
  % -----
- % Last Modified: Tuesday, 11th February 2025 11:39:00 am
+ % Last Modified: Tuesday, 11th February 2025 11:25:47 am
  % Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
  % -----
  % HISTORY:
@@ -362,9 +362,9 @@ This lemma quantifies the likelihood that a co-cluster will remain sufficiently 
 
 \begin{theorem}[Probability of Co-cluster Detection]
     \label{thm:probability_co_cluster_detection}
-    If the matrix $\mathbf{A}$ is partitioned into $M \times N$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $\mathbf{C}_k$ in any block is $P(\omega_k)$, then
+    If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $\mathbf{C}_k$ in any block is $P(\omega_k)$, then
     \begin{equation}
-        P \geq 1 - \exp \left\{ -2 T_p \left[ \phi M (s^{(k)})^2 + \psi N (t^{(k)})^2 \right] \right\}
+        P \geq 1 - \exp \left\{ -2 T_p \left[ \phi m (s^{(k)})^2 + \psi n (t^{(k)})^2 \right] \right\}
     \end{equation}
     where $P(\omega_k)$ is the probability of failing to identify co-cluster $C_k$, $T_p$ is the number of sampling times, $\phi$ and $\psi$ are the row and column block sizes, and $s^{(k)}$ and $t^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$.
 \end{theorem}
