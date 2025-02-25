@@ -2,24 +2,26 @@
     "cSpell.words": [
         "bioinformatics"
     ],
-    "latex-workshop.latex.build.forceRecipeUsage": true,
-    "latex-workshop.latex.autoBuild.run": "onFileChange",
     "makefile.configureOnOpen": false,
-    // pdf recipe
+    // no auto save
+    "files.autoSave": "off",
+    // latex build on save
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    // latex first recipe
     "latex-workshop.latex.recipes": [
         {
             "name": "arara",
             "tools": [
                 "arara"
             ]
-        },
+        }
     ],
     "latex-workshop.latex.tools": [
         {
             "name": "arara",
             "command": "arara",
             "args": [
-                "%DOC%"
+                "root.tex"
             ]
         }
     ],
