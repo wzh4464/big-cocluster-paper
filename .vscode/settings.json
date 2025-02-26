@@ -3,12 +3,16 @@
         "bioinformatics"
     ],
     "latex-workshop.latex.build.forceRecipeUsage": true,
-    "latex-workshop.latex.autoBuild.run": "onFileChange",
     "makefile.configureOnOpen": false,
     // pick first recipe
     "latex-workshop.latex.recipe.default": "first",
     "latex-workshop.view.autoFocus.enabled": true,
     // pdf recipe
+    // no auto save
+    "files.autoSave": "off",
+    // latex build on save
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    // latex first recipe
     "latex-workshop.latex.recipes": [
         {
             "name": "arara",

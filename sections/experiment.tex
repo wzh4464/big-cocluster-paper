@@ -1,0 +1,64 @@
+%%%
+% File: /latex/big-cocluster-paper/sections/experiment.tex
+% Created Date: Thursday, July 11th 2024
+% Author: Zihan
+% -----
+% Last Modified: Sunday, 14th July 2024 9:43:45 pm
+% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
+% -----
+% HISTORY:
+% Date      		By   	Comments
+% ----------		------	---------------------------------------------------------
+%%%
+
+\section{Experimental Evaluation}
+\label{sec:experiment}
+\subsection{Experiment Setup}
+
+\textbf{Datasets.}
+The experiments were conducted using three distinct datasets to demonstrate the versatility and robustness of our method:
+
+\begin{itemize}
+    \item Amazon 1000 \cite{ni2019justifying}: Comprising 1000 Amazon reviews; each represented as a 1000-dimensional vector, this dataset is designed to mimic customer behavior analysis.
+    \item CLASSIC4 \cite{reddy2021weclustering}: Containing 18000 documents from 20 newsgroups; each document is represented as a 1000-dimensional vector, this dataset is suitable for text analysis and topic discovery.
+    \item RCV1-Large \cite{lewis2004rcv1}: A larger dataset used to test the scalability of our method, it includes a vast array of document vectors for high-dimensional data analysis.
+\end{itemize}
+
+\textbf{Implementation details.}
+All experiments were performed on a computing cluster with the following specifications: Intel Xeon E5-2670 v3 @ 2.30GHz processors, 128GB RAM, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler.
+
+\textbf{Compared Methods.}
+The experiments followed the procedure outlined in Algorithm \ref{alg:method}. The proposed method was compared with the following state-of-the-art co-clustering methods:
+
+\begin{itemize}
+    \item Spectral Co-Clustering (SCC) \cite{dhillon2001CoclusteringDocumentsWords}
+    \item Parallel Non-negative Matrix Tri-Factorization (PNMTF)\cite{chen2023ParallelNonNegativeMatrix}
+    \item Deep Co-Clustering (DeepCC) \cite{dongkuanxu2019DeepCoClustering}
+\end{itemize}
+
+Notably, 1) PNMTF is one of the most efficient co-clustering algorithms in the state-of-art. 2) All our experiments show that DeepCC cannot process all selected datasets due to the dataset size exceeds DeepCC processing limit.
+
+\textbf{Our Methods.} Our proposed scalable co-cluster method is applied along with the SCC and PNMTF to demonstrate the enhanced performance and capability of handling large datasets:
+\begin{itemize}
+    \item Adaptive Hierarchical Partitioning and Merging for Scalable Co-Clustering with Spectral Co-Clustering (AHPM-SCC)
+    \item Adaptive Hierarchical Partitioning and Merging for Scalable Co-Clustering with Parallel Non-negative Matrix Tri-Factorization (AHPM-PNMTF)
+\end{itemize}
+
+\textbf{Evaluation Metrics.}
+The effectiveness of the co-clustering was measured using two widely accepted metrics:
+
+\begin{itemize}
+    \item Normalized Mutual Information (NMI): Quantifies the mutual information between the co-clusters obtained and the ground truth, normalized to [0, 1] range, where 1 indicates perfect overlap.
+    \item Adjusted Rand Index (ARI): Adjusts the Rand Index for chance, providing a measure of the agreement between two clusters, with values ranging from $-1$ (complete disagreement) to 1 (perfect agreement).
+\end{itemize}
+
+\subsection{Results}
+The experimental results are presented in Tables \ref{tab:running-time} and \ref{tab:evaluation-metrics}, comparing our methods, AHPM-SCC and AHPM-PNMTF, with traditional methods SCC and PNMTF.
+
+\subsubsection{Handling Large-scale Datasets} The results highlight the limitations of traditional methods like SCC and DeepCC in processing large datasets, as shown by their inability to handle certain datasets (denoted by "*"). This underscores the scalability challenges in existing co-clustering methods.
+
+\subsubsection{Improved Performance} Our methods successfully processed all datasets and significantly outperformed traditional methods in efficiency. For example, the running time for the Amazon 1000 dataset was reduced from 64545.2 seconds (SCC) to 112.5 seconds (AHPM-SCC), demonstrating a substantial increase in speed.
+
+\subsubsection{Quantitative Metrics} As shown in Table \ref{tab:evaluation-metrics}, our methods also improved accuracy and robustness. For instance, in the CLASSIC4 dataset, AHPM-SCC achieved an NMI of 0.7676 and an ARI of 0.5845, outperforming PNMTF.
+
+These results validate our scalable co-clustering method as more efficient and capable of handling diverse, large-scale datasets without compromising co-cluster identification quality. The adaptability and parallel processing capabilities of our method demonstrate its potential for various applications, including text and biomedical data analysis and financial pattern recognition.
