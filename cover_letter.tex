@@ -1,0 +1,48 @@
+%%%
+% File: ./cover_letter.tex
+% Created Date: Tuesday, February 11th, 2025
+% Author: Zihan Wu
+% -----
+% Last Modified: Tuesday, 11th February 2025 12:16:28 pm
+% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
+% -----
+% HISTORY:
+% Date      		By   	Comments
+% ----------		------	---------------------------------------------------------
+%%%
+\documentclass[11pt]{letter}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+\signature{Zihan Wu\\
+Department of Electrical Engineering\\
+City University of Hong Kong\\
+Hong Kong\\
+Email: zihan.wu@my.cityu.edu.hk}
+\begin{document}
+\begin{letter}{Editor-in-Chief\\
+IEEE Transactions on Systems, Man, and Cybernetics: Systems}
+\opening{Dear Editor,}
+
+We are pleased to submit our manuscript titled ``DiMergeCo: A Scalable Framework for Large-Scale Co-Clustering with Theoretical Guarantees'' for consideration in \emph{IEEE Transactions on Systems, Man, and Cybernetics: Systems}. 
+
+This work addresses the challenge of large-scale co-clustering by proposing a novel scalable framework that integrates dynamic partitioning and hierarchical merging, providing provable theoretical guarantees and high computational efficiency. Our approach significantly reduces computational complexity while maintaining clustering accuracy, making it particularly relevant to the scope of TSMC-S.
+
+This manuscript is an extended version of our conference paper presented at \emph{IEEE SMC 2024}, titled ``Scalable Co-Clustering for Large-Scale Data through Dynamic Partitioning and Hierarchical Merging.'' Compared to the conference version, the journal submission contains over 50\% new material, including:
+
+\begin{itemize}
+  \item Expanded theoretical analysis with new error bounds, optimality conditions, and complexity proofs.
+  \item Extended algorithmic developments, including a detailed formulation of the hierarchical merging process and improvements in dynamic partitioning efficiency.
+  \item Comprehensive empirical evaluation, covering new large-scale datasets, extended benchmarking, and improved scalability analysis (e.g., 83\% computational time reduction for dense matrices).
+  \item Full implementation details, including MPI-based parallelization and reproducibility guidelines.
+  \item Additional mathematical proofs and derivations in the technical appendices.
+\end{itemize}
+
+We have carefully ensured that this submission complies with IEEE's policies, including a detailed ``Previously Published Statement'' outlining the key differences and advancements over the conference version.
+
+We appreciate your time and consideration. We look forward to your feedback.
+
+\closing{Best regards,}
+
+\end{letter}
+\end{document}

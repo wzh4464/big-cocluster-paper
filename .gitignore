@@ -4,6 +4,9 @@
 *.blg
 *.log
 main.pdf
+cover_letter.pdf
+Diff_statement.pdf
+supplement.pdf
 *.synctex.gz
 *.synctex\(busy\)
 *.bcf
