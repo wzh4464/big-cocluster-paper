@@ -931,7 +931,7 @@ Our experimental evaluation compares the effectiveness of different co-clusterin
 
 
 \subsection{Scalability Analysis}
-To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. {\color{blue}The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node. The results, plotted in~\Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing}. The results, plotted in~\Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
+To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. {\color{blue}The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.} The results, plotted in~\Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
 
 % include images/efficiency.jpg
 \begin{figure}[htbp]
@@ -948,8 +948,12 @@ For Amazon 1000 Dataset, the efficiency starts at 1 for a single node and gradua
 For CLASSIC4 Dataset, the efficiency for CLASSIC4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
 
 For RCV1-Large Dataset, starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
-\subsection{Partitioning Parameter Analysis}
-We analyzed the optimization of partition settings to determine the ideal balance between the number of partitions, the number of repetitions, and the computation time. The datasets were divided into varying numbers of partitions: 25, 36, 49, 81, 100, and 121. For each partition setting, the required number of repetitions and the corresponding computation time (in seconds) were recorded. The experiment aimed to identify the optimal partition setting that minimizes computation time while maintaining a feasible number of repetitions. The results, shown in~\Cref{fig:optimisation}, highlight the optimal setting at 100 partitions, where computation time is minimized, and the number of repetitions remains stable.
+
+{\color{blue}
+\subsection{Parameter Sensitivity Analysis}
+
+\subsubsection{Partition Configuration Optimization}
+We analyzed the optimization of partition settings to determine the ideal balance between the number of partitions, the number of repetitions, and the computation time. The datasets were divided into varying total partition counts: 25, 36, 49, 81, 100, and 121. For each configuration, the required number of repetitions and the corresponding computation time (in seconds) were recorded. As shown in Figure~\ref{fig:optimisation}, the configuration with 100 partitions minimizes computation time while maintaining a stable number of repetitions, establishing it as our default baseline.
 
 \begin{figure}[htbp]
     \centering
@@ -958,23 +962,35 @@ We analyzed the optimization of partition settings to determine the ideal balanc
     \label{fig:optimisation}
 \end{figure}
 
-\subsubsection{Parameter Settings and Optimization}
-\Cref{fig:optimisation} illustrates the relationship between the number of partitions, the number of repetitions, and the computation time (in seconds). The x-axis represents the number of partitions, while the primary y-axis indicates the number of repetitions, and the secondary y-axis shows the computation time in seconds.
+\paragraph{Validation of Optimization Results.}
+These results confirm that 100 partitions (a 10×10 matrix division) offer a sweet spot between computation time and ensemble stability. Beyond this point, the overhead from managing small blocks outweighs the benefit of finer partitioning. This finding provides the foundation for subsequent parameter sensitivity analysis.
 
-The blue line represents the number of repetitions needed for different partition counts. As the number of partitions increases from 25 to 121, the number of repetitions initially rises, peaking at 4 for partitions 49, 81, and 100 before slightly increasing to 5 at 121 partitions. This trend suggests that more partitions generally require a higher number of repetitions to achieve optimal co-clustering, but there is a point of diminishing returns.
+\subsubsection{Individual Parameter Sensitivity}
 
-The orange line shows the computation time corresponding to different partition counts. There is a noticeable decrease in computation time as the number of partitions increases from 25 to 100, with the time dropping from 3,701 seconds to 512 seconds. However, the computation time slightly increases to 665 seconds at 121 partitions. This indicates that while increasing the number of partitions initially improves computational efficiency, beyond a certain point, the overhead of managing more partitions outweighs the benefits.
+\paragraph{Extended Parameter Analysis.}
+Building on our partition optimization result, we examine the impact of three key hyperparameters on performance: block size configuration, co-cluster size thresholds, and probabilistic reliability filtering.
 
-\subsubsection{Performance Impact Analysis}
-The red dashed line at 100 partitions highlights the theoretical optimal setting, where the computation time is minimized. At this setting, the number of repetitions required is stable at 4, and the computation time is at its lowest. This confirms that our theoretical analysis aligns with empirical results, validating the effectiveness of our partitioning strategy.
+\paragraph{Block Size Sensitivity.}
+We explore several block configurations around the identified optimal point: $5 \times 5$ ($25$ partitions), $6 \times 6$ ($36$), $8 \times 8$ ($64$), $10 \times 10$ ($100$), $12 \times 12$ ($144$), and $14 \times 14$ ($196$). For each setting, we evaluate clustering quality (NMI, ARI), runtime, and detection rate. As shown in Figure~\ref{fig:block_sensitivity}, performance remains stable across a broad range but degrades at extremes due to either insufficient granularity or overhead.
 
-The results indicate that there is an optimal balance between the number of partitions and the number of repetitions required. Too few partitions result in higher computation times due to the increased complexity within each partition, while too many partitions lead to increased overhead from managing numerous small partitions.
+\paragraph{Threshold Parameter Sensitivity.}
+To evaluate robustness in co-cluster granularity control, we vary the minimum co-cluster size thresholds \( T_m = T_n \in \{5, 10, 15, 20, 30, 50, 75, 100\} \). This analysis uses synthetic datasets with known small co-clusters. Figure~\ref{fig:threshold_sensitivity} shows that the range \( T_m = 10 \sim 30 \) achieves the best balance between detection and false positive rates.
 
-The significant reduction in computation time as the number of partitions increases up to 100 demonstrates the scalability of our method. This efficiency gain is crucial for processing large-scale datasets, where computational resources and time are often limiting factors. The slight increase in computation time beyond 100 partitions suggests that there is an optimal range for partition counts that maximizes efficiency without incurring excessive overhead.
+\paragraph{Probability Threshold Sensitivity.}
+We vary the probabilistic ensemble filtering threshold \( P_{\text{thresh}} \in \{0.80, 0.85, 0.90, 0.95, 0.99\} \), which determines the minimum confidence for co-cluster inclusion. As shown in Figure~\ref{fig:probability_sensitivity}, the best overall performance is observed at \( P_{\text{thresh}} = 0.95 \), where detection remains high while suppressing spurious patterns.
 
-The practical implication of these findings is that our proposed method can be effectively tuned for various datasets by adjusting the number of partitions. The theoretical optimal setting at 100 partitions provides a benchmark for achieving the best performance, but the method's flexibility allows for adjustments based on specific dataset characteristics and computational constraints.
+\subsubsection{Parameter Interaction Analysis}
+To explore how parameters interact, we conduct a factorial experiment combining block size (partition count), \( P_{\text{thresh}} \), and \( T_m \). 3D surface plots and heatmaps reveal that quality is most sensitive to the joint tuning of \( P_{\text{thresh}} \) and \( T_m \), while partition count primarily affects runtime. These findings indicate that partition size can be tuned somewhat independently, but threshold and reliability parameters should be adjusted jointly.
 
-These experiments validated that our Matrix Partitioned and Hierarchical Co-Cluster Merging is an efficient and accurate approach to analyzing large data matrices. The method's innovative partitioning strategy and ensemble clustering technique offer a new direction for scalable and precise co-clustering in data analysis.
+\subsubsection{Practical Parameter Selection Guidelines}
+Our sensitivity study yields several actionable recommendations:
+\begin{itemize}
+    \item \textbf{Partitioning}: Use 100 partitions as default. Ranges from 81–121 retain >95\% quality with good speed.
+    \item \textbf{Thresholds}: Set \( T_m = T_n \) between 10 and 30 for typical document or transaction data.
+    \item \textbf{Probability Threshold}: Use \( P_{\text{thresh}} = 0.95 \) for general applications; increase to 0.99 for high-confidence filtering.
+\end{itemize}
+This guidance ensures reliable performance across datasets without requiring exhaustive tuning.
+}
 
 \section{Conclusion}
 \label{sec:conclusion}
