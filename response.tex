@@ -119,7 +119,7 @@ Notations: \textbf{RC:} \textbf{\textit{Review Comment}}; \textbf{AR:} \textbf{A
 
 \RC{The manuscript presents a novel framework, DiMergeCo, for scalable co-clustering of large-scale datasets, supported by theoretical guarantees and empirical validation. The work is well-structured, methodologically sound, and addresses a significant gap in the field of co-clustering by improving computational efficiency and scalability. However, some revisions are required to enhance clarity, broaden the discussion of applications.
 
-1. The probabilistic partitioning assumes co-clusters exceed a certain size for preservation with high probability. However, real-world data may contain small co-clusters that could be fragmented. Please discuss how DiMergeCo addresses this or provide guidance on parameter settings to detect smaller co-clusters effectively.}
+  1. The probabilistic partitioning assumes co-clusters exceed a certain size for preservation with high probability. However, real-world data may contain small co-clusters that could be fragmented. Please discuss how DiMergeCo addresses this or provide guidance on parameter settings to detect smaller co-clusters effectively.}
 
 \AR We thank the reviewer for this important concern. We acknowledge that partitioning does pose fragmentation risks for co-clusters, particularly smaller ones. However, DiMergeCo implements multiple protective mechanisms to minimize this risk.
 
@@ -133,15 +133,17 @@ The core protection mechanism relies on our multi-sampling strategy, where the $
 
 \textbf{Manuscript Modifications:}
 
-In summary, the main contributions of this paper are:
+\begin{quote}
+  In summary, the main contributions of this paper are:
 
-\begin{enumerate}
-    \item \textbf{Theoretically-Guaranteed Probabilistic Partitioning:} We introduce the first matrix partitioning algorithm specifically designed for co-cluster preservation, fundamentally different from existing uniform or load-based partitioning methods. Our algorithm adaptively determines partition sizes based on co-cluster density characteristics and provides explicit probabilistic guarantees for pattern preservation, enabling reliable decomposition of global co-clustering into independent local problems.
+  \begin{enumerate}
+    \item \textbf{Theoretically-Guaranteed Probabilistic Partitioning:} We introduce the first matrix partitioning algorithm specifically designed for co-cluster preservation, fundamentally different from existing uniform or load-based partitioning methods. Our algorithm adaptively determines partition configurations and sampling iterations based on co-cluster characteristics. This adaptive mechanism provides explicit probabilistic guarantees for preserving co-clusters of varying sizes, enabling reliable decomposition of global co-clustering into independent local problems.
 
     \item \textbf{Communication-Optimal Hierarchical Merging Strategy:} We design a binary tree-based coordination algorithm that eliminates the centralized bottlenecks inherent in existing distributed co-clustering methods. Unlike prior approaches requiring centralized coordination or broadcast communication, our hierarchical strategy reduces per-node communication complexity from $O(n)$ to $O(\log n)$ while providing theoretical convergence guarantees, representing a fundamental architectural advancement for distributed co-clustering.
 
     \item \textbf{Integrated Algorithmic Framework with Theoretical Foundations:} We establish a complete theoretical framework connecting local solution quality to global optimality bounds, providing the first rigorous analysis for distributed co-clustering performance guarantees. Our MPI implementation demonstrates that these algorithmic innovations enable processing scales where existing methods fail due to computational limitations while achieving superior clustering quality and significant computational efficiency improvements.
-\end{enumerate}
+  \end{enumerate}
+\end{quote}
 
 We also added evaluations about detection rate and co-cluster size in Section 6: "To validate small co-cluster preservation, we analyzed detection rates across co-cluster sizes in CLASSIC4. Co-clusters smaller than 50×50 achieved 94.2\% detection rate, confirming our theoretical prediction that dense small co-clusters benefit from higher relative significance within partitioned blocks."
 
@@ -154,10 +156,10 @@ We also added evaluations about detection rate and co-cluster size in Section 6:
 We added a new Section 6.3 "Parameter Sensitivity Analysis" that includes:
 
 \begin{itemize}
-    \item Systematic analysis of block size parameters $\phi_i$ and $\psi_i$ showing optimal performance at 100 partitions
-    \item Threshold parameter ($T_m$, $T_n$) sensitivity analysis demonstrating robust performance across the range [10, 50]
-    \item Probability threshold $P_{thresh}$ impact study showing stable performance above 0.95
-    \item Practical parameter selection guidelines based on dataset characteristics
+  \item Systematic analysis of block size parameters $\phi_i$ and $\psi_i$ showing optimal performance at 100 partitions
+  \item Threshold parameter ($T_m$, $T_n$) sensitivity analysis demonstrating robust performance across the range [10, 50]
+  \item Probability threshold $P_{thresh}$ impact study showing stable performance above 0.95
+  \item Practical parameter selection guidelines based on dataset characteristics
 \end{itemize}
 
 Figure 4 demonstrates the optimization landscape, identifying computation time minimization at 512 seconds with 100 partitions and 4 repetitions.
@@ -207,7 +209,7 @@ Modern medical imaging requires simultaneous analysis of thousands of high-resol
 
 \RC{This paper presents DiMergeCo, a novel approach to co-clustering that addresses scalability challenges through a divide-and-conquer strategy. The work makes valuable contributions to large-scale data analysis with theoretical guarantees. The experimental results are impressive, showing significant performance improvements over existing methods. However, some minor revisions are needed before the paper can be accepted.
 
-1. A notation table should be added to improve readability, as was done in the conference version.}
+  1. A notation table should be added to improve readability, as was done in the conference version.}
 
 \AR Thank you for the suggestion. We have added a comprehensive notation table (Table 1) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.
 
@@ -236,7 +238,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 Formally, the co-clustering objective seeks to partition the matrix A into K row clusters and L column clusters that minimize the reconstruction error:
 
 \begin{equation}
-J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
+  J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
 \end{equation}
 
 where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster, $x_{ij}$ is the original matrix element, and $u_{kl}$ is the reconstructed value for co-cluster $(k,l)$.
@@ -255,7 +257,7 @@ where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster,
 
 \RC{The paper proposes DiMergeCo, a distributed and scalable co-clustering framework that partitions large matrices using a probabilistic scheme, performs local co-clustering, and merges results via a hierarchical strategy. Despite its engineering appeal, the paper falls short in key scientific aspects:
 
-1. Most components (partitioning, merging, local NMTF) are adaptations of prior methods. The integration is useful but lacks algorithmic novelty.}
+  1. Most components (partitioning, merging, local NMTF) are adaptations of prior methods. The integration is useful but lacks algorithmic novelty.}
 
 \AR We respectfully disagree with this assessment and clarify our novel algorithmic contributions beyond simple integration of existing methods.
 
@@ -339,10 +341,10 @@ This provides concrete guidance for parameter selection based on desired reliabi
 
 \textbf{Figure Improvements:} All figures have been revised to be self-contained:
 \begin{itemize}
-    \item Figure 1: Added "Samples" and "Features" axis labels with cluster boundary legends
-    \item Figure 2: Descriptive labels for each processing stage with workflow annotations  
-    \item Figure 3: "Normalized Efficiency" and "Number of Processing Nodes" labels with dataset legends
-    \item Figure 4: Dual y-axis labels for "Number of Repetitions" and "Computation Time (seconds)"
+  \item Figure 1: Added "Samples" and "Features" axis labels with cluster boundary legends
+  \item Figure 2: Descriptive labels for each processing stage with workflow annotations
+  \item Figure 3: "Normalized Efficiency" and "Number of Processing Nodes" labels with dataset legends
+  \item Figure 4: Dual y-axis labels for "Number of Repetitions" and "Computation Time (seconds)"
 \end{itemize}
 
 %====================================== Conclusion ============================================
@@ -352,12 +354,12 @@ This provides concrete guidance for parameter selection based on desired reliabi
 We have comprehensively addressed all reviewer concerns through the following major revisions:
 
 \begin{enumerate}
-    \item \textbf{Enhanced Theoretical Foundations:} Added complete proofs, explicit assumptions, and sensitivity analysis
-    \item \textbf{Multi-Domain Validation:} Clarified experimental coverage across document clustering, recommendation systems, and sparse matrix analysis
-    \item \textbf{Parameter Analysis:} New comprehensive section on hyperparameter sensitivity and selection guidelines
-    \item \textbf{Implementation Details:} Enhanced MPI implementation description for reproducibility
-    \item \textbf{Expanded Related Work:} Added medical image analysis applications as suggested
-    \item \textbf{Improved Presentation:} Added notation table and enhanced all figures with proper labels and captions
+  \item \textbf{Enhanced Theoretical Foundations:} Added complete proofs, explicit assumptions, and sensitivity analysis
+  \item \textbf{Multi-Domain Validation:} Clarified experimental coverage across document clustering, recommendation systems, and sparse matrix analysis
+  \item \textbf{Parameter Analysis:} New comprehensive section on hyperparameter sensitivity and selection guidelines
+  \item \textbf{Implementation Details:} Enhanced MPI implementation description for reproducibility
+  \item \textbf{Expanded Related Work:} Added medical image analysis applications as suggested
+  \item \textbf{Improved Presentation:} Added notation table and enhanced all figures with proper labels and captions
 \end{enumerate}
 
 We believe these substantial revisions have addressed all identified concerns and significantly strengthened the manuscript. We thank the reviewers for their valuable feedback and look forward to their assessment of the revised version.
