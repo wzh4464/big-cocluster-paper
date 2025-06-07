@@ -16,6 +16,7 @@
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 \NeedsTeXFormat{LaTeX2e}
+\typeout{*** LOADING LOCAL ar2rc.cls ***}
 \ProvidesClass{ar2rc}[2020/08/04 Author response to reviewer comment class]
 \LoadClass{article}
 
@@ -69,11 +70,29 @@
 %\def\AR{\makebox[0pt][r]{AR:\hspace{4mm}}}
 
 %% Define that \RC and \AR should start and format the whole paragraph 
-\RequirePackage{suffix}
-\long\def\RC#1\par{\makebox[0pt][r]{\bf RC:\hspace{4mm}}\textbf{\textit{#1}}\par} %\RC
-\WithSuffix\long\def\RC*#1\par{\textbf{\textit{#1}}\par} %\RC*
-\long\def\AR#1\par{\makebox[0pt][r]{AR:\hspace{10pt}}#1\par} %\AR
-\WithSuffix\long\def\AR*#1\par{#1\par} %\AR*
+%%% 更稳妥的定义，用大括号参数，不再依赖空行
+\RequirePackage{xparse}
+
+% RC and AR commands with starred versions
+\NewDocumentCommand{\RC}{s+m}{%
+  \par\medskip
+  \IfBooleanTF{#1}
+    {\noindent\textbf{\textit{#2}}\par} % Starred version (\RC*)
+    {
+      \noindent\textbf{RC:}\par
+      \noindent\textbf{\textit{#2}}\par % Unstarred version (\RC)
+    }
+}
+
+\NewDocumentCommand{\AR}{s+m}{%
+  \par\smallskip
+  \IfBooleanTF{#1}
+    {\noindent #2\par} % Starred version (\AR*)
+    {
+      \noindent\textbf{AR:}\par
+      \noindent #2\par % Unstarred version (\AR)
+    }
+}
 
 %%%
 %DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
