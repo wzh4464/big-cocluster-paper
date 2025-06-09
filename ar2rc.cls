@@ -77,20 +77,20 @@
 \NewDocumentCommand{\RC}{s+m}{%
   \par\medskip
   \IfBooleanTF{#1}
-    {\noindent\textbf{\textit{#2}}\par} % Starred version (\RC*)
+    {\noindent{\bfseries\itshape #2}\hspace{1em}} % Starred version (\RC*)
     {
-      \noindent\textbf{RC:}\par
-      \noindent\textbf{\textit{#2}}\par % Unstarred version (\RC)
+      \noindent\textbf{RC:}\hspace{1em}
+      {\bfseries\itshape #2}\par % Unstarred version (\RC)
     }
 }
 
 \NewDocumentCommand{\AR}{s+m}{%
   \par\smallskip
   \IfBooleanTF{#1}
-    {\noindent #2\par} % Starred version (\AR*)
+    {\noindent #2\hspace{1em}} % Starred version (\AR*)
     {
-      \noindent\textbf{AR:}\par
-      \noindent #2\par % Unstarred version (\AR)
+      \noindent\textbf{AR:}\hspace{1em}
+      {\bfseries #2}\par % Unstarred version (\AR)
     }
 }
 
