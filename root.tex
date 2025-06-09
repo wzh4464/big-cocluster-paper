@@ -637,27 +637,27 @@ In conclusion, our proposed scalable co-clustering method effectively addresses 
 
 \section{Theoretical Analysis}
 \label{sec:theoretical-foundations}
+
 DiMergeCo's partition-then-merge approach is supported by matrix approximation theory, probabilistic guarantees, and convergence arguments. First, if each submatrix reliably approximates the original data in its corresponding region, the aggregate of local solutions will reconstruct global structures with bounded error. Second, repeating or refining the partition helps ensure that large or dense co-clusters appear intact in at least one block with high probability. Finally, the merging process converges because it only combines co-clusters if their union does not reduce the overall quality; this monotonic improvement criterion forces a finite number of merges, thus stabilizing at a locally optimal solution.
 
-Throughout this section, $\delta_{(i,j)}$ denotes the maximum Frobenius-norm difference between the true submatrix $\mathbf{A}\lbrack I_i,J_j\rbrack $ and its local approximation $\mathbf{B}_{(i,j)}$. Formally, $\|\mathbf{A}\lbrack I_i, J_j\rbrack - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$. Meanwhile, $\epsilon_{(i,j)}$ captures the suboptimality of the local co-clustering objective relative to the local optimum, i.e., $J(\mathbf{F}_{(i,j)}) \leq J(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$, where $\mathbf{F}_{(i,j)}^*$ is the local optimal cluster indicator for block $(i,j)$.
+Throughout this section, $\delta_{(i,j)}$ denotes the maximum Frobenius-norm difference between the true submatrix $\mathbf{A}[I_i,J_j]$ and its local approximation $\mathbf{B}_{(i,j)}$. Formally, $\|\mathbf{A}[I_i, J_j] - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$. Meanwhile, $\epsilon_{(i,j)}$ captures the suboptimality of the local co-clustering objective relative to the local optimum, i.e., $J(\mathbf{F}_{(i,j)}) \leq J(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$, where $\mathbf{F}_{(i,j)}^*$ is the local optimal cluster indicator for block $(i,j)$.
 
-    {\color{blue}
-        \textbf{Fundamental Assumptions}: To ensure theoretical rigor, we explicitly state all assumptions underlying our framework:
+\textbf{Fundamental Assumptions}: To ensure theoretical rigor, we explicitly state all assumptions underlying our framework:
 
-        \textbf{Assumption 1 (Random Partitioning)}: Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$.
+\textbf{Assumption 1 (Random Partitioning)}: Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$.
 
-        \textbf{Assumption 2 (Independence)}: Row and column partitioning processes are independent, allowing factorization of joint probabilities as $P(A \cap B) = P(A) \cdot P(B)$.
+\textbf{Assumption 2 (Independence)}: Row and column partitioning processes are independent, allowing factorization of joint probabilities as $P(A \cap B) = P(A) \cdot P(B)$.
 
-        \textbf{Assumption 3 (Co-cluster Coherence)}: Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by factor $\rho \leq 2$.
+\textbf{Assumption 3 (Co-cluster Coherence)}: Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by factor $\rho \leq 2$.
 
-        \textbf{Assumption 4 (Finite Co-cluster Set)}: The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$.
+\textbf{Assumption 4 (Finite Co-cluster Set)}: The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$.
 
-        \textbf{Assumption 5 (Minimum Size Constraint)}: All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$.
+\textbf{Assumption 5 (Minimum Size Constraint)}: All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$.
 
-        \textbf{Sample Size Requirements}: Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence.
-    }
+\textbf{Sample Size Requirements}: Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence.
 
 \subsection{Matrix Approximation Theory}
+
 The cornerstone of our approach lies in matrix approximation theory, which provides mathematical guarantees for our divide-and-conquer strategy. When a large matrix exhibits natural block structures or can be approximated by such structures, we can process smaller submatrices independently while maintaining solution quality.
 
 \begin{theorem}[Block Matrix Approximation]
@@ -666,131 +666,62 @@ The cornerstone of our approach lies in matrix approximation theory, which provi
 \end{theorem}
 
 \begin{proof}
-    {\color{blue}Consider a low-rank approximation $\mathbf{A} \approx \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ from truncated SVD.
+    Consider a low-rank approximation $\mathbf{A} \approx \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ from truncated SVD.
 
-        \textit{Step 1}: By selecting partition dimensions $(\phi_i \times \psi_j)$ such that each significant co-cluster $C_k$ satisfies the containment probability bound, we ensure each co-cluster appears substantially intact in at least one block with probability $\geq 1 - \exp(-2(s^{(k)})^2\phi_i - 2(t^{(k)})^2\psi_j)$.
+    \textit{Step 1}: By selecting partition dimensions $(\phi_i \times \psi_j)$ such that each significant co-cluster $C_k$ satisfies the containment probability bound, we ensure each co-cluster appears substantially intact in at least one block with probability $\geq 1 - \exp(-2(s^{(k)})^2\phi_i - 2(t^{(k)})^2\psi_j)$.
 
-        \textit{Step 2}: For each block $\mathbf{B}_{(i,j)}$, the local approximation satisfies $\|\mathbf{A}[I_i, J_j] - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$ where $\delta_{(i,j)} = \sum_{k=r+1}^{\min(|I_i|,|J_j|)} \sigma_k$.
+    \textit{Step 2}: For each block $\mathbf{B}_{(i,j)}$, the local approximation satisfies $\|\mathbf{A}[I_i, J_j] - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$ where $\delta_{(i,j)} = \sum_{k=r+1}^{\min(|I_i|,|J_j|)} \sigma_k$.
 
-        \textit{Step 3}: The reconstructed matrix $\hat{\mathbf{A}}$ satisfies:
-        \begin{align}
-            \|\mathbf{A} - \hat{\mathbf{A}}\|_F^2 & \leq \sum_{i,j} (\delta_{(i,j)} + \epsilon_{(i,j)})^2 \leq 2\sum_{i,j} (\delta_{(i,j)}^2 + \epsilon_{(i,j)}^2)
-        \end{align}
+    \textit{Step 3}: The reconstructed matrix $\hat{\mathbf{A}}$ satisfies:
+    \begin{align}
+        \|\mathbf{A} - \hat{\mathbf{A}}\|_F^2 & \leq \sum_{i,j} (\delta_{(i,j)} + \epsilon_{(i,j)})^2 \leq 2\sum_{i,j} (\delta_{(i,j)}^2 + \epsilon_{(i,j)}^2)
+    \end{align}
 
-        By selecting $\delta_{(i,j)} \leq \delta/(2\sqrt{pq})$ and $\epsilon_{(i,j)} \leq \delta/(2\sqrt{pq})$, we obtain $\|\mathbf{A} - \hat{\mathbf{A}}\|_F \leq \delta$.}
+    By selecting $\delta_{(i,j)} \leq \delta/(2\sqrt{pq})$ and $\epsilon_{(i,j)} \leq \delta/(2\sqrt{pq})$, we obtain $\|\mathbf{A} - \hat{\mathbf{A}}\|_F \leq \delta$. \qed
 \end{proof}
 
 \subsection{Error Bounds for Submatrix Co-Clustering}
+
 \begin{theorem}[Local Solution Quality]
     \label{thm:local-solution-quality}
     Let each block $\mathbf{B}_{(i,j)}$ yield a local solution $\mathbf{F}_{(i,j)}$ with $\epsilon_{(i,j)}$-optimality relative to its local optimum. If $\|\mathbf{A}[I_i,J_j] - \mathbf{B}_{(i,j)}\|_F \le \delta_{(i,j)}$ for each block, then the merged global solution $\mathbf{F}'$ satisfies $\|\mathbf{F}' - \mathbf{F}^*\|_F \le \sum_{i,j} \epsilon_{(i,j)} + g(\{\delta_{(i,j)}\})$, where $\mathbf{F}^*$ is the global optimal indicator matrix and $g$ is a mild function depending on approximation qualities of all blocks.
 \end{theorem}
 
 \begin{proof}
-    {\color{blue}Consider the global co-clustering objective $J(\mathbf{F}) = \|\mathbf{A} - \mathbf{F}\mathbf{H}\mathbf{G}^T\|_F^2$.
+    Consider the global co-clustering objective $J(\mathbf{F}) = \|\mathbf{A} - \mathbf{F}\mathbf{H}\mathbf{G}^T\|_F^2$.
 
-        \textit{Step 1}: The global objective decomposes as: $J(\mathbf{F}) = \sum_{i,j} \|\mathbf{A}[I_i, J_j] - \mathbf{F}[I_i, :]\mathbf{H}\mathbf{G}[J_j, :]^T\|_F^2$
+    \textit{Step 1}: The global objective decomposes as: $J(\mathbf{F}) = \sum_{i,j} \|\mathbf{A}[I_i, J_j] - \mathbf{F}[I_i, :]\mathbf{H}\mathbf{G}[J_j, :]^T\|_F^2$
 
-        \textit{Step 2}: For each block, $J_{(i,j)}(\mathbf{F}_{(i,j)}) \leq J_{(i,j)}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$ where $\mathbf{F}_{(i,j)}^*$ is the local optimum.
+    \textit{Step 2}: For each block, $J_{(i,j)}(\mathbf{F}_{(i,j)}) \leq J_{(i,j)}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$ where $\mathbf{F}_{(i,j)}^*$ is the local optimum.
 
-        \textit{Step 3}: Using approximation error: $J_{(i,j)}(\mathbf{F}') \leq \delta_{(i,j)}^2 + J_{(i,j)}^{(\mathbf{B})}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$
+    \textit{Step 3}: Using approximation error: $J_{(i,j)}(\mathbf{F}') \leq \delta_{(i,j)}^2 + J_{(i,j)}^{(\mathbf{B})}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$
 
-        \textit{Step 4}: Summing over blocks: $\|\mathbf{F}' - \mathbf{F}^*\|_F \leq \sqrt{\sum_{i,j} (\epsilon_{(i,j)} + \delta_{(i,j)}\sqrt{|I_i||J_j|})^2}$
+    \textit{Step 4}: Summing over blocks: $\|\mathbf{F}' - \mathbf{F}^*\|_F \leq \sqrt{\sum_{i,j} (\epsilon_{(i,j)} + \delta_{(i,j)}\sqrt{|I_i||J_j|})^2}$
 
-        Setting $g(\{\delta_{(i,j)}\}) = \sqrt{\sum_{i,j} \delta_{(i,j)}^2|I_i||J_j|}$ yields the stated bound.}
+    Setting $g(\{\delta_{(i,j)}\}) = \sqrt{\sum_{i,j} \delta_{(i,j)}^2|I_i||J_j|}$ yields the stated bound. \qed
 \end{proof}
 
 \subsection{Convergence Analysis}
+
 \begin{theorem}[Global Convergence]
     \label{thm:global-convergence}
     Under mild conditions on local solution quality and partitioning, with probability at least $1-\alpha$, the iterative merging converges to a local minimum of the original objective, and the probability of missing any significant co-cluster (larger than $T_m \times T_n$) is bounded by $P(\text{miss}) \le \exp(-\gamma T_p)$ where $T_p$ is the number of random partitions and $\gamma > 0$ depends on the partition parameters.
 \end{theorem}
 
 \begin{proof}
-    {\color{blue}We establish convergence through detection guarantee and algorithmic convergence.
+    We establish convergence through detection guarantee and algorithmic convergence.
 
-        \textit{Part A (Detection)}: For each significant co-cluster $C_k$:
-        $$P(\text{detect } C_k) \geq 1 - mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]$$
+    \textit{Part A (Detection)}: For each significant co-cluster $C_k$:
+    $$P(\text{detect } C_k) \geq 1 - mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]$$
 
-        Over $T_p$ trials: $P(\text{miss } C_k) \leq \left(mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]\right)^{T_p}$
+    Over $T_p$ trials: $P(\text{miss } C_k) \leq \left(mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]\right)^{T_p}$
 
-        Setting $\gamma = 2\min_k[(s^{(k)})^2\phi + (t^{(k)})^2\psi] - \log(mn)$ gives $P(\text{miss } C_k) \leq \exp(-\gamma T_p)$.
+    Setting $\gamma = 2\min_k[(s^{(k)})^2\phi + (t^{(k)})^2\psi] - \log(mn)$ gives $P(\text{miss } C_k) \leq \exp(-\gamma T_p)$.
 
-        \textit{Part B (Convergence)}: The merging process maintains monotonic improvement. Since the score function is bounded and clusters are finite, termination occurs in at most $K_0 - 1$ steps.}
+    \textit{Part B (Convergence)}: The merging process maintains monotonic improvement. Since the score function is bounded and clusters are finite, termination occurs in at most $K_0 - 1$ steps. \qed
 \end{proof}
 
 \subsection{Assumption Sensitivity Analysis}
-\label{subsec:sensitivity-analysis}
-
-{\color{blue}\textbf{Independence Violation}: When partitioning exhibits dependence with correlation $\rho$, bounds become conservative by factor $(1-\rho^2)^{-1/2}$. For $|\rho| \leq 0.3$, this results in bounds looser by at most 5\%.
-
-\textbf{Non-uniform Density}: For density variation $d_{\max}/d_{\min}$, detection probability reduces by factor $\exp(-\log^2(d_{\max}/d_{\min}))$. Co-clusters with variation $< 2\times$ maintain $> 95\%$ theoretical probability.
-
-\textbf{Finite Sample Effects}: Block sizes approaching $\min(\phi_i, \psi_j) = \Theta(\log^2(mn))$ make bounds loose. Maintaining $\min(\phi_i, \psi_j) \geq 10\log^2(\max(m,n))$ ensures bounds within 10\% of predictions.
-
-\textbf{Empirical Validation}: Independence tests (Kolmogorov-Smirnov, $p > 0.05$) confirm assumptions across datasets. Bound tightness shows theoretical predictions match empirical results within 8\% deviation.}
-
-\subsection{Sample Complexity Analysis}
-\label{subsec:sample-complexity}
-
-{\color{blue}\textbf{Detection Requirements}: To achieve detection probability $\geq 1-\delta$:
-    \begin{equation}
-        T_p \geq \frac{\log(K/\delta)}{2 \min_k [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2]}
-    \end{equation}
-
-    \textbf{Block Size Optimization}: For co-clusters of minimum size $M_{\min} \times N_{\min}$:
-    $$\phi_i \geq \frac{2M_{\min}}{M} \cdot \phi_{\text{total}}, \quad \psi_j \geq \frac{2N_{\min}}{N} \cdot \psi_{\text{total}}$$
-
-    \textbf{Computational Complexity}: Total cost scales as $O(T_p \cdot mn \cdot \phi \psi \min(\phi, \psi))$ for spectral methods.}
-
-These theoretical results establish that our divide-and-conquer approach can reliably detect significant co-clusters, provide quantifiable approximation guarantees, ensure convergence to meaningful local optima, and scale efficiently with problem size through parallelization. {\color{blue}The complete mathematical proofs of all theorems, including explicit error bounds and Chernoff-type tail inequalities, are now provided in the main text with rigorous justification of all modeling assumptions.}
-
-\subsection{Conclusion and Practical Considerations}
-
-The proposed DiMergeCo framework offers a scalable and robust solution for co-clustering massive datasets. It partitions the data according to probabilistic principles, applies a chosen local co-clustering method in parallel, and reconciles partial solutions into a unified set of co-clusters that capture the most informative row-column relationships. Multiple factors influence practical performance. For instance, tuning $(p, q)$ to ensure submatrices are neither too large nor too small is important for balancing computational efficiency against the risk of fragmenting key patterns. Likewise, the score function governing merges can be adapted to emphasize statistical coherence, density, or application-specific relevance. In distributed environments, careful attention to load balancing, sparse data representations, and asynchronous communications can further reduce overhead. Overall, by synthesizing classic ideas from partitioned matrix approximations and modern co-clustering algorithms, DiMergeCo enables a tractable and theoretically sound approach to analyzing large-scale data.
-
-
-
-\subsection{Error Bounds for Submatrix Co-Clustering}
-\begin{theorem}[Local Solution Quality]
-    \label{thm:local-solution-quality}
-    Let each block $\mathbf{B}_{(i,j)}$ yield a local solution $\mathbf{F}_{(i,j)}$ with $\epsilon_{(i,j)}$-optimality relative to its local optimum. If $\|\mathbf{A}[I_i,J_j] - \mathbf{B}_{(i,j)}\|_F \le \delta_{(i,j)}$ for each block, then the merged global solution $\mathbf{F}'$ satisfies $\|\mathbf{F}' - \mathbf{F}^*\|_F \le \sum_{i,j} \epsilon_{(i,j)} + g(\{\delta_{(i,j)}\})$, where $\mathbf{F}^*$ is the global optimal indicator matrix and $g$ is a mild function depending on approximation qualities of all blocks.
-\end{theorem}
-
-{\color{blue}\textbf{Complete Proof}: Consider the global co-clustering objective $J(\mathbf{F}) = \|\mathbf{A} - \mathbf{F}\mathbf{H}\mathbf{G}^T\|_F^2$.
-
-\textit{Step 1}: The global objective decomposes as: $J(\mathbf{F}) = \sum_{i,j} \|\mathbf{A}[I_i, J_j] - \mathbf{F}[I_i, :]\mathbf{H}\mathbf{G}[J_j, :]^T\|_F^2$
-
-\textit{Step 2}: For each block, $J_{(i,j)}(\mathbf{F}_{(i,j)}) \leq J_{(i,j)}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$ where $\mathbf{F}_{(i,j)}^*$ is the local optimum.
-
-\textit{Step 3}: Using approximation error: $J_{(i,j)}(\mathbf{F}') \leq \delta_{(i,j)}^2 + J_{(i,j)}^{(\mathbf{B})}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$
-
-\textit{Step 4}: Summing over blocks: $\|\mathbf{F}' - \mathbf{F}^*\|_F \leq \sqrt{\sum_{i,j} (\epsilon_{(i,j)} + \delta_{(i,j)}\sqrt{|I_i||J_j|})^2}$
-
-Setting $g(\{\delta_{(i,j)}\}) = \sqrt{\sum_{i,j} \delta_{(i,j)}^2|I_i||J_j|}$ yields the stated bound. \qed}
-
-\sout{Proof Sketch: Consider global objective $J(\mathbf{F})$ and its minimizer $\mathbf{F}^*$. The local optimality condition and block approximation error bounds combine via triangle inequality to yield the global deviation bound. Full proof appears in Appendix.}
-
-\subsection{Convergence Analysis}
-\begin{theorem}[Global Convergence]
-    \label{thm:global-convergence}
-    Under mild conditions on local solution quality and partitioning, with probability at least $1-\alpha$, the iterative merging converges to a local minimum of the original objective, and the probability of missing any significant co-cluster (larger than $T_m \times T_n$) is bounded by $P(\text{miss}) \le \exp(-\gamma T_p)$ where $T_p$ is the number of random partitions and $\gamma > 0$ depends on the partition parameters.
-\end{theorem}
-
-{\color{blue}\textbf{Complete Proof}: We establish convergence through detection guarantee and algorithmic convergence.
-
-\textit{Part A (Detection)}: For each significant co-cluster $C_k$:
-$$P(\text{detect } C_k) \geq 1 - mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]$$
-
-Over $T_p$ trials: $P(\text{miss } C_k) \leq \left(mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]\right)^{T_p}$
-
-Setting $\gamma = 2\min_k[(s^{(k)})^2\phi + (t^{(k)})^2\psi] - \log(mn)$ gives $P(\text{miss } C_k) \leq \exp(-\gamma T_p)$.
-
-\textit{Part B (Convergence)}: The merging process maintains monotonic improvement. Since the score function is bounded and clusters are finite, termination occurs in at most $K_0 - 1$ steps. \qed}
-
-\sout{Proof Sketch: Using Chernoff-type bounds, we show the detection probability for each significant co-cluster is high in a single partition attempt. The union bound over multiple attempts establishes the global detection guarantee. Since the objective is bounded below and merges are monotonic, convergence to a local minimum follows. Full proof appears in Appendix.}
-
-{\color{blue}\subsection{Assumption Sensitivity Analysis}
 \label{subsec:sensitivity-analysis}
 
 \textbf{Independence Violation}: When partitioning exhibits dependence with correlation $\rho$, bounds become conservative by factor $(1-\rho^2)^{-1/2}$. For $|\rho| \leq 0.3$, this results in bounds looser by at most 5\%.
@@ -812,14 +743,13 @@ Setting $\gamma = 2\min_k[(s^{(k)})^2\phi + (t^{(k)})^2\psi] - \log(mn)$ gives $
 \textbf{Block Size Optimization}: For co-clusters of minimum size $M_{\min} \times N_{\min}$:
 $$\phi_i \geq \frac{2M_{\min}}{M} \cdot \phi_{\text{total}}, \quad \psi_j \geq \frac{2N_{\min}}{N} \cdot \psi_{\text{total}}$$
 
-\textbf{Computational Complexity}: Total cost scales as $O(T_p \cdot mn \cdot \phi \psi \min(\phi, \psi))$ for spectral methods.}
-
-These theoretical results establish that our divide-and-conquer approach can reliably detect significant co-clusters, provide quantifiable approximation guarantees, ensure convergence to meaningful local optima, and scale efficiently with problem size through parallelization. {\color{blue}The complete mathematical proofs of all theorems, including explicit error bounds and Chernoff-type tail inequalities, are now provided in the main text with rigorous justification of all modeling assumptions.} \sout{The detailed mathematical proofs of all theorems, including explicit error bounds and Chernoff-type tail inequalities, are provided in Appendix to maintain readability of the main text.}
+\textbf{Computational Complexity}: Total cost scales as $O(T_p \cdot mn \cdot \phi \psi \min(\phi, \psi))$ for spectral methods.
 
 \subsection{Conclusion and Practical Considerations}
 
-The proposed DiMergeCo framework offers a scalable and robust solution for co-clustering massive datasets. It partitions the data according to probabilistic principles, applies a chosen local co-clustering method in parallel, and reconciles partial solutions into a unified set of co-clusters that capture the most informative row-column relationships. Multiple factors influence practical performance. For instance, tuning $(p, q)$ to ensure submatrices are neither too large nor too small is important for balancing computational efficiency against the risk of fragmenting key patterns. Likewise, the score function governing merges can be adapted to emphasize statistical coherence, density, or application-specific relevance. In distributed environments, careful attention to load balancing, sparse data representations, and asynchronous communications can further reduce overhead. Overall, by synthesizing classic ideas from partitioned matrix approximations and modern co-clustering algorithms, DiMergeCo enables a tractable and theoretically sound approach to analyzing large-scale data.
+These theoretical results establish that our divide-and-conquer approach can reliably detect significant co-clusters, provide quantifiable approximation guarantees, ensure convergence to meaningful local optima, and scale efficiently with problem size through parallelization. The complete mathematical proofs of all theorems, including explicit error bounds and Chernoff-type tail inequalities, are provided above with rigorous justification of all modeling assumptions.
 
+The proposed DiMergeCo framework offers a scalable and robust solution for co-clustering massive datasets. It partitions the data according to probabilistic principles, applies a chosen local co-clustering method in parallel, and reconciles partial solutions into a unified set of co-clusters that capture the most informative row-column relationships. Multiple factors influence practical performance, including tuning partition parameters to balance computational efficiency against pattern preservation, adapting scoring functions for domain-specific requirements, and optimizing load balancing in distributed environments.
 
 \section{Experimental Evaluation}
 \label{sec:experiment}
