@@ -1446,3 +1446,80 @@
   annotation   = {影响因子: 5.3 CCF: C 5年影响因子: 5.2},
   file         = {D:\zihan\Zotero\storage\TJXWYC8K\Zhao et al. - 2023 - Multi-view co-clustering with multi-similarity.pdf}
 }
+
+@article{farnoosh2022ApplicationModifiedCombinational,
+  title = {Application of a {{Modified Combinational Approach}} to {{Brain Tumor Detection}} in {{MR Images}}},
+  author = {Farnoosh, Rahman and Noushkaran, Hamidreza},
+  date = {2022-12-01},
+  journaltitle = {Journal of Digital Imaging},
+  shortjournal = {J Digit Imaging},
+  volume = {35},
+  number = {6},
+  pages = {1421--1432},
+  issn = {1618-727X},
+  doi = {10.1007/s10278-022-00653-4},
+  url = {https://doi.org/10.1007/s10278-022-00653-4},
+  urldate = {2025-05-29},
+  abstract = {For many years, brain tumor detection has been one of the most essential and competitive issues for medical researchers. Many methods have been developed to detect normal and abnormal tissues in Magnetic Resonance (MR) images. In this work, we present a novel algorithm based on iterative Co-Clustering and K-Means (ICCK). After image pre-processing and enhancement, this algorithm recognizes the part of the image that contains the tumor and eliminates the unused parts using a modification of the Co-Clustering method. Finally, the K-Means clustering method is adopted to detect the tumor area. The Co-Clustering methods cannot be used directly for the detection of brain tumors because they manipulate the image matrix for the purpose of block clustering. Furthermore, they are incapable of detecting the tumor area correctly and accurately. Such issues are addressed by our proposed methodology. The latent block model (LBM) is applied as the Co-Clustering method in this work. We evaluate the performance of our method on the images that were collected from the BraTS2019 dataset. The sensitivity, specificity, accuracy, and dice similarity coefficient values for our method are 82.41\%, 99.74\%, 99.28\%, and 84.87\%, respectively, which shows that the proposed method outperforms the existing methods in the literature. Moreover, it performs much better on complex images.},
+  langid = {english}
+}
+
+@article{farnoosh2024NovelApproachAutomatic,
+  title = {A novel approach for automatic tumor detection and localization in mammography images via mixture of factor analyzers based on co-clustering},
+  author = {Farnoosh, Rahman and Aghagoli, Fatemeh},
+  date = {2024-05-01},
+  journaltitle = {Biomedical Signal Processing and Control},
+  shortjournal = {Biomedical Signal Processing and Control},
+  volume = {91},
+  pages = {106038},
+  issn = {1746-8094},
+  doi = {10.1016/j.bspc.2024.106038},
+  url = {https://www.sciencedirect.com/science/article/pii/S174680942400096X},
+  urldate = {2025-05-29},
+  abstract = {This paper proposes a novel model-based method called the Extension of Mixture of Factor Analyzers for Co-Clustering of Images (EMFACCI) to segment grayscale mammography images into a number of blocks, one of which contains the tumor. After image preprocessing and enhancement, the EMFACCI model first determines the optimal number of row clusters and column clusters by reducing the local dimension. Using the optimal number of blocks, the proposed model changes the location of columns and rows by clustering them simultaneously until it identifies the block containing the tumor. Finally, the detected block is binarized using Fuzzy C-Mean clustering and located on the input image by the proposed model, while other blocks are removed. The performance of the proposed method is evaluated on images taken from the MIAS and DDSM datasets. The results demonstrate the effectiveness of the proposed method based on sensitivity, specificity, dice, jaccard similarity index (JSI), false-negative rate (FNR), false-positive rate (FPR), and accuracy. Our proposed method performs well in detecting tumors of different sizes and is accurate in dealing with complex and high-dimensional images. Additionally, it outperforms existing detection methods.}
+}
+
+@article{farnoosh2024BrainMagneticResonance,
+  title = {Brain magnetic resonance images segmentation via improved mixtures of factor analyzers based on dynamic co-clustering},
+  author = {Farnoosh, Rahman and Aghagoli, Fatemeh},
+  date = {2024-05-28},
+  journaltitle = {Neurocomputing},
+  shortjournal = {Neurocomputing},
+  volume = {583},
+  pages = {127551},
+  issn = {0925-2312},
+  doi = {10.1016/j.neucom.2024.127551},
+  url = {https://www.sciencedirect.com/science/article/pii/S0925231224003229},
+  urldate = {2025-05-29},
+  abstract = {The main goal of this paper is to attain accurate and automatic detection of brain tumors in gray magnetic resonance images using reducing the local dimensions. We propose a novel model called Improved Mixtures of Factor Analyzers based on Dynamic Co-Clustering (IMFADCC) for the detection and localization of brain tumors. After image preprocessing and enhancement, the optimal numbers of row clusters and column clusters corresponding to each row cluster, alongside other model parameters, are determined concurrently based on the size of the tumor by our model. Then, using the optimal values obtained, the image is co-clustered by simultaneously clustering rows and columns until the block containing the tumor is identified. The output image is divided into a certain number of blocks, one of which contains the tumor. For post-processing, the identified block is binarized using minimum error thresholding. The proposed model accurately detects and locates the block binarized within the original image while considering the remainder of the image as background. The effectiveness of the proposed method was assessed by evaluating its accuracy, Dice, intersection on union, geometric mean, receiver operating characteristic curve, specificity, and sensitivity criteria on the BraTS2018, BraTS2019, and BraTS2020 datasets. The results show that our method has significant performance and is highly accurate in detecting tumors of different sizes in complex and high-size images. Moreover, our method outperforms the existing diagnostic methods.}
+}
+
+@article{farnoosh2025PseudodeepUnsupervisedModelbased,
+  title = {Pseudo-deep unsupervised model-based clustering for brain tumor detection in magnetic resonance images},
+  author = {Farnoosh, Rahman and Aghagoli, Fatemeh},
+  date = {2025-04-01},
+  journaltitle = {Applied Soft Computing},
+  shortjournal = {Applied Soft Computing},
+  volume = {174},
+  pages = {112940},
+  issn = {1568-4946},
+  doi = {10.1016/j.asoc.2025.112940},
+  url = {https://www.sciencedirect.com/science/article/pii/S1568494625002510},
+  urldate = {2025-05-29},
+  abstract = {This paper proposes a novel unsupervised pseudo-deep algorithm, Mixtures of Factor Analyzers based on Rows Iterative Clustering with Image Rotation according to Dimension (MFARICIRD), for accurate and automatic detection of brain tumors in grayscale magnetic resonance images. The main goal is to extract the region of interest (ROI) containing tumors using a pseudo-deep framework with iterative clustering. This framework incorporates a layer by layer structure inspired by deep learning, using a mixture of agent analysts to optimize the clustering process. In each computational layer, the algorithm first rotates the image 90 degrees clockwise if the number of rows is greater than the number of columns. Then, it performs clustering on the image using the estimated parameters of optimal clusters and the optimal number of clusters until the tumor-containing cluster is identified. The identified cluster is used as input for the next layer. These computational processes are iterated layer by layer until the proposed convergence criterion, which acts as the stopping rule, is satisfied. The algorithm uses fuzzy c-mean clustering to binarize the output cluster of the final layer (ROI), enabling the exact extraction of the tumor shape. Finally, it localizes the detected tumor within the original image. A comprehensive evaluation of the effectiveness of the proposed algorithm is presented on the BraTS2020, BraTS2019, and BraTS2018 datasets, demonstrating exceptional performance in detecting tumors with different locations, sizes, and complexities. The algorithm achieved an accuracy and Dice similarity coefficient of 99.96\,+\,0.0073\,\% and 98.97\,\% on the BraTS2018, 99.97\,+\,0.0087\,\% and 99.22\,+\,0.0051\,\% on the BraTS2019, and 99.98\,+\,0.0038\,\% and 99.33\,+\,0.0072\,\% on the BraTS2020. The results highlight the remarkable capability of the algorithm in dealing with complex and high-dimensional images, especially in detecting small and unclear tumors. Moreover, it outperforms existing diagnostic methods, significantly improving the accuracy and reliability of brain tumor detection.}
+}
+
+@article{farnoosh2024DevelopmentUnsupervisedPseudodeep,
+  title = {Development of an unsupervised pseudo-deep approach for brain tumor detection in magnetic resonance images},
+  author = {Farnoosh, Rahman and Noushkaran, Hamidreza},
+  date = {2024-09-27},
+  journaltitle = {Knowledge-Based Systems},
+  shortjournal = {Knowledge-Based Systems},
+  volume = {300},
+  pages = {112171},
+  issn = {0950-7051},
+  doi = {10.1016/j.knosys.2024.112171},
+  url = {https://www.sciencedirect.com/science/article/pii/S0950705124008050},
+  urldate = {2025-05-29},
+  abstract = {Brain tumor detection has long been a significant and challenging issue in medical research. In this study, we propose an unsupervised pseudo-deep method for detecting brain tumors in Magnetic Resonance (MR) images. Our approach utilizes iterative spectral Co-Clustering and Fuzzy C-means techniques to achieve precise segmentation results. In each iteration, the algorithm recognizes the tumor block from its input image using spectral Co-Clustering. The selected block from the previous iteration serves as the input for the subsequent iteration. In the final iteration, Fuzzy C-Means is applied to the last selected block to extract the tumor, and a scheme is proposed to determine the location of the tumor in the original image. Through this iterative pseudo-deep method, our approach exhibits a layered-like structure, resembling deep learning architectures, within the context of unsupervised methods. We evaluated our approach using the BraTS2020 and BraTS2021 datasets and assessed its performance using key metrics. Our method achieved values of 99.12\% and 81.42\% for accuracy and dice coefficient on BraTS2020 and also 99.21\% and 82.03\% on the BraTS2021 dataset, surpassing the performance of existing unsupervised methods reported in the literature. Moreover, our approach demonstrates notably superior performance when dealing with complex images. The proposed method offers a unique perspective in the application of unsupervised techniques for brain tumor detection using a pseudo-deep structure.}
+}

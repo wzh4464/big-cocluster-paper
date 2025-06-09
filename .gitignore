@@ -26,6 +26,7 @@
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
+*SAVE*
 *.bcf
 *.blg
 *-blx.aux
@@ -242,3 +243,5 @@ TSWLatexianTemp*
 *.spl
 
 root.pdf
+
+response.pdf
