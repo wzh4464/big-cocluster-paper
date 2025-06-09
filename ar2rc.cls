@@ -90,7 +90,7 @@
     {\noindent #2\hspace{1em}} % Starred version (\AR*)
     {
       \noindent\textbf{AR:}\hspace{1em}
-      {\bfseries #2}\par % Unstarred version (\AR)
+      {#2}\par % Unstarred version (\AR)
     }
 }
 
