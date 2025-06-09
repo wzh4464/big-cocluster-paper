@@ -12,6 +12,9 @@
 % the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
 
+% TODO:
+% renew the counter
+
 \documentclass{ar2rc}
 \usepackage{bm}
 \usepackage{amsfonts,amssymb}
@@ -120,92 +123,86 @@ Notations: \textbf{RC:} \textbf{\textit{Review Comment}}; \textbf{AR:} \textbf{A
 
 \RC{The probabilistic partitioning assumes co-clusters exceed a certain size for preservation with high probability. However, real-world data may contain small co-clusters that could be fragmented. Please discuss how DiMergeCo addresses this or provide guidance on parameter settings to detect smaller co-clusters effectively.}
 
-\AR{We thank the reviewer for this important concern. DiMergeCo provides systematic guidance for detecting co-clusters of any desired size through our theoretical framework.}
+\AR{We thank the reviewer for this important concern. DiMergeCo implements multiple protective mechanisms specifically designed to address small co-cluster fragmentation through theoretical guarantees, algorithmic safeguards, and experimental validation.}
 
-\textbf{Parameter Setting for Target Co-cluster Size:}
+\textbf{Multi-Sampling Protection:} Our probabilistic model provides exponential protection against fragmentation through repeated sampling iterations. For any co-cluster $C_k$, the probability of successful preservation across $T_p$ independent sampling iterations follows:
+\begin{equation}
+  P(\text{preserve}) = 1 - \left(1 - P_{\text{single}}\right)^{T_p}
+\end{equation}
+Even for co-clusters with relatively low single-iteration detection probability, multiple sampling iterations provide substantial protection. For example, co-clusters with $P_{\text{single}} = 0.2$ achieve $67.2\%$ preservation with $T_p = 5$ and $89.3\%$ with $T_p = 10$.
 
-For co-clusters of size $m \times n$, our method provides explicit parameter guidance:
-\begin{enumerate}
-  \item Set thresholds: $T_m = m$, $T_n = n$
-  \item Calculate required sampling iterations using our formula:
-        \begin{equation}
-          T_p \geq \frac{\log(K/\delta)}{2 \min_k [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2]}
-        \end{equation}
-  \item Apply the probabilistic partitioning with these parameters
-\end{enumerate}
+\textbf{Adaptive Block Sizing:} Algorithm~\ref{alg:partitioning} dynamically expands block dimensions to protect detected co-clusters:
+\begin{equation}
+  \phi_i \leftarrow \max\left(\phi_i, \left\lceil\frac{M^{(k)}T_m}{Ms^{(k)}}\right\rceil\right)
+\end{equation}
+This adaptive mechanism ensures that co-clusters exceeding the size threshold are proportionally accommodated within individual blocks, reducing fragmentation risk.
 
-\textbf{Experimental Validation:}
+\textbf{Hierarchical Merging as Secondary Protection:} Our hierarchical merging strategy serves as a secondary protection layer, reconstructing co-clusters that may have been partially fragmented across block boundaries. The overlap threshold $\tau$ is calibrated to identify and merge fragments of the same underlying co-cluster structure.
 
-We conducted controlled experiments on $5000 \times 5000$ synthetic matrices with embedded co-clusters of various sizes:
+\textbf{Experimental Validation on Small Co-cluster Detection:} We conducted controlled experiments on synthetic $5000 \times 5000$ matrices with planted co-clusters of varying sizes ($T_m = T_n = 5$). Results demonstrate DiMergeCo's effectiveness:
 
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{images/nmi_small.png}
+      \caption{NMI for small co-clusters}
+      \label{fig:nmi_small}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{images/ari_small.png}
+      \caption{ARI for small co-clusters}
+      \label{fig:ari_small}
+  \end{subfigure}
+  \caption{Small co-cluster detection results. (a) NMI and (b) ARI performance across different sizes.}
+  \label{fig:small-co-cluster-detection}
+\end{figure}
+
+\textbf{Detection vs. Quality Distinction:} We distinguish between (1) successfully identifying the presence of a co-cluster structure and (2) accurately clustering its constituent elements (measured by NMI/ARI). Our results demonstrate strong performance on both aspects.
+
+\textbf{Quality vs. Scalability Trade-off:} The clustering quality comparison reveals an important practical advantage:
 \begin{itemize}
-  \item \textbf{Target 8×8 co-clusters:} Setting $T_m=T_n=8$, formula predicted $T_p=6$, achieved $94.2\%$ detection rate
-  \item \textbf{Target 5×5 co-clusters:} Setting $T_m=T_n=5$, $T_p=8$, achieved $89.1\%$ detection rate
-  \item \textbf{Theoretical validation:} Empirical results matched predictions within $\pm 3\%$ across all tested sizes
+  \item For $20 \times 20$ co-clusters: SCC (NMI: 0.76, ARI: 0.68) vs. DiMergeCo-SCC (NMI: 0.74, ARI: 0.62)
+  \item DiMergeCo maintains competitive quality while enabling distributed processing
+  \item SCC cannot process matrices beyond moderate scales due to $O(MN \min(M,N))$ complexity
 \end{itemize}
 
-\textbf{Minimum Size Considerations:}
-
-While our method can theoretically detect arbitrarily small co-clusters, we emphasize that co-clusters smaller than $5 \times 5$ may lack statistical significance. Co-clustering aims to discover meaningful patterns representing shared characteristics across multiple samples and features. Extremely small co-clusters ($< 5 \times 5$) often represent noise rather than genuine structural patterns.
-
-\textbf{Practical Guidelines:}
+\textbf{Progressive Performance Trend:} Results show improving relative performance as co-cluster size increases:
 \begin{itemize}
-  \item For document clustering: Use $T_m = T_n \geq 8$ (meaningful topic-term associations)
-  \item For recommendation systems: Use $T_m = T_n \geq 10$ (user-item preference groups)
-  \item For gene expression: Use $T_m = T_n \geq 5$ (pathway-sample relationships)
+  \item $5 \times 5$: Challenging for all methods (approaches noise threshold)
+  \item $10 \times 10$: DiMergeCo approaches SCC performance
+  \item $15 \times 15$ and above: Performance gap narrows significantly
 \end{itemize}
+This trend aligns with our theoretical prediction that larger co-clusters are more reliably preserved through partitioning.
 
-This framework ensures reliable detection of statistically meaningful co-clusters while providing flexibility for domain-specific requirements.
+\textbf{Practical Advantage in Real-world Scenarios:} While SCC shows slight quality advantages on small synthetic examples, DiMergeCo's key contribution lies in making co-clustering feasible for large-scale datasets where traditional methods fail entirely. Based on our experimental results, DiMergeCo achieves effective detection across all tested sizes, with particularly strong performance for co-clusters $\geq 10 \times 10$ where it approaches or matches SCC quality while maintaining scalability advantages.
+
+\textbf{Parameter Optimization:} Specific parameter settings for enhanced small co-cluster detection are detailed in our comprehensive sensitivity analysis (see Response to Comment 2).
+
+\textbf{Theoretical Limitations and Practical Considerations:}
+We acknowledge that extremely small co-clusters (e.g., smaller than $5 \times 5$) pose inherent challenges for any partitioning-based approach. In large-scale co-clustering scenarios, such small patterns often exhibit limited structural significance and are highly susceptible to noise and transient, non-meaningful fluctuations. As a result, their detection may not only be unreliable but also of limited practical value in many real-world applications.
 
 \textbf{Manuscript Modifications:}
 
-\begin{quote}
-  In summary, the main contributions of this paper are:
-
-  \begin{enumerate}
-    \item \textbf{Theoretically-Guaranteed Probabilistic Partitioning:} We introduce the first matrix partitioning algorithm specifically designed for co-cluster preservation, fundamentally different from existing uniform or load-based partitioning methods. Our algorithm adaptively determines partition configurations and sampling iterations based on co-cluster characteristics. This adaptive mechanism provides explicit probabilistic guarantees for preserving co-clusters of varying sizes, enabling reliable decomposition of global co-clustering into independent local problems.
-
-    \item \textbf{Communication-Optimal Hierarchical Merging Strategy:} We design a binary tree-based coordination algorithm that eliminates the centralized bottlenecks inherent in existing distributed co-clustering methods. Unlike prior approaches requiring centralized coordination or broadcast communication, our hierarchical strategy reduces per-node communication complexity from $O(n)$ to $O(\log n)$ while providing theoretical convergence guarantees, representing a fundamental architectural advancement for distributed co-clustering.
-
-    \item \textbf{Integrated Algorithmic Framework with Theoretical Foundations:} We establish a complete theoretical framework connecting local solution quality to global optimality bounds, providing the first rigorous analysis for distributed co-clustering performance guarantees. Our MPI implementation demonstrates that these algorithmic innovations enable processing scales where existing methods fail due to computational limitations while achieving superior clustering quality and significant computational efficiency improvements.
-  \end{enumerate}
-\end{quote}
-
-We also added the following experimental validation to Section 6.1:
+We enhanced our contribution statement to emphasize the adaptive preservation mechanism:
 
 \begin{quote}
-  \textbf{Small Co-cluster Detection Validation:}
-
-  To address concerns about small co-cluster fragmentation, we conducted controlled experiments on synthetic $5000 \times 5000$ matrices with embedded co-clusters ranging from $5 \times 5$ to $50 \times 50$. We compared DiMergeCo with standard Spectral Co-Clustering (SCC) to validate our theoretical guarantees.
-
-  \textbf{Experimental Setup:} The synthetic matrix contained 20 co-clusters of each size category, embedded with signal-to-noise ratio of 3:1. We tested DiMergeCo with adaptive parameter settings: for target co-cluster size $m \times n$, we set $T_m = m$, $T_n = n$, and calculated required $T_p$ using Equation~\eqref{eq:prob-of-identifying-all-co-clusters}.
-
-  \textbf{Results:} As shown in Table~\ref{tab:small-cocluster-detection}, DiMergeCo achieves detection rates exceeding 95\% for co-clusters meeting the size threshold ($m \geq T_m$, $n \geq T_n$), closely matching our theoretical predictions. While SCC achieved slightly higher detection rates (99\%) on the complete matrix, it cannot scale to datasets exceeding memory limits. For co-clusters smaller than the threshold, detection rates drop as expected by theory, confirming our probabilistic bounds.
-
-  This validation demonstrates that DiMergeCo provides reliable co-cluster detection within theoretical guarantees while enabling scalability to datasets where traditional methods become computationally infeasible. The slight performance trade-off (95\% vs 99\%) is compensated by the ability to process large-scale matrices that exceed single-machine memory limits.
+  \textbf{Theoretically-Guaranteed Probabilistic Partitioning:} We introduce the first matrix partitioning algorithm specifically designed for co-cluster preservation, fundamentally different from existing uniform or load-based partitioning methods. Our algorithm adaptively determines partition configurations and sampling iterations based on co-cluster characteristics. This adaptive mechanism provides explicit probabilistic guarantees for preserving co-clusters of varying sizes, enabling reliable decomposition of global co-clustering into independent local problems.
 \end{quote}
 
-\begin{table}[h]
-  \centering
-  \fbox{%
-    \begin{minipage}{0.9\linewidth}
-      \centering
-      \caption{Small Co-cluster Detection Performance Comparison}
-      \label{tab:small-cocluster-detection}
-      \begin{tabular}{lccc}
-        \toprule
-        Co-cluster Size           & SCC (Whole Matrix) & DiMergeCo & Theoretical Bound \\
-        \midrule
-        $5 \times 5$ ($T_m=5$)    & 99.0\%             & 95.2\%    & $\geq 95\%$       \\
-        $8 \times 8$ ($T_m=8$)    & 99.1\%             & 96.1\%    & $\geq 95\%$       \\
-        $10 \times 10$ ($T_m=10$) & 99.2\%             & 97.3\%    & $\geq 95\%$       \\
-        $15 \times 15$ ($T_m=15$) & 99.3\%             & 98.1\%    & $\geq 95\%$       \\
-        $20 \times 20$ ($T_m=20$) & 99.4\%             & 98.7\%    & $\geq 95\%$       \\
-        \bottomrule
-      \end{tabular}
-    \end{minipage}
-  }
-\end{table}
+We added a new subsection in~\Cref{sec:experiment} "Small Co-cluster Detection Analysis":
+
+\begin{quote}
+  To validate small co-cluster preservation, we conducted controlled experiments on synthetic $5000 \times 5000$ matrices with planted co-clusters ranging from $5 \times 5$ to $20 \times 20$ with minimum thresholds $T_m = T_n = 5$. As demonstrated in~\Cref{fig:small-co-cluster-detection}, DiMergeCo-SCC consistently outperforms NMTF and PNMTF across all co-cluster sizes, confirming that the proposed multi-sampling, adaptive sizing, and merging mechanisms effectively protect small co-clusters from fragmentation. Notably, for $20 \times 20$ co-clusters, it achieves NMI=0.74 and ARI=0.62, closely matching SCC's performance (NMI=0.76, ARI=0.68) while offering distributed processing capabilities that SCC lacks. This empirically validates our theoretical guarantees and supports DiMergeCo's applicability to real-world datasets where small co-clusters are common.
+\end{quote}
+
+We also enhanced~\Cref{subsec:practical-implementation} with clarification of the coordinated protection mechanisms:
+
+\begin{quote}
+  The algorithm achieves reliable co-cluster preservation through three complementary mechanisms: (1) probabilistic bounds ensuring exponential protection through multi-sampling, (2) adaptive block sizing that expands dimensions for important co-clusters, and (3) hierarchical merging that reconstructs fragments across block boundaries. Together, these mechanisms provide robust protection against co-cluster fragmentation while maintaining computational efficiency for large-scale applications.
+\end{quote}
 
 \RC{2. The method relies on parameters such as block sizes ($\phi_i$, $\psi_i$), thresholds ($T_m$, $T_n$), and the probability threshold ($P_\text{thresh}$). The manuscript lacks discussion on how to select these parameters or their impact on performance. Please include an analysis of parameter sensitivity and practical guidelines for their tuning.}
 
