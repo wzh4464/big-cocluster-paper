@@ -172,7 +172,7 @@ Figure 4 demonstrates the optimization landscape, identifying computation time m
 
 \RC{3. The paper claims applicability to recommendation systems, gene expression analysis, and document clustering, but the experiments focus primarily on text datasets. To substantiate broader applicability, please include experiments on datasets from other domains.}
 
-\AR We would like to clarify that our experiments encompass multiple application domains beyond text analysis. Our experimental design strategically validates DiMergeCo across three distinct co-clustering scenarios.
+\AR{We would like to clarify that our experiments encompass multiple application domains beyond text analysis. Our experimental design strategically validates DiMergeCo across three distinct co-clustering scenarios.}
 
 \textbf{Multi-Domain Experimental Coverage:}
 
@@ -186,7 +186,7 @@ DiMergeCo operates as a matrix-agnostic framework where theoretical foundations 
 
 \RC{4. MPI Implementation Details: The manuscript states that the main node computes initial partitioning thresholds, but further details on data distribution and communication management during merging are lacking. Please elaborate on these aspects to enhance reproducibility.}
 
-\AR We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we provide the following clarifications:
+\AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we provide the following clarifications:}
 
 \textbf{Data Distribution Mechanism:}
 The data distribution strategy is detailed in Algorithm 2. The main node computes optimal block dimensions $\{\phi_i\}$ and $\{\psi_j\}$ using the probabilistic model, ensuring each processor receives blocks of size $\phi_i \times \psi_j$.
@@ -199,7 +199,7 @@ Load balancing is achieved through adaptive block sizing. The algorithm dynamica
 
 \RC{5. In Related Work section, please analyze the application of co-clustering in different areas, for example, in the area of medical image analysis I suggest following papers: [References 1-5]}
 
-\AR Thank you for this valuable suggestion. We have added a new subsection "Co-clustering Applications in Medical Image Analysis" in Section 2 that incorporates all five suggested papers.
+\AR{Thank you for this valuable suggestion. We have added a new subsection "Co-clustering Applications in Medical Image Analysis" in Section 2 that incorporates all five suggested papers.}
 
 \textbf{Manuscript Modifications:}
 
@@ -217,7 +217,7 @@ Modern medical imaging requires simultaneous analysis of thousands of high-resol
 
   1. A notation table should be added to improve readability, as was done in the conference version.}
 
-\AR Thank you for the suggestion. We have added a comprehensive notation table (Table 1) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.
+\AR{Thank you for the suggestion. We have added a comprehensive notation table (Table 1) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.}
 
 \textbf{Manuscript Modifications:}
 
@@ -225,7 +225,7 @@ Table 1 now includes sections for Matrix Notation, Co-clustering Concepts, Parti
 
 \RC{2. In Section III B, there is a potential error where the authors state "computing and storing the similarity matrix requires O(MN) memory." This should likely be O(M²) or O(N²). Please clarify.}
 
-\AR We sincerely thank the reviewer for this clarification request. In co-clustering context, our "similarity matrix" refers to the original data matrix $A \in \mathbb{R}^{M \times N}$, not traditional row-row ($M \times M$) or column-column ($N \times N$) similarity matrices.
+\AR{We sincerely thank the reviewer for this clarification request. In co-clustering context, our "similarity matrix" refers to the original data matrix $A \in \mathbb{R}^{M \times N}$, not traditional row-row ($M \times M$) or column-column ($N \times N$) similarity matrices.}
 
 Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 - Storage: $O(MN)$ for the data matrix itself
@@ -237,7 +237,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \RC{3. In Equation (5), the meanings of $L$, $x_{ij}$, and $u_{kl}$ need to be explicitly defined to ensure clarity.}
 
-\AR We thank the reviewer for this important observation and have modified the manuscript accordingly.
+\AR{We thank the reviewer for this important observation and have modified the manuscript accordingly.}
 
 \textbf{Manuscript Modifications:}
 
@@ -251,7 +251,7 @@ where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster,
 
 \RC{4. Figure 3 references "efficiency" but does not specify how this metric is defined. Please provide a clear definition.}
 
-\AR We thank the reviewer for this important observation. We have added a clear mathematical definition in Section 6.2.
+\AR{We thank the reviewer for this important observation. We have added a clear mathematical definition in Section 6.2.}
 
 \textbf{Manuscript Modifications:}
 
@@ -265,7 +265,7 @@ where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster,
 
   1. Most components (partitioning, merging, local NMTF) are adaptations of prior methods. The integration is useful but lacks algorithmic novelty.}
 
-\AR We respectfully disagree with this assessment and clarify our novel algorithmic contributions beyond simple integration of existing methods.
+\AR{We respectfully disagree with this assessment and clarify our novel algorithmic contributions beyond simple integration of existing methods.}
 
 \textbf{Novel Probabilistic Partitioning Algorithm:}
 
@@ -292,7 +292,7 @@ This joint analysis of partition approximation error and local optimization qual
 
 \RC{2. Several theorems are stated but not rigorously proved. Important assumptions (e.g., independence, sample size effects) are not discussed in depth.}
 
-\AR We believe there may be some misunderstanding regarding the theoretical content in our paper. Several rigorous proofs are already provided in our manuscript.
+\AR{We believe there may be some misunderstanding regarding the theoretical content in our paper. Several rigorous proofs are already provided in our manuscript.}
 
 \textbf{Enhanced Clarity for Better Understanding:}
 
@@ -333,15 +333,15 @@ This provides concrete guidance for parameter selection based on desired reliabi
 
 \RC{3. Only text datasets are used. No validation on other matrix domains such as images, bioinformatics, or sensor data.}
 
-\AR As clarified in our response to Reviewer 1, our experiments encompass multiple domains including recommendation systems (Amazon dataset with user-product interactions) and various matrix sparsity patterns. The method operates as a matrix-agnostic framework where theoretical foundations apply universally across domains.
+\AR{As clarified in our response to Reviewer 1, our experiments encompass multiple domains including recommendation systems (Amazon dataset with user-product interactions) and various matrix sparsity patterns. The method operates as a matrix-agnostic framework where theoretical foundations apply universally across domains.}
 
 \RC{4. The effect of core hyperparameters and algorithmic stages is unexplored.}
 
-\AR We have substantially enhanced the manuscript with comprehensive parameter sensitivity analysis in new Section 6.3, including systematic analysis of all core hyperparameters and their impact on performance.
+\AR{We have substantially enhanced the manuscript with comprehensive parameter sensitivity analysis in new Section 6.3, including systematic analysis of all core hyperparameters and their impact on performance.}
 
 \RC{5. Figures are not self-contained (missing axis labels), and a table of notation is needed to assist readers.}
 
-\AR We thank the reviewer for this constructive feedback and have made the following revisions:
+\AR{We thank the reviewer for this constructive feedback and have made the following revisions:}
 
 \textbf{Notation Table:} Added comprehensive Table 1 that systematically defines all mathematical symbols and parameters.
 
