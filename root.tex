@@ -688,7 +688,7 @@ The cornerstone of our approach lies in matrix approximation theory, which provi
         \|\mathbf{A} - \hat{\mathbf{A}}\|_F^2 & \leq \sum_{i,j} (\delta_{(i,j)} + \epsilon_{(i,j)})^2 \leq 2\sum_{i,j} (\delta_{(i,j)}^2 + \epsilon_{(i,j)}^2)
     \end{align}
 
-    By selecting $\delta_{(i,j)} \leq \delta/(2\sqrt{pq})$ and $\epsilon_{(i,j)} \leq \delta/(2\sqrt{pq})$, we obtain $\|\mathbf{A} - \hat{\mathbf{A}}\|_F \leq \delta$. \qed
+    By selecting $\delta_{(i,j)} \leq \delta/(2\sqrt{pq})$ and $\epsilon_{(i,j)} \leq \delta/(2\sqrt{pq})$, we obtain $\|\mathbf{A} - \hat{\mathbf{A}}\|_F \leq \delta$.
 \end{proof}
 
 \subsection{Error Bounds for Submatrix Co-Clustering}
@@ -709,7 +709,7 @@ The cornerstone of our approach lies in matrix approximation theory, which provi
 
     \textit{Step 4}: Summing over blocks: $\|\mathbf{F}' - \mathbf{F}^*\|_F \leq \sqrt{\sum_{i,j} (\epsilon_{(i,j)} + \delta_{(i,j)}\sqrt{|I_i||J_j|})^2}$
 
-    Setting $g(\{\delta_{(i,j)}\}) = \sqrt{\sum_{i,j} \delta_{(i,j)}^2|I_i||J_j|}$ yields the stated bound. \qed
+    Setting $g(\{\delta_{(i,j)}\}) = \sqrt{\sum_{i,j} \delta_{(i,j)}^2|I_i||J_j|}$ yields the stated bound.
 \end{proof}
 
 \subsection{Convergence Analysis}
@@ -729,7 +729,7 @@ The cornerstone of our approach lies in matrix approximation theory, which provi
 
     Setting $\gamma = 2\min_k[(s^{(k)})^2\phi + (t^{(k)})^2\psi] - \log(mn)$ gives $P(\text{miss } C_k) \leq \exp(-\gamma T_p)$.
 
-    \textit{Part B (Convergence)}: The merging process maintains monotonic improvement. Since the score function is bounded and clusters are finite, termination occurs in at most $K_0 - 1$ steps. \qed
+    \textit{Part B (Convergence)}: The merging process maintains monotonic improvement. Since the score function is bounded and clusters are finite, termination occurs in at most $K_0 - 1$ steps.
 \end{proof}
 
 \subsection{Assumption Sensitivity Analysis}
