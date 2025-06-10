@@ -87,7 +87,8 @@
 \makeatother
 
 \usepackage{pifont}
-\graphicspath{{pic}}
+\graphicspath{ {images/} }
+\renewcommand{\cite}[1]{~\autocite{#1}}
 
 \title{Response to Reviewers:\\
 DiMergeCo: Ellipse Detection via Global Arc Compatibilities and Adaptive Co-Clustering for Real-World Measurement Systems}
@@ -264,15 +265,14 @@ We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI
 
 \RC{5. In Related Work section, please analyze the application of co-clustering in different areas, for example, in the area of medical image analysis I suggest following papers: [References 1-5]}
 
-\AR{Thank you for this valuable suggestion. We have added a new subsection "Co-clustering Applications in Medical Image Analysis" in Section 2 that incorporates all five suggested papers.}
+\AR{Thank you for this valuable suggestion. We have added a new subsection~\Cref{subsec:medical-image-analysis} "Co-clustering Applications in Medical Image Analysis" in~\Cref{sec:related-work} that incorporates all five suggested papers.}
 
 \textbf{Manuscript Modifications:}
 
-\textbf{Co-clustering Applications in Medical Image Analysis}
-
-Co-clustering has proven effective in medical image analysis, particularly for tumor detection. In brain MR imaging, iterative spectral co-clustering achieves 99.12\% accuracy on BraTS2020\cite{farnoosh2024DevelopmentUnsupervisedPseudodeep}, while advanced approaches like MFARICIRD reach 99.98\% accuracy through dynamic parameter optimization\cite{farnoosh2025PseudodeepUnsupervisedModelbased}. The IMFADCC method demonstrates superior performance across BraTS2018-2020 by simultaneously optimizing row-column clusters\cite{farnoosh2024BrainMagneticResonance}. For mammography, EMFACCI segments images into tumor-containing blocks on MIAS and DDSM datasets\cite{farnoosh2024NovelApproachAutomatic}. Combined ICCK approaches achieve 84.87\% Dice coefficient on brain tumor detection\cite{farnoosh2022ApplicationModifiedCombinational}.
-
-Modern medical imaging requires simultaneous analysis of thousands of high-resolution images. These medical applications face scalability limitations when processing large-scale datasets, highlighting the need for distributed co-clustering methods like our proposed DiMergeCo framework.
+\begin{quote}
+  \subsection*{\Cref{subsec:medical-image-analysis} Co-clustering Applications in Medical Image Analysis}
+  Co-clustering has proven effective in medical image analysis, particularly for tumor detection. In brain MR imaging, iterative spectral co-clustering achieves 99.12\% accuracy on BraTS2020\cite{farnoosh2024DevelopmentUnsupervisedPseudodeep}, while advanced approaches like MFARICIRD reach 99.98\% accuracy through dynamic parameter optimization\cite{farnoosh2025PseudodeepUnsupervisedModelbased}. The IMFADCC method demonstrates superior performance across BraTS2018-2020 by simultaneously optimizing row-column clusters\cite{farnoosh2024BrainMagneticResonance}. For mammography, EMFACCI segments images into tumor-containing blocks on MIAS and DDSM datasets\cite{farnoosh2024NovelApproachAutomatic}. Combined ICCK approaches achieve 84.87\% Dice coefficient on brain tumor detection\cite{farnoosh2022ApplicationModifiedCombinational}.
+\end{quote}
 
 %====================================== Reviewer 2 ============================================
 
