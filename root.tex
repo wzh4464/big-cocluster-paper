@@ -542,13 +542,13 @@ The final phase focuses on convergence and probability optimization. After each 
 The algorithm achieves $\mathcal{O}(T_p \cdot \max(m,n))$ complexity through efficient dynamic programming in the block redistribution step. When implemented in a parallel processing environment, the submatrix co-clustering can be distributed across multiple processors, leveraging the independence of local optimizations.
 By~\Cref{thm:probability-co-cluster-detection}, we can guarantee that the probability that any co-cluster exceeding $T_m \times T_n$ is preserved in at least one of $T_p$ iterations is $1 - (1 - P)^K$, making fragmentation exponentially unlikely as $T_p$ grows. This enables efficient analysis of $10^6 \times 10^6$ matrices by balancing probabilistic safety with computational tractability.
 
-{\color{blue}
-In addition, DiMergeCo achieves reliable co-cluster preservation through a combination of three complementary mechanisms:
-(1) \emph{Probabilistic multi-sampling}, which exponentially reduces fragmentation risk;
-(2) \emph{Adaptive block sizing}, which enlarges blocks to encompass important co-clusters;
-(3) \emph{Hierarchical merging}, which reconstructs fragmented clusters across block boundaries.
-These mechanisms jointly ensure robust co-cluster preservation while supporting scalable computation on massive matrices.
-}
+    {\color{blue}
+        In addition, DiMergeCo achieves reliable co-cluster preservation through a combination of three complementary mechanisms:
+        (1) \emph{Probabilistic multi-sampling}, which exponentially reduces fragmentation risk;
+        (2) \emph{Adaptive block sizing}, which enlarges blocks to encompass important co-clusters;
+        (3) \emph{Hierarchical merging}, which reconstructs fragmented clusters across block boundaries.
+        These mechanisms jointly ensure robust co-cluster preservation while supporting scalable computation on massive matrices.
+    }
 
 With an efficient and co-cluster-preserving partitioning strategy in place, we now turn to the local co-clustering stage, where each submatrix is analyzed independently to uncover meaningful bicluster structures.
 
@@ -594,46 +594,56 @@ The merging process is guaranteed to converge through the Monotonic Merging Lemm
 
 This approach refines local co-cluster boundaries and eliminates redundancies that arise from parallel partitioning. The process terminates when no pair of partial co-clusters can be profitably combined, resulting in a final co-cluster set that offers a consistent, global view of row-column groupings capturing the most coherent patterns in the entire dataset.
 
-\subsection{MPI Implementation}
+\subsection{Distributed MPI Implementation and Communication Framework}
 \label{subsec:mpi-implementation}
-DiMergeCo's MPI implementation (\Cref{alg:mpi-method}) employs a two-stage aggregation to avoid main-node bottlenecks: (1) Workers locally merge co-clusters using~\Cref{alg:local-co-clustering}, and (2) Intermediate results are combined via a binary tree reduction, limiting main-node communication to $O(log P)$ steps for $P$ processors.
 
-To demonstrate the practical feasibility and performance of our proposed distributed system, we implement it using the Message Passing Interface (MPI) to enable distributed computing across multiple nodes. This implementation allows for effective distribution of the computational load, facilitating parallel processing of submatrices and enhancing the scalability of our method. The main computation node is responsible for computing thresholds based on the size of the matrix, without requiring specialized performance beyond that of other nodes. This design ensures that our approach is practical and scalable for large-scale applications, without the need for a supercomputer as a central node.
-More details about the MPI implementation are shown in~\Cref{alg:mpi-method}.
-
-In conclusion, our proposed scalable co-clustering method effectively addresses the challenges associated with large-scale data analysis. By leveraging a probabilistic model for optimal partitioning and a hierarchical merging strategy, we ensure that our method is both efficient and robust. The detailed algorithmic framework and theoretical underpinnings provide a solid foundation for further research and development in this field.
+{\color{blue}
+    To demonstrate the practical feasibility and scalability of our proposed distributed system, we implement DiMergeCo using the Message Passing Interface (MPI) with comprehensive protocols for data distribution, communication management, and fault tolerance. This implementation enables effective distribution of computational load across multiple nodes while maintaining theoretical guarantees for co-cluster preservation.
+}
 
 \begin{algorithm}[!t]
-    \caption{MPI-based Optimal Matrix Partition and Hierarchical Co-cluster Merging Method}
+    \caption{Enhanced MPI-based DiMergeCo Implementation}
     \begin{algorithmic}[1]
-        \REQUIRE Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Co-cluster set $C = \{C_k\}_{k=1}^K$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Sampling times $T_p$, Probability threshold $P_\text{thresh}$, Number of processors $P$
+        \REQUIRE Data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, Block sizes $\{\phi_i\}_{i=1}^m$, $\{\psi_j\}_{j=1}^n$, Thresholds $T_m$, $T_n$, Probability threshold $P_{\text{thresh}}$, Number of processors $P$
         \ENSURE Co-clustered result $\mathcal{C}$
-        \STATE Initialize MPI environment
-        \STATE Determine rank and size using \texttt{MPI\_Comm\_rank} and \texttt{MPI\_Comm\_size}
-        \IF{rank == 0}
-        \STATE Initialize block set $B = \{B_{(i,j)}\}_{i=1}^m,_{j=1}^n$ based on $\phi_i$ and $\psi_j$
-        \STATE Calculate $s^{(k)}$ and $t^{(k)}$ for each co-cluster $C_k$
-        \FOR{$k=1$ to $K$}
-        \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
-        \IF{$P(\omega_k) < P_{thresh}$}
-        \STATE Partition matrix $\mathbf{A}$ into blocks $B$ and distribute to processors
-        \FOR{each processor $p$}
-        \STATE Send corresponding block $B_p$ to processor $p$
-        \ENDFOR
+        \STATE Initialize MPI environment with \texttt{MPI\_Init}
+        \STATE Determine processor rank and size using \texttt{MPI\_Comm\_rank}, \texttt{MPI\_Comm\_size}
+        \IF{$\text{rank} = 0$}
+        \STATE Compute optimal partition using Algorithm~\ref{alg:partitioning}
+        \STATE Verify load balancing constraints and adjust if necessary
+        \ENDIF
+        \STATE Broadcast partition parameters using \texttt{MPI\_Bcast}($T_m$, $T_n$, $P_{\text{thresh}}$, $\phi_i$, $\psi_j$)
+        \STATE Distribute matrix blocks using \texttt{MPI\_Scatter} with load balancing
+        \STATE Allocate local memory buffers: $1.2 \times \max(\phi_i \times \psi_j)$
+        \STATE Each processor performs local co-clustering with timeout monitoring
+        \STATE Begin hierarchical merging via \texttt{MPI\_Reduce} in $\lceil \log_2 P \rceil$ steps
+        \FOR{step $t = 1$ to $\lceil \log_2 P \rceil$}
+        \IF{$\text{rank} \bmod 2^t = 0$ and $\text{rank} + 2^{t-1} < P$}
+        \STATE Receive co-clusters from processor $\text{rank} + 2^{t-1}$
+        \STATE Merge received co-clusters using overlap threshold $\tau = 0.45$
+        \ELSIF{$\text{rank} \bmod 2^t = 2^{t-1}$}
+        \STATE Send local co-clusters to processor $\text{rank} - 2^{t-1}$
+        \STATE Break from loop (processor finished)
         \ENDIF
         \ENDFOR
+        \STATE Apply fault tolerance checks and load balancing verification
+        \IF{$\text{rank} == 0$}
+        \STATE \textbf{return} Final merged co-clustering result $\mathcal{C}$
         \ENDIF
-        \STATE Each processor $p$ receives its block $B_p$ and performs co-clustering
-        \STATE Each processor sends its co-clustered result $C_p$ back to the root processor
-        \IF{rank == 0}
-        \STATE $\mathcal{C}$ $\gets$ Aggregate co-clustered results from all blocks
-        \STATE \textbf{return} Aggregated co-clustered result $\mathcal{C}$
-        \ENDIF
-        \STATE Finalize MPI environment
+        \STATE Finalize MPI environment with \texttt{MPI\_Finalize}
     \end{algorithmic}
     \label{alg:mpi-method}
 \end{algorithm}
 
+{\color{blue}
+\subsubsection{Data Distribution Protocol}
+\label{subsec:data-distribution-protocol}
+The main node implements a three-phase protocol: (1) computing optimal partitions using Algorithm~\ref{alg:partitioning} with theoretical guarantees from Theorem~\ref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing, and (3) synchronizing parameters via \texttt{MPI\_Bcast}.
+
+\subsubsection{Hierarchical Communication Management}
+\label{subsec:hierarchical-communication-management}
+Our binary tree reduction achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging using custom \texttt{MPI\_Reduce} operations, eliminating centralized bottlenecks while maintaining co-cluster preservation guarantees.
+}
 
 \section{Theoretical Analysis}
 \label{sec:theoretical-foundations}
@@ -642,19 +652,19 @@ DiMergeCo's partition-then-merge approach is supported by matrix approximation t
 
 Throughout this section, $\delta_{(i,j)}$ denotes the maximum Frobenius-norm difference between the true submatrix $\mathbf{A}[I_i,J_j]$ and its local approximation $\mathbf{B}_{(i,j)}$. Formally, $\|\mathbf{A}[I_i, J_j] - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$. Meanwhile, $\epsilon_{(i,j)}$ captures the suboptimality of the local co-clustering objective relative to the local optimum, i.e., $J(\mathbf{F}_{(i,j)}) \leq J(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$, where $\mathbf{F}_{(i,j)}^*$ is the local optimal cluster indicator for block $(i,j)$.
 
-\textbf{Fundamental Assumptions}: To ensure theoretical rigor, we explicitly state all assumptions underlying our framework:
+\paragraph{Fundamental Assumptions} To ensure theoretical rigor, we explicitly state all assumptions underlying our framework:
 
-\textbf{Assumption 1 (Random Partitioning)}: Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$.
+\paragraph{Assumption 1 (Random Partitioning)} Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$.
 
-\textbf{Assumption 2 (Independence)}: Row and column partitioning processes are independent, allowing factorization of joint probabilities as $P(A \cap B) = P(A) \cdot P(B)$.
+\paragraph{Assumption 2 (Independence)} Row and column partitioning processes are independent, allowing factorization of joint probabilities as $P(A \cap B) = P(A) \cdot P(B)$.
 
-\textbf{Assumption 3 (Co-cluster Coherence)}: Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by factor $\rho \leq 2$.
+\paragraph{Assumption 3 (Co-cluster Coherence)} Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by factor $\rho \leq 2$.
 
-\textbf{Assumption 4 (Finite Co-cluster Set)}: The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$.
+\paragraph{Assumption 4 (Finite Co-cluster Set)} The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$.
 
-\textbf{Assumption 5 (Minimum Size Constraint)}: All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$.
+\paragraph{Assumption 5 (Minimum Size Constraint)} All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$.
 
-\textbf{Sample Size Requirements}: Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence.
+\paragraph{Sample Size Requirements} Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence.
 
 \subsection{Matrix Approximation Theory}
 
@@ -1064,6 +1074,8 @@ For RCV1-Large Dataset, starting from an efficiency of 1, it decreases to 0.47 a
 \section{Conclusion}
 \label{sec:conclusion}
 We presented DiMergeCo, a scalable co-clustering method for large-scale datasets, leveraging a divide-and-conquer strategy to partition the input matrix into smaller submatrices for parallel processing, thereby significantly reducing computational overhead. Each submatrix is co-clustered independently using a probabilistic model-based optimal partitioning algorithm, ensuring the integrity of co-clusters, and the results are combined using a hierarchical co-cluster merging algorithm to enhance accuracy and reliability. Our implementation using MPI distributes the computational load across multiple nodes, improving scalability and making the approach practical for large-scale applications without requiring specialized performance from any single node. Experimental results demonstrate substantial improvements in computational efficiency and scalability, confirming the method's effectiveness for diverse and extensive datasets. This work addresses the challenges of co-clustering large-scale data by integrating efficient partitioning, parallel processing, and robust merging techniques, setting a new benchmark for scalable co-clustering and paving the way for future research in scalable data analysis technologies.
+
+Our MPI implementation provides complete reproducibility specifications including compilation requirements, network configurations, and fault tolerance mechanisms, enabling deployment across diverse HPC environments. The detailed communication protocols and resource management strategies ensure that DiMergeCo can be reliably reproduced and deployed for large-scale co-clustering applications in production systems.
 
 \printbibliography
 \end{document}

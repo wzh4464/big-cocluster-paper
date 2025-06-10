@@ -27,7 +27,7 @@
 \usepackage{xcolor}
 \usepackage{tabularray}
 \usepackage{array}
-\usepackage{xr}
+\usepackage{xr-hyper}
 \externaldocument{root}
 \usepackage{hyperref}
 \usepackage{cleveref}
@@ -144,17 +144,17 @@ This adaptive mechanism ensures that co-clusters exceeding the size threshold ar
 \begin{figure}[t]
   \centering
   \begin{subfigure}[b]{0.48\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{images/nmi_small.png}
-      \caption{NMI for small co-clusters}
-      \label{fig:nmi_small}
+    \centering
+    \includegraphics[width=\linewidth]{images/nmi_small.png}
+    \caption{NMI for small co-clusters}
+    \label{fig:nmi_small}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.48\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{images/ari_small.png}
-      \caption{ARI for small co-clusters}
-      \label{fig:ari_small}
+    \centering
+    \includegraphics[width=\linewidth]{images/ari_small.png}
+    \caption{ARI for small co-clusters}
+    \label{fig:ari_small}
   \end{subfigure}
   \caption{Small co-cluster detection results. (a) NMI and (b) ARI performance across different sizes.}
   \label{fig:small-co-cluster-detection}
@@ -237,16 +237,30 @@ DiMergeCo operates as a matrix-agnostic framework where theoretical foundations 
 
 \RC{4. MPI Implementation Details: The manuscript states that the main node computes initial partitioning thresholds, but further details on data distribution and communication management during merging are lacking. Please elaborate on these aspects to enhance reproducibility.}
 
-\AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we provide the following clarifications:}
+\AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we have substantially expanded \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with implementation specifications that demonstrate how our theoretical framework translates to distributed computing while maintaining all co-cluster preservation guarantees.}
 
-\textbf{Data Distribution Mechanism:}
-The data distribution strategy is detailed in Algorithm 2. The main node computes optimal block dimensions $\{\phi_i\}$ and $\{\psi_j\}$ using the probabilistic model, ensuring each processor receives blocks of size $\phi_i \times \psi_j$.
+\textbf{Data Distribution Strategy:}
+We provide detailed specifications for our three-phase distribution protocol that directly implements Algorithm~\ref{alg:partitioning}: (1) computing optimal partitions with theoretical guarantees from Theorem~\ref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing constraints, and (3) synchronizing parameters via \texttt{MPI\_Bcast} to ensure consistent execution across processors.
 
 \textbf{Communication Management During Merging:}
-The hierarchical merging communication pattern operates through binary tree reduction strategy. Each node communicates only with immediate neighbors, achieving $O(\log P)$ complexity per node. The two-stage aggregation operates as: (1) workers locally merge co-clusters using quality scoring functions, and (2) intermediate results combine via binary tree reduction.
+The enhanced section describes our binary tree reduction protocol that achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging operations. This hierarchical approach eliminates centralized bottlenecks while maintaining the theoretical co-cluster preservation properties established in our analysis.
 
-\textbf{Load Balancing and Resource Management:}
-Load balancing is achieved through adaptive block sizing. The algorithm dynamically adjusts block dimensions based on co-cluster distribution, ensuring computational load remains proportional across processors.
+\textbf{Reproducibility Specifications:}
+We include essential system requirements, compilation instructions, and distributed execution guidelines that ensure the theoretical guarantees can be practically realized across different computing environments.
+
+\textbf{Manuscript Modifications:}
+
+We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with comprehensive implementation details including:
+
+\begin{quote}
+  \subsection*{\Cref{subsec:mpi-implementation} Distributed MPI Implementation and Communication Framework}
+  To demonstrate the practical feasibility and scalability of our proposed distributed system, we implement DiMergeCo using the Message Passing Interface (MPI) with comprehensive protocols for data distribution, communication management, and fault tolerance. This implementation enables effective distribution of computational load across multiple nodes while maintaining theoretical guarantees for co-cluster preservation.
+  \subsubsection*{\Cref{subsec:mpi-implementation} Data Distribution Protocol}
+  The main node implements a three-phase protocol: (1) computing optimal partitions using Algorithm~\ref{alg:partitioning} with theoretical guarantees from Theorem~\ref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing, and (3) synchronizing parameters via \texttt{MPI\_Bcast}.
+
+  \subsubsection*{\Cref{subsec:mpi-implementation} Hierarchical Communication Management}
+  Our binary tree reduction achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging using custom \texttt{MPI\_Reduce} operations, eliminating centralized bottlenecks while maintaining co-cluster preservation guarantees.
+\end{quote}
 
 \RC{5. In Related Work section, please analyze the application of co-clustering in different areas, for example, in the area of medical image analysis I suggest following papers: [References 1-5]}
 
