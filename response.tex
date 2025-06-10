@@ -278,17 +278,19 @@ We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI
 
 \section{Reviewer \#2}
 
-\RC{This paper presents DiMergeCo, a novel approach to co-clustering that addresses scalability challenges through a divide-and-conquer strategy. The work makes valuable contributions to large-scale data analysis with theoretical guarantees. The experimental results are impressive, showing significant performance improvements over existing methods. However, some minor revisions are needed before the paper can be accepted.
+\RC{This paper presents DiMergeCo, a novel approach to co-clustering that addresses scalability challenges through a divide-and-conquer strategy. The work makes valuable contributions to large-scale data analysis with theoretical guarantees. The experimental results are impressive, showing significant performance improvements over existing methods. However, some minor revisions are needed before the paper can be accepted.}
 
-  1. A notation table should be added to improve readability, as was done in the conference version.}
+\AR{We sincerely thank the reviewer for their positive assessment of our contribution. We have addressed all the suggested revisions as outlined in the responses below.}
 
-\AR{Thank you for the suggestion. We have added a comprehensive notation table (Table 1) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.}
+\RC{1. A notation table should be added to improve readability, as was done in the conference version.}
+
+\AR{Thank you for the suggestion. We have added a comprehensive notation table (\Cref{tab:notation}) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.}
 
 \textbf{Manuscript Modifications:}
 
-Table 1 now includes sections for Matrix Notation, Co-clustering Concepts, Partitioning Parameters, Algorithm Variables, and Implementation Details.
+\Cref{tab:notation} now includes sections for Matrix Notation, Co-clustering Concepts, Partitioning Parameters, Algorithm Variables, and Implementation Details.
 
-\RC{2. In Section III B, there is a potential error where the authors state "computing and storing the similarity matrix requires O(MN) memory." This should likely be O(M²) or O(N²). Please clarify.}
+\RC{2. In \Cref{subsec:problem-statement}, there is a potential error where the authors state "computing and storing the similarity matrix requires $O(MN)$ memory." This should likely be $O(M^2)$ or $O(N^2)$. Please clarify.}
 
 \AR{We sincerely thank the reviewer for this clarification request. In co-clustering context, our "similarity matrix" refers to the original data matrix $A \in \mathbb{R}^{M \times N}$, not traditional row-row ($M \times M$) or column-column ($N \times N$) similarity matrices.}
 
@@ -298,29 +300,36 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \textbf{Manuscript Modifications:}
 
-"At this scale, traditional co-clustering methods become computationally infeasible due to the significant complexity of managing and processing such data. In particular, computing and storing the $M \\times N$ data matrix requires $O(MN)$ memory, and performing the corresponding SVD on the $M \\times N$ data matrix demands $O(MN\\min(M,N))$ computational operations."
+\begin{quote}
+  In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ computational operations.
+\end{quote}
 
-\RC{3. In Equation (5), the meanings of $L$, $x_{ij}$, and $u_{kl}$ need to be explicitly defined to ensure clarity.}
+
+\RC{3. In \Cref{eq:co-clustering-objective}, the meanings of $L$, $x_{ij}$, and $u_{kl}$ need to be explicitly defined to ensure clarity.}
 
 \AR{We thank the reviewer for this important observation and have modified the manuscript accordingly.}
 
 \textbf{Manuscript Modifications:}
 
-Formally, the co-clustering objective seeks to partition the matrix A into K row clusters and L column clusters that minimize the reconstruction error:
+\begin{quote}
+  Formally, the co-clustering objective seeks to partition the matrix A into K row clusters and L column clusters that minimize the reconstruction error:
 
-\begin{equation}
-  J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
-\end{equation}
+  \begin{equation}
+    J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
+  \end{equation}
 
-where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster, $x_{ij}$ is the original matrix element, and $u_{kl}$ is the reconstructed value for co-cluster $(k,l)$.
+  where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster, $x_{ij}$ is the original matrix element, and $u_{kl}$ is the reconstructed value for co-cluster $(k,l)$.
+\end{quote}
 
-\RC{4. Figure 3 references "efficiency" but does not specify how this metric is defined. Please provide a clear definition.}
+\RC{4. \Cref{fig:efficiency} references `efficiency' but does not specify how this metric is defined. Please provide a clear definition.}
 
-\AR{We thank the reviewer for this important observation. We have added a clear mathematical definition in Section 6.2.}
+\AR{We thank the reviewer for this important observation. We have added a clear mathematical definition in \Cref{subsec:scalability-analysis}.}
 
 \textbf{Manuscript Modifications:}
 
-"The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node."
+\begin{quote}
+  The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.
+\end{quote}
 
 %====================================== Reviewer 3 ============================================
 
