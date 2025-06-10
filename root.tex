@@ -598,7 +598,7 @@ This approach refines local co-cluster boundaries and eliminates redundancies th
 \label{subsec:mpi-implementation}
 
 {\color{blue}
-To demonstrate the practical feasibility and scalability of our proposed distributed system, we implement DiMergeCo using the Message Passing Interface (MPI) with comprehensive protocols for data distribution, communication management, and fault tolerance. This implementation enables effective distribution of computational load across multiple nodes while maintaining theoretical guarantees for co-cluster preservation.
+    To demonstrate the practical feasibility and scalability of our proposed distributed system, we implement DiMergeCo using the Message Passing Interface (MPI) with comprehensive protocols for data distribution, communication management, and fault tolerance. This implementation enables effective distribution of computational load across multiple nodes while maintaining theoretical guarantees for co-cluster preservation.
 }
 
 \begin{algorithm}[!t]
@@ -612,7 +612,7 @@ To demonstrate the practical feasibility and scalability of our proposed distrib
         \STATE Compute optimal partition using Algorithm~\ref{alg:partitioning}
         \STATE Verify load balancing constraints and adjust if necessary
         \ENDIF
-        \STATE Broadcast partition parameters using \texttt{MPI\_Bcast}($T_m$, $T_n$, $P_{\text{thresh}}$)
+        \STATE Broadcast partition parameters using \texttt{MPI\_Bcast}($T_m$, $T_n$, $P_{\text{thresh}}$, $\phi_i$, $\psi_j$)
         \STATE Distribute matrix blocks using \texttt{MPI\_Scatter} with load balancing
         \STATE Allocate local memory buffers: $1.2 \times \max(\phi_i \times \psi_j)$
         \STATE Each processor performs local co-clustering with timeout monitoring
@@ -627,7 +627,7 @@ To demonstrate the practical feasibility and scalability of our proposed distrib
         \ENDIF
         \ENDFOR
         \STATE Apply fault tolerance checks and load balancing verification
-        \IF{$\text{rank} = 0$}
+        \IF{$\text{rank} == 0$}
         \STATE \textbf{return} Final merged co-clustering result $\mathcal{C}$
         \ENDIF
         \STATE Finalize MPI environment with \texttt{MPI\_Finalize}
