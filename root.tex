@@ -804,7 +804,7 @@ The experiments were conducted using three distinct datasets (see~\Cref{tab:data
     \item \textbf{RCV1-Large}: A larger dataset used to test the scalability of our method, including a vast array of document vectors for high-dimensional data analysis.
 \end{itemize}
 
-\subsubsection{Implementation Details.}
+\subsubsection{Implementation Details}
 All experiments were performed on a computing cluster with the following specifications: \texttt{Intel Xeon E5-2670 v3 @ 2.30GHz processors, 128GB RAM}, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler.
 
 \subsubsection{Compared Methods}
@@ -908,7 +908,7 @@ Our experimental evaluation compares the effectiveness of different co-clusterin
         \paragraph{Dataset and Setup}
         We use the Breast Cancer Wisconsin dataset (Gene Expression Omnibus: GSE45827) containing 130 samples $\times$ 22,277 genes, representing a moderate-scale bioinformatics application. The goal is to simultaneously cluster patients and genes to identify disease-relevant biological pathways.
 
-        \paragraph{Domain-Specific Adaptations.}
+        \paragraph{Domain-Specific Adaptations}
         Gene expression matrices typically exhibit high sparsity and noise. We apply log-transformation and z-score normalization before partitioning. The biological interpretation requires co-clusters to represent gene-pathway-patient relationships rather than document-term associations.
 
         \textbf{Experimental Settings:} We compare DiMergeCo with traditional biclustering methods (FABIA, ISA) and report biological pathway enrichment, silhouette coefficient, and adjusted rand index (ARI). Parameters are set as in document clustering (100 partitions, $P_{\text{thresh}}=0.95$) to demonstrate parameter transferability.
@@ -989,7 +989,7 @@ Our experimental evaluation compares the effectiveness of different co-clusterin
         %     \label{fig:domain_examples}
         % \end{figure*}
 
-        \paragraph{Implications for Scalable Co-clustering.}
+        \paragraph{Implications for Scalable Co-clustering}
         These multi-domain experiments demonstrate that DiMergeCo's theoretical guarantees and algorithmic innovations transfer effectively across application areas. The consistent performance with fixed parameters validates our claim that the method provides a general-purpose solution for large-scale co-clustering, not just a document-clustering optimization.
 
     }
@@ -1032,15 +1032,15 @@ For RCV1-Large Dataset, starting from an efficiency of 1, it decreases to 0.47 a
             \label{fig:optimisation}
         \end{figure}
 
-        \paragraph{Validation of Optimization Results.}
+        \paragraph{Validation of Optimization Results}
         These results confirm that 100 partitions (a 10×10 matrix division) offer a sweet spot between computation time and ensemble stability. Beyond this point, the overhead from managing small blocks outweighs the benefit of finer partitioning. This finding provides the foundation for subsequent parameter sensitivity analysis.
 
         \subsubsection{Individual Parameter Sensitivity}
 
-        \paragraph{Extended Parameter Analysis.}
+        \paragraph{Extended Parameter Analysis}
         Building on our partition optimization result, we examine the impact of three key hyperparameters on performance: block size configuration, co-cluster size thresholds, and probabilistic reliability filtering.
 
-        \paragraph{Block Size Sensitivity.}
+        \paragraph{Block Size Sensitivity}
         We explore several block configurations around the identified optimal point: $5 \times 5$ ($25$ partitions), $6 \times 6$ ($36$), $8 \times 8$ ($64$), $10 \times 10$ ($100$), $12 \times 12$ ($144$), and $14 \times 14$ ($196$). For each setting, we evaluate clustering quality (NMI, ARI), runtime, and detection rate. As shown in ~\Cref{fig:block-sensitivity}, performance remains stable across a broad range but degrades at extremes due to either insufficient granularity or overhead.
 
         \paragraph{Threshold Parameter Sensitivity.}
