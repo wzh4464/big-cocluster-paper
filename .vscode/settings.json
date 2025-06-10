@@ -65,4 +65,11 @@
             ]
         }
     ],
+    "latex-workshop.view.outline.sections": [
+        "part",
+        "chapter",
+        "section",
+        "subsection|RC",
+        "subsubsection"
+    ],
 }
