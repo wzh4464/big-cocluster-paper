@@ -27,7 +27,7 @@
 \usepackage{xcolor}
 \usepackage{tabularray}
 \usepackage{array}
-\usepackage{xr}
+\usepackage{xr-hyper}
 \externaldocument{root}
 \usepackage{hyperref}
 \usepackage{cleveref}
@@ -144,17 +144,17 @@ This adaptive mechanism ensures that co-clusters exceeding the size threshold ar
 \begin{figure}[t]
   \centering
   \begin{subfigure}[b]{0.48\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{images/nmi_small.png}
-      \caption{NMI for small co-clusters}
-      \label{fig:nmi_small}
+    \centering
+    \includegraphics[width=\linewidth]{images/nmi_small.png}
+    \caption{NMI for small co-clusters}
+    \label{fig:nmi_small}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.48\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{images/ari_small.png}
-      \caption{ARI for small co-clusters}
-      \label{fig:ari_small}
+    \centering
+    \includegraphics[width=\linewidth]{images/ari_small.png}
+    \caption{ARI for small co-clusters}
+    \label{fig:ari_small}
   \end{subfigure}
   \caption{Small co-cluster detection results. (a) NMI and (b) ARI performance across different sizes.}
   \label{fig:small-co-cluster-detection}
@@ -237,102 +237,29 @@ DiMergeCo operates as a matrix-agnostic framework where theoretical foundations 
 
 \RC{4. MPI Implementation Details: The manuscript states that the main node computes initial partitioning thresholds, but further details on data distribution and communication management during merging are lacking. Please elaborate on these aspects to enhance reproducibility.}
 
-\AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we have substantially expanded Section 3.5 with comprehensive implementation specifications addressing all aspects of our distributed framework, including specific MPI operations, communication protocols, resource management strategies, and complete reproducibility guidelines.}
+\AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we have substantially expanded \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with implementation specifications that demonstrate how our theoretical framework translates to distributed computing while maintaining all co-cluster preservation guarantees.}
 
 \textbf{Data Distribution Strategy:}
-We now provide detailed specifications for our three-phase distribution protocol, including specific MPI primitives used (\texttt{MPI\_Scatter}, \texttt{MPI\_Bcast}), load balancing constraints with mathematical bounds, and metadata synchronization procedures.
+We provide detailed specifications for our three-phase distribution protocol that directly implements Algorithm~\ref{alg:partitioning}: (1) computing optimal partitions with theoretical guarantees from Theorem~\ref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing constraints, and (3) synchronizing parameters via \texttt{MPI\_Bcast} to ensure consistent execution across processors.
 
 \textbf{Communication Management During Merging:}
-The enhanced section includes precise descriptions of our binary tree reduction protocol with step-by-step communication patterns, custom \texttt{MPI\_Datatype} implementations for 75\% communication overhead reduction, and detailed merge operation algorithms with overlap threshold specifications.
-
-\textbf{Resource Management and Fault Tolerance:}
-We added comprehensive coverage of memory allocation strategies, timeout handling with exponential backoff mechanisms, automatic load balancing verification, and fault recovery procedures for distributed environments.
+The enhanced section describes our binary tree reduction protocol that achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging operations. This hierarchical approach eliminates centralized bottlenecks while maintaining the theoretical co-cluster preservation properties established in our analysis.
 
 \textbf{Reproducibility Specifications:}
-The revision includes complete system requirements, compilation instructions, optimal processor topology configurations, and network performance guidelines to ensure full reproducibility across different HPC environments.
+We include essential system requirements, compilation instructions, and distributed execution guidelines that ensure the theoretical guarantees can be practically realized across different computing environments.
 
 \textbf{Manuscript Modifications:}
 
-\begin{quote}
-\subsection{Distributed MPI Implementation and Communication Framework}
-\label{subsec:mpi-implementation}
-
-To demonstrate the practical feasibility and scalability of our proposed distributed system, we implement DiMergeCo using the Message Passing Interface (MPI) with comprehensive protocols for data distribution, communication management, and fault tolerance. This implementation enables effective distribution of computational load across multiple nodes while maintaining theoretical guarantees for co-cluster preservation.
-
-\subsubsection{Data Distribution Protocol}
-
-The main node (rank 0) implements a three-phase distribution protocol to ensure optimal load balancing and co-cluster preservation:
-
-\textbf{Phase 1 - Partition Computation:} The main node calculates optimal block dimensions $\{\phi_i\}_{i=1}^m$ and $\{\psi_j\}_{j=1}^n$ using Algorithm~\ref{alg:partitioning}, ensuring each block satisfies the probabilistic preservation constraints from Theorem~\ref{thm:probability-co-cluster-detection}. The partition parameters are computed with complexity $O(\log(\max(m,n)))$ using dynamic programming optimization.
-
-\textbf{Phase 2 - Block Assignment:} Matrix blocks are distributed using \texttt{MPI\_Scatter} operations with strict load balancing constraints. Each processor $p$ receives exactly one block $\mathbf{B}_{(i,j)}$ where $(i,j) = \text{block\_mapping}(p)$. The load balancing condition ensures:
-\begin{equation}
-\max_p|\phi_i \times \psi_j| - \min_p|\phi_i \times \psi_j| \leq 0.1 \times \frac{MN}{P}
-\end{equation}
-where $P$ is the total number of processors.
-
-\textbf{Phase 3 - Metadata Synchronization:} Partition parameters $(T_m, T_n, P_{\text{thresh}})$ are broadcasted via \texttt{MPI\_Bcast} to ensure consistent local co-clustering execution across all processors.
-
-\subsubsection{Hierarchical Communication Management}
-
-Our binary tree reduction implements a sophisticated multi-stage communication pattern that eliminates centralized bottlenecks:
-
-\textbf{Local Aggregation Stage:} Each processor $p$ performs local co-clustering on $\mathbf{B}_{(i,j)}$ using Algorithm~\ref{alg:local-co-clustering} and generates local co-cluster set $\mathcal{C}_{(i,j)} = \{(\mathbf{C}_k, s_k)\}$ with quality scores.
-
-\textbf{Tree Reduction Protocol:} Processors communicate in $\lceil \log_2 P \rceil$ steps using \texttt{MPI\_Reduce} with custom reduction operations. At step $t$, processor $p$ with $p \bmod 2^t = 0$ receives co-clusters from processor $p + 2^{t-1}$ and performs merging using overlap threshold $\tau = 0.45$. The merge operation is defined as:
-\begin{equation}
-\text{merge}(\mathbf{C}_i, \mathbf{C}_j) = \begin{cases}
-\text{union}(\mathbf{C}_i, \mathbf{C}_j) & \text{if overlap}(\mathbf{C}_i, \mathbf{C}_j) > \tau \\
-\{\mathbf{C}_i, \mathbf{C}_j\} & \text{otherwise}
-\end{cases}
-\end{equation}
-
-\textbf{Message Optimization:} Co-cluster messages use custom \texttt{MPI\_Datatype} that packs row indices, column indices, and quality scores into optimized 64-byte messages, achieving 75\% reduction in communication overhead compared to standard serialization methods.
-
-\subsubsection{Resource Management and Fault Tolerance}
-
-\textbf{Memory Management:} Each processor pre-allocates memory buffers sized $1.2 \times \max(\phi_i \times \psi_j)$ to handle dynamic block expansions during adaptive partitioning. This prevents memory allocation bottlenecks during execution.
-
-\textbf{Fault Tolerance:} All \texttt{MPI\_Send}/\texttt{MPI\_Recv} operations implement 30-second timeouts with exponential backoff retry mechanisms. The system monitors processing times via \texttt{MPI\_Gather} and triggers automatic repartitioning when $\max_p(t_p) > 1.5 \times \text{avg\_time}$, ensuring load balance maintenance.
-
-\textbf{Synchronization Strategy:} The algorithm requires only $O(\log P)$ synchronization points during tree reduction, with each synchronization bounded by $\max_p(\text{local\_processing\_time}) + O(\log P) \times \text{network\_latency}$.
-
-\subsubsection{Reproducibility Specifications}
-
-\textbf{System Requirements:}
-\begin{itemize}
-\item \textbf{MPI Implementation:} OpenMPI 4.0+ or MPICH 3.3+, compiled with \texttt{-O3 -fopenmp} optimization flags
-\item \textbf{Processor Topology:} Optimal performance achieved with $P = m \times n$ processors matching the partition grid dimensions
-\item \textbf{Network Configuration:} InfiniBand or 10GbE networking recommended for matrices $> 10^6 \times 10^6$ to maintain communication efficiency below 15\% of total execution time
-\item \textbf{Memory Requirements:} Minimum 4GB per processor, with 8GB recommended for optimal performance
-\end{itemize}
-
-\textbf{Compilation and Execution:}
-\begin{verbatim}
-mpic++ -O3 -fopenmp -std=c++17 dimerge_co.cpp -o dimerge_co
-mpirun -np 16 --hostfile nodes.txt ./dimerge_co \
-       --matrix input.mtx --blocks 10x10 --threshold 0.95
-\end{verbatim}
-
-\subsubsection{Implementation Complexity Analysis}
-
-The distributed implementation achieves the following computational and communication complexities:
-\begin{itemize}
-\item \textbf{Communication Complexity:} $O(\log P)$ messages per processor during hierarchical merging
-\item \textbf{Memory Complexity:} $O(\frac{MN}{P} + K \log P)$ per processor, where $K$ is the number of co-clusters
-\item \textbf{Fault Tolerance:} Automatic recovery from single node failures without global restart
-\item \textbf{Scalability:} Linear speedup demonstrated up to $P = \min(m \times n, 1000)$ processors
-\end{itemize}
-
-Algorithm~\ref{alg:mpi-method} provides the complete distributed implementation framework, incorporating all specified communication protocols and resource management strategies.
-
-This comprehensive distributed implementation provides complete reproducibility specifications and enables deployment across diverse HPC environments while maintaining all theoretical guarantees for co-cluster preservation and detection accuracy.
-\end{quote}
-
-Additionally, we have updated the conclusion section to emphasize the implementation contributions:
+We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with comprehensive implementation details including:
 
 \begin{quote}
-Our MPI implementation provides complete reproducibility specifications including compilation requirements, network configurations, and fault tolerance mechanisms, enabling deployment across diverse HPC environments. The detailed communication protocols and resource management strategies ensure that DiMergeCo can be reliably reproduced and deployed for large-scale co-clustering applications in production systems.
+  \subsection*{\Cref{subsec:mpi-implementation} Distributed MPI Implementation and Communication Framework}
+  To demonstrate the practical feasibility and scalability of our proposed distributed system, we implement DiMergeCo using the Message Passing Interface (MPI) with comprehensive protocols for data distribution, communication management, and fault tolerance. This implementation enables effective distribution of computational load across multiple nodes while maintaining theoretical guarantees for co-cluster preservation.
+  \subsubsection*{\Cref{subsec:mpi-implementation} Data Distribution Protocol}
+  The main node implements a three-phase protocol: (1) computing optimal partitions using Algorithm~\ref{alg:partitioning} with theoretical guarantees from Theorem~\ref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing, and (3) synchronizing parameters via \texttt{MPI\_Bcast}.
+
+  \subsubsection*{\Cref{subsec:mpi-implementation} Hierarchical Communication Management}
+  Our binary tree reduction achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging using custom \texttt{MPI\_Reduce} operations, eliminating centralized bottlenecks while maintaining co-cluster preservation guarantees.
 \end{quote}
 
 \RC{5. In Related Work section, please analyze the application of co-clustering in different areas, for example, in the area of medical image analysis I suggest following papers: [References 1-5]}
