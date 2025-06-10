@@ -905,7 +905,7 @@ Our experimental evaluation compares the effectiveness of different co-clusterin
 
         \subsubsection{Gene Expression Co-clustering}
 
-        \paragraph{Dataset and Setup.}
+        \paragraph{Dataset and Setup}
         We use the Breast Cancer Wisconsin dataset (Gene Expression Omnibus: GSE45827) containing 130 samples $\times$ 22,277 genes, representing a moderate-scale bioinformatics application. The goal is to simultaneously cluster patients and genes to identify disease-relevant biological pathways.
 
         \paragraph{Domain-Specific Adaptations.}
@@ -915,20 +915,20 @@ Our experimental evaluation compares the effectiveness of different co-clusterin
 
         \subsubsection{Medical Image Region Co-clustering}
 
-        \paragraph{Dataset and Setup.}
+        \paragraph{Dataset and Setup}
         We evaluate on the MIMIC-CXR chest X-ray dataset, constructing image-patch co-occurrence matrices (512 images $\times$ 1,024 patches) to identify anatomical regions and pathological patterns simultaneously. This represents a computer vision application where spatial relationships require preservation during partitioning.
 
-        \paragraph{Technical Implementation.}
+        \paragraph{Technical Implementation}
         Each image is divided into 32$\times$32 pixel patches, and co-clustering identifies both: (1) images with similar pathological patterns, and (2) patch locations that consistently co-occur across diagnoses.
 
         \textbf{Experimental Settings:} Baseline is traditional image clustering plus separate patch analysis. Metrics include diagnostic accuracy improvement and spatial coherence of patch clusters. Medical expert annotation is used for ground truth validation on a subset.
 
         \subsubsection{Environmental Sensor Network Analysis}
 
-        \paragraph{Dataset and Setup.}
+        \paragraph{Dataset and Setup}
         Using the Intel Berkeley Research Lab sensor network dataset (54 sensors $\times$ 2,000 time windows), we construct sensor-temporal pattern matrices to identify both: (1) sensor groups with correlated behaviors, and (2) time periods with similar environmental conditions across the network.
 
-        \paragraph{Domain Characteristics.}
+        \paragraph{Domain Characteristics}
         Time-series data introduces temporal dependencies that challenge the independence assumptions in our probabilistic partitioning model. This provides a stress test for our theoretical guarantees.
 
         \textbf{Experimental Settings:} Baseline is k-means clustering on sensors and time windows separately. Metrics include NMI, ARI, and temporal pattern detection accuracy. Missing values are handled by linear interpolation.
