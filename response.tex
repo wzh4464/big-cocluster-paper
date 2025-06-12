@@ -211,20 +211,34 @@ We also enhanced~\Cref{subsec:practical-implementation} with clarification of th
 
 \RC{2. The method relies on parameters such as block sizes ($\phi_i$, $\psi_i$), thresholds ($T_m$, $T_n$), and the probability threshold ($P_\text{thresh}$). The manuscript lacks discussion on how to select these parameters or their impact on performance. Please include an analysis of parameter sensitivity and practical guidelines for their tuning.}
 
-\AR{We thank the reviewer for this important observation. We have substantially enhanced the manuscript with systematic parameter analysis and selection strategies.}
+\AR{We thank the reviewer for highlighting the need for a clearer explanation of hyper-parameter selection. In the revised manuscript, we have:}
+\begin{enumerate}
+  \item Introduced a new subsection, \emph{Parameter Sensitivity Analysis} (\Cref{subsec:param-sensitivity}), which systematically varies the three key parameters on the CLASSIC4 dataset.
+  \item Added~\Cref{tab:param_sens} that reports NMI, ARI, and runtime across 36 different parameter combinations. The study reveals that co-cluster size thresholds have the most significant impact on quality, with $T_m=T_n=20$ achieving optimal performance (NMI=0.776, ARI=0.590). The configuration with 100 blocks provides the best runtime-quality trade-off, being approximately $55\%$ faster than 25 blocks while maintaining superior clustering accuracy.
+  \item Provided evidence-based practical guidelines that recommend: (i) 100 blocks for optimal parallelization, (ii) $T_m=T_n=20$ for balanced noise filtering, and (iii) $P_{\text{thresh}}=0.95$ for efficient reliability-speed balance.
+\end{enumerate}
 
 \textbf{Manuscript Modifications:}
+\begin{quote}
+  \subsection*{\Cref{subsec:param-sensitivity} Parameter Sensitivity Analysis}
 
-We added a new Section 6.3 "Parameter Sensitivity Analysis" that includes:
+  To evaluate the influence of key parameters on both clustering quality and computational efficiency, we conducted a detailed ablation study on the \textbf{CLASSIC4} dataset. Specifically, we examined the effects of three parameters: (i) the number of blocks in the layout, with square configurations $m \times n \in \{25, 64, 100, 144\}$; (ii) the minimum co-cluster size thresholds, $T_m = T_n \in \{10, 20, 30\}$; and (iii) the detection probability threshold, $P_{\text{thresh}} \in \{0.90, 0.95, 0.99\}$. Each configuration was evaluated using Normalized Mutual Information (NMI), Adjusted Rand Index (ARI), and wall-clock runtime. All reported results are averaged over three independent runs for consistency.
 
-\begin{itemize}
-  \item Systematic analysis of block size parameters $\phi_i$ and $\psi_i$ showing optimal performance at 100 partitions
-  \item Threshold parameter ($T_m$, $T_n$) sensitivity analysis demonstrating robust performance across the range [10, 50]
-  \item Probability threshold $P_{thresh}$ impact study showing stable performance above 0.95
-  \item Practical parameter selection guidelines based on dataset characteristics
-\end{itemize}
+  \paragraph{Sensitivity Results}
+  \Cref{tab:param_sens} presents the full set of results, with optimal values highlighted in \textbf{bold}. Our analysis shows that the minimum co-cluster size threshold has the most significant effect on clustering quality. A low threshold ($T_m = T_n = 10$) leads to the formation of noisy and irrelevant micro-clusters, resulting in degraded performance (NMI $\approx$ 0.746--0.766). Conversely, a high threshold ($T_m = T_n = 30$) filters out too many valid small co-clusters, leading to under-segmentation and reduced accuracy (NMI $\approx$ 0.733--0.753). The intermediate value ($T_m = T_n = 20$) offers the best trade-off, consistently achieving superior performance (NMI $\approx$ 0.756--0.778) by balancing noise suppression with structure preservation.
 
-Figure 4 demonstrates the optimization landscape, identifying computation time minimization at 512 seconds with 100 partitions and 4 repetitions.
+  The block configuration primarily affects runtime rather than clustering quality. With only 25 blocks, limited parallelism causes prolonged runtimes (7,456--11,890 seconds). Increasing the number of blocks to 100 significantly reduces runtime (3,234--6,234 seconds) by improving parallel efficiency without substantial communication overhead. However, further increasing to 144 blocks results in higher overhead from inter-block communication, which offsets the parallelization gains and increases the runtime again.
+
+  The detection probability threshold, $P_{\text{thresh}}$, has a relatively minor impact on clustering quality but a noticeable effect on runtime. Raising the threshold from 0.90 to 0.99 yields only marginal NMI improvements (typically 0.002--0.005), but incurs a substantial increase in runtime (30--70\%). This suggests that while higher thresholds may slightly enhance reliability, they do so at a disproportionately high computational cost.
+
+  \paragraph{Recommendations}
+  Based on our empirical findings, we propose the following parameter settings for an effective balance between accuracy and efficiency:
+  \begin{itemize}
+    \item \textbf{Block configuration:} Use a square $10 \times 10$ layout (100 blocks), which minimizes runtime without compromising clustering quality.
+    \item \textbf{Minimum co-cluster size:} Set $T_m = T_n = 20$ to effectively filter noise while preserving meaningful co-cluster structures, consistently yielding the highest NMI and ARI values.
+    \item \textbf{Detection probability threshold:} Use $P_{\text{thresh}} = 0.95$ to achieve strong clustering reliability with a reasonable computational cost. Increasing to 0.99 offers minimal performance gains (less than 0.5\%) at the expense of significantly longer runtimes.
+  \end{itemize}
+\end{quote}
 
 \RC{3. The paper claims applicability to recommendation systems, gene expression analysis, and document clustering, but the experiments focus primarily on text datasets. To substantiate broader applicability, please include experiments on datasets from other domains.}
 
