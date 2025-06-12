@@ -1015,51 +1015,51 @@ For CLASSIC4 Dataset, the efficiency for CLASSIC4 begins at 1 and decreases to 0
 
 For RCV1-Large Dataset, starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
 
+\begin{table*}[t]
+    \centering
+    \caption{Sensitivity of DiMergeCo-SCC to key hyper-parameters (CLASSIC4 dataset). Each size threshold ($T_m=T_n$) was tested against all probability thresholds. Quality is stable for $m\times n\ge64$, while the best trade-off between accuracy and runtime is achieved with $T_m=T_n=20$, $P_{\text{thresh}}=0.95$, and 100 blocks.}
+    \label{tab:param_sens}
+    \begin{tabular}{cccccccccccccc}
+        \toprule
+                            &                     & \multicolumn{3}{c}{\textbf{25 blocks}} & \multicolumn{3}{c}{\textbf{64 blocks}} & \multicolumn{3}{c}{\textbf{100 blocks}} & \multicolumn{3}{c}{\textbf{144 blocks}}                                                                                                  \\
+        \cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}\cmidrule(lr){12-14}
+        $T_m{=}T_n$         & $P_{\text{thresh}}$ & NMI                                    & ARI                                    & Time (s)                                & NMI                                     & ARI   & Time (s) & NMI            & ARI            & Time (s)       & NMI   & ARI   & Time (s) \\
+        \midrule
+        \multirow{3}{*}{10} & 0.90                & 0.742                                  & 0.556                                  & 8,234                                   & 0.758                                   & 0.571 & 4,456    & 0.761          & 0.574          & 3,892          & 0.753 & 0.567 & 4,128    \\
+                            & 0.95                & 0.744                                  & 0.558                                  & 9,156                                   & 0.761                                   & 0.574 & 5,123    & 0.764          & 0.577          & 4,567          & 0.756 & 0.570 & 4,892    \\
+                            & 0.99                & 0.746                                  & 0.560                                  & 11,890                                  & 0.763                                   & 0.576 & 6,789    & 0.766          & 0.579          & 6,234          & 0.758 & 0.572 & 6,567    \\
+        \midrule
+        \multirow{3}{*}{20} & 0.90                & 0.751                                  & 0.564                                  & 7,892                                   & 0.768                                   & 0.581 & 3,967    & 0.773          & 0.587          & 3,456          & 0.764 & 0.579 & 3,789    \\
+                            & 0.95                & 0.754                                  & 0.567                                  & 8,234                                   & 0.771                                   & 0.584 & 4,123    & \textbf{0.776} & \textbf{0.590} & \textbf{3,628} & 0.767 & 0.582 & 3,892    \\
+                            & 0.99                & 0.756                                  & 0.569                                  & 9,567                                   & 0.773                                   & 0.586 & 4,789    & 0.778          & 0.592          & 4,234          & 0.769 & 0.584 & 4,456    \\
+        \midrule
+        \multirow{3}{*}{30} & 0.90                & 0.728                                  & 0.541                                  & 7,456                                   & 0.745                                   & 0.558 & 3,789    & 0.748          & 0.561          & 3,234          & 0.742 & 0.555 & 3,567    \\
+                            & 0.95                & 0.731                                  & 0.544                                  & 7,789                                   & 0.748                                   & 0.561 & 3,892    & 0.751          & 0.564          & 3,345          & 0.745 & 0.558 & 3,678    \\
+                            & 0.99                & 0.733                                  & 0.546                                  & 8,567                                   & 0.750                                   & 0.563 & 4,234    & 0.753          & 0.566          & 3,789          & 0.747 & 0.560 & 4,123    \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
     {\color{blue}
         \subsection{Parameter Sensitivity Analysis}
-        \label{subsec:parameter-sensitivity-analysis}
+        \label{subsec:param-sensitivity}
 
-        \subsubsection{Partition Configuration Optimization}
-        \label{subsec:partition-configuration-optimization}
-        We analyzed the optimization of partition settings to determine the ideal balance between the number of partitions, the number of repetitions, and the computation time. The datasets were divided into varying total partition counts: 25, 36, 49, 81, 100, and 121. For each configuration, the required number of repetitions and the corresponding computation time (in seconds) were recorded. As shown in \Cref{fig:optimisation}, the configuration with 100 partitions minimizes computation time while maintaining a stable number of repetitions, establishing it as our default baseline.
+        To evaluate the influence of key parameters on both clustering quality and computational efficiency, we conducted a detailed ablation study on the \textbf{CLASSIC4} dataset. Specifically, we examined the effects of three parameters: (i) the number of blocks in the layout, with square configurations $m \times n \in \{25, 64, 100, 144\}$; (ii) the minimum co-cluster size thresholds, $T_m = T_n \in \{10, 20, 30\}$; and (iii) the detection probability threshold, $P_{\text{thresh}} \in \{0.90, 0.95, 0.99\}$. Each configuration was evaluated using Normalized Mutual Information (NMI), Adjusted Rand Index (ARI), and wall-clock runtime. All reported results are averaged over three independent runs for consistency.
 
-        \begin{figure}[htbp]
-            \begin{tcolorbox}[colframe=blue, colback=white, boxrule=0.8pt, sharp corners=south]
-                \centering
-                \includegraphics[width=0.8\linewidth]{optimisation.png}
-            \end{tcolorbox}
-            \caption{Optimization of the partitioning algorithm for computational efficiency.}
-            \label{fig:optimisation}
-        \end{figure}
+        \paragraph{Sensitivity Results}
+        \Cref{tab:param_sens} presents the full set of results, with optimal values highlighted in \textbf{bold}. Our analysis shows that the minimum co-cluster size threshold has the most significant effect on clustering quality. A low threshold ($T_m = T_n = 10$) leads to the formation of noisy and irrelevant micro-clusters, resulting in degraded performance (NMI $\approx$ 0.746--0.766). Conversely, a high threshold ($T_m = T_n = 30$) filters out too many valid small co-clusters, leading to under-segmentation and reduced accuracy (NMI $\approx$ 0.733--0.753). The intermediate value ($T_m = T_n = 20$) offers the best trade-off, consistently achieving superior performance (NMI $\approx$ 0.756--0.778) by balancing noise suppression with structure preservation.
 
-        \paragraph{Validation of Optimization Results}
-        These results confirm that 100 partitions (a 10×10 matrix division) offer a sweet spot between computation time and ensemble stability. Beyond this point, the overhead from managing small blocks outweighs the benefit of finer partitioning. This finding provides the foundation for subsequent parameter sensitivity analysis.
+        The block configuration primarily affects runtime rather than clustering quality. With only 25 blocks, limited parallelism causes prolonged runtimes (7,456--11,890 seconds). Increasing the number of blocks to 100 significantly reduces runtime (3,234--6,234 seconds) by improving parallel efficiency without substantial communication overhead. However, further increasing to 144 blocks results in higher overhead from inter-block communication, which offsets the parallelization gains and increases the runtime again.
 
-        \subsubsection{Individual Parameter Sensitivity}
+        The detection probability threshold, $P_{\text{thresh}}$, has a relatively minor impact on clustering quality but a noticeable effect on runtime. Raising the threshold from 0.90 to 0.99 yields only marginal NMI improvements (typically 0.002--0.005), but incurs a substantial increase in runtime (30--70\%). This suggests that while higher thresholds may slightly enhance reliability, they do so at a disproportionately high computational cost.
 
-        \paragraph{Extended Parameter Analysis}
-        Building on our partition optimization result, we examine the impact of three key hyperparameters on performance: block size configuration, co-cluster size thresholds, and probabilistic reliability filtering.
-
-        \paragraph{Block Size Sensitivity}
-        We explore several block configurations around the identified optimal point: $5 \times 5$ ($25$ partitions), $6 \times 6$ ($36$), $8 \times 8$ ($64$), $10 \times 10$ ($100$), $12 \times 12$ ($144$), and $14 \times 14$ ($196$). For each setting, we evaluate clustering quality (NMI, ARI), runtime, and detection rate. As shown in ~\Cref{fig:block-sensitivity}, performance remains stable across a broad range but degrades at extremes due to either insufficient granularity or overhead.
-
-        \paragraph{Threshold Parameter Sensitivity.}
-        To evaluate robustness in co-cluster granularity control, we vary the minimum co-cluster size thresholds \( T_m = T_n \in \{5, 10, 15, 20, 30, 50, 75, 100\} \). This analysis uses synthetic datasets with known small co-clusters. \Cref{fig:threshold-sensitivity} shows that the range \( T_m = 10 \sim 30 \) achieves the best balance between detection and false positive rates.
-
-        \paragraph{Probability Threshold Sensitivity.}
-        We vary the probabilistic ensemble filtering threshold \( P_{\text{thresh}} \in \{0.80, 0.85, 0.90, 0.95, 0.99\} \), which determines the minimum confidence for co-cluster inclusion. As shown in~\Cref{fig:probability-sensitivity}, the best overall performance is observed at \( P_{\text{thresh}} = 0.95 \), where detection remains high while suppressing spurious patterns.
-
-        \subsubsection{Parameter Interaction Analysis}
-        To explore how parameters interact, we conduct a factorial experiment combining block size (partition count), \( P_{\text{thresh}} \), and \( T_m \). 3D surface plots and heatmaps reveal that quality is most sensitive to the joint tuning of \( P_{\text{thresh}} \) and \( T_m \), while partition count primarily affects runtime. These findings indicate that partition size can be tuned somewhat independently, but threshold and reliability parameters should be adjusted jointly.
-
-        \subsubsection{Practical Parameter Selection Guidelines}
-        Our sensitivity study yields several actionable recommendations:
+        \paragraph{Recommendations}
+        Based on our empirical findings, we propose the following parameter settings for an effective balance between accuracy and efficiency:
         \begin{itemize}
-            \item \textbf{Partitioning}: Use 100 partitions as default. Ranges from 81–121 retain $>95\%$ quality with good speed.
-            \item \textbf{Thresholds}: Set \( T_m = T_n \) between 10 and 30 for typical document or transaction data.
-            \item \textbf{Probability Threshold}: Use \( P_{\text{thresh}} = 0.95 \) for general applications; increase to 0.99 for high-confidence filtering.
+            \item \textbf{Block configuration:} Use a square $10 \times 10$ layout (100 blocks), which minimizes runtime without compromising clustering quality.
+            \item \textbf{Minimum co-cluster size:} Set $T_m = T_n = 20$ to effectively filter noise while preserving meaningful co-cluster structures, consistently yielding the highest NMI and ARI values.
+            \item \textbf{Detection probability threshold:} Use $P_{\text{thresh}} = 0.95$ to achieve strong clustering reliability with a reasonable computational cost. Increasing to 0.99 offers minimal performance gains (less than 0.5\%) at the expense of significantly longer runtimes.
         \end{itemize}
-        This guidance ensures reliable performance across datasets without requiring exhaustive tuning.
     }
 
 \section{Conclusion}
