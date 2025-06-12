@@ -409,19 +409,21 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \section{Reviewer \#3}
 
-\RC{The paper proposes DiMergeCo, a distributed and scalable co-clustering framework that partitions large matrices using a probabilistic scheme, performs local co-clustering, and merges results via a hierarchical strategy. Despite its engineering appeal, the paper falls short in key scientific aspects:
+\RC{The paper proposes DiMergeCo, a distributed and scalable co-clustering framework that partitions large matrices using a probabilistic scheme, performs local co-clustering, and merges results via a hierarchical strategy. Despite its engineering appeal, the paper falls short in key scientific aspects:}
 
-  1. Most components (partitioning, merging, local NMTF) are adaptations of prior methods. The integration is useful but lacks algorithmic novelty.}
+\AR{We thank the reviewer for this constructive feedback. We have substantially enhanced our manuscript to address all the concerns raised by the reviewer.}
+
+\RC{1. Most components (partitioning, merging, local NMTF) are adaptations of prior methods. The integration is useful but lacks algorithmic novelty.}
 
 \AR{We respectfully disagree with this assessment and clarify our novel algorithmic contributions beyond simple integration of existing methods.}
 
 \textbf{Novel Probabilistic Partitioning Algorithm:}
 
-Our probabilistic partitioning fundamentally differs from existing matrix partitioning approaches. We introduce the first theoretically-guaranteed probabilistic model specifically designed for co-cluster preservation. The core innovation lies in our adaptive algorithm (Algorithm 1) that provides explicit probability bounds:
+Our probabilistic partitioning fundamentally differs from existing matrix partitioning approaches. We introduce the first theoretically-guaranteed probabilistic model specifically designed for co-cluster preservation. The core innovation lies in our adaptive algorithm (Algorithm~\ref{alg:method}) that provides explicit probability bounds:
 
 $P \geq 1 - \exp\left\{-2T_p\left[\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2\right]\right\}$
 
-The adaptive block sizing mechanism in Lines 8-9 of Algorithm 1:
+The adaptive block sizing mechanism in Lines 8-9 of Algorithm~\ref{alg:method}:
 $\phi_i \leftarrow \max\left(\phi_i, \left\lceil\frac{M^{(k)}T_m}{Ms^{(k)}}\right\rceil\right)$
 
 represents a novel algorithmic contribution where partition sizes are determined by co-cluster density characteristics through our constrained optimization framework, fundamentally different from existing uniform or load-based partitioning methods.
@@ -481,25 +483,15 @@ This provides concrete guidance for parameter selection based on desired reliabi
 
 \RC{3. Only text datasets are used. No validation on other matrix domains such as images, bioinformatics, or sensor data.}
 
-\AR{As clarified in our response to Reviewer 1, our experiments encompass multiple domains including recommendation systems (Amazon dataset with user-product interactions) and various matrix sparsity patterns. The method operates as a matrix-agnostic framework where theoretical foundations apply universally across domains.}
+\AR{This concern has been comprehensively addressed in our response to Reviewer 1, Comment 3. Our experimental validation encompasses multiple distinct domains including recommendation systems (Amazon dataset) and bioinformatics (Breast Cancer Wisconsin dataset), demonstrating effectiveness across different matrix types and sparsity patterns. Please refer to our detailed response to Reviewer 1 for complete domain-specific analysis and performance results.}
 
 \RC{4. The effect of core hyperparameters and algorithmic stages is unexplored.}
 
-\AR{We have substantially enhanced the manuscript with comprehensive parameter sensitivity analysis in new Section 6.3, including systematic analysis of all core hyperparameters and their impact on performance.}
+\AR{This concern has been addressed through comprehensive parameter sensitivity analysis detailed in our response to Reviewer 1, Comment 2. We have added \Cref{subsec:param-sensitivity} with systematic analysis of all core hyperparameters across 36 parameter combinations, providing evidence-based selection guidelines. Please refer to our response to Reviewer 1 for complete analysis results and practical recommendations.}
 
 \RC{5. Figures are not self-contained (missing axis labels), and a table of notation is needed to assist readers.}
 
-\AR{We thank the reviewer for this constructive feedback and have made the following revisions:}
-
-\textbf{Notation Table:} Added comprehensive Table 1 that systematically defines all mathematical symbols and parameters.
-
-\textbf{Figure Improvements:} All figures have been revised to be self-contained:
-\begin{itemize}
-  \item Figure 1: Added "Samples" and "Features" axis labels with cluster boundary legends
-  \item Figure 2: Descriptive labels for each processing stage with workflow annotations
-  \item Figure 3: "Normalized Efficiency" and "Number of Processing Nodes" labels with dataset legends
-  \item Figure 4: Dual y-axis labels for "Number of Repetitions" and "Computation Time (seconds)"
-\end{itemize}
+\AR{These presentation issues have been comprehensively addressed in our responses to Reviewer 1, Comment 5 and Reviewer 2, Comment 1. We have added a comprehensive notation table (\Cref{tab:notation}) and enhanced all figures with proper axis labels, legends, and self-contained captions. Please refer to our detailed responses to Reviewers 1 and 2 for specific improvements made to each figure and the complete notation framework.}
 
 %====================================== Conclusion ============================================
 
