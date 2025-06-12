@@ -803,6 +803,7 @@ The proposed DiMergeCo framework offers a scalable and robust solution for co-cl
 \end{table}
 
 \subsubsection{Datasets}
+\label{subsec:datasets}
 The experiments were conducted using four distinct datasets (see~\Cref{tab:dataset-statistics}) to demonstrate the versatility and robustness of our method:
 \begin{itemize}
     \item \textbf{CLASSIC4}: A classic small dataset used for benchmarking co-clustering algorithms, consisting of document vectors for text analysis.
@@ -896,6 +897,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 \end{figure*}
 
 \subsubsection{Clustering Quality Comparison}
+\label{subsec:clustering-quality}
 Our experimental evaluation compares different co-clustering methods using NMI and ARI metrics (\Cref{tab:evaluation-metrics}). DiMergeCo-SCC achieves superior performance across all datasets, with the highest scores on CLASSIC4 (NMI: 0.8650, ARI: 0.7763), RCV1-Large (NMI: 0.8349, ARI: 0.7576), and Amazon (NMI: 0.7676, ARI: 0.5845). Particularly impressive is its performance on the Breast Cancer Wisconsin dataset (NMI: 0.8237, ARI: 0.7403), significantly outperforming PNMTF and ONMTF. This success stems from our probabilistic partitioning strategy and hierarchical merging process, which effectively preserve gene regulatory modules and reconstruct meaningful gene-sample associations. The method's computational efficiency (847.5 seconds) and ability to handle high-dimensional data (11,731 genes, 130 samples) make it particularly valuable for genomics applications.
 
 \subsubsection{Small Co-cluster Detection Analysis}
