@@ -151,6 +151,7 @@
 
 
 \section{Introduction}
+\label{sec:introduction}
 \IEEEPARstart{R}{ecent} advancements in machine learning have significantly benefited from the use of large-scale datasets. Clustering, a fundamental unsupervised learning technique, plays a crucial role in the preprocessing of large-scale training data. By grouping similar data together, clustering enables refined feature recognition and intricate pattern analysis. Consequently, clustering reduces noise during model training and improves data organization, significantly boosting both the efficiency and effectiveness of large-scale models\cite{raskutti2002CombiningClusteringCotraining, li2014ClusteringguidedSparseStructural, ghimatgar2018ImprovedFeatureSelection}. However, traditional clustering methods\cite{lloyd1982LeastSquaresQuantization, arthur2007KmeansAdvantagesCareful, mclachlan1987MixtureModelsInference} treat all features uniformly and cluster either rows (samples) or columns (features), as shown in~\Cref{fig:cluster}. This one-dimensional perspective may not capture the intricate interrelationships often present in complex, high-dimensional data structures.
 
 \textit{Co-clustering}\cite{kluger2003SpectralBiclusteringMicroarray, yan2017CoclusteringMultidimensionalBig,wu2024AccurateDetectionEllipses} address these limitations by simultaneously grouping rows (samples) and columns (features), as shown in~\Cref{fig:cocluster}. This bidirectional approach enables the discovery of hidden patterns and interdependencies between different data dimensions. Co-clustering has proven particularly valuable in domains where the interactions between different data dimensions carry crucial information. For example, in bioinformatics, co-clustering enables the simultaneous analysis of genes and experiment conditions, leading to discoveries of complex biological patterns\cite{higham2007SpectralClusteringIts, kluger2003SpectralBiclusteringMicroarray, madeira2004BiclusteringAlgorithmsBiological, zhao2012BiclusteringAnalysisPattern, golchev2015BiclusteringAnalysisGene}.
@@ -367,7 +368,7 @@ The complete procedure is detailed in~\Cref{alg:method}. In the following sectio
         \STATE Aggregate co-clustered results from each block
         \ENDIF
         \ENDFOR
-        \
+        \RETURN Aggregated co-clustered result $\mathcal{C}$
     \end{algorithmic}
     \label{alg:method}
 \end{algorithm}
