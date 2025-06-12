@@ -868,11 +868,6 @@ The effectiveness of the co-clustering was measured using two widely accepted me
     \end{tablenotes}
 \end{table*}
 
-\subsubsection{Small Co-cluster Detection Analysis}
-{\color{blue}
-    To validate small co-cluster preservation, we conducted controlled experiments on synthetic $5000 \times 5000$ matrices with planted co-clusters ranging from $5 \times 5$ to $20 \times 20$ with minimum thresholds $T_m = T_n = 5$. As demonstrated in~\Cref{fig:small-co-cluster-detection}, DiMergeCo-SCC consistently outperforms NMTF and PNMTF across all co-cluster sizes, confirming that the proposed multi-sampling, adaptive sizing, and merging mechanisms effectively protect small co-clusters from fragmentation. Notably, for $20 \times 20$ co-clusters, it achieves NMI=0.74 and ARI=0.62, closely matching SCC's performance (NMI=0.76, ARI=0.68) while offering distributed processing capabilities that SCC lacks. This empirically validates our theoretical guarantees and supports DiMergeCo's applicability to real-world datasets where small co-clusters are common.
-}
-
 % blue picture
 \begin{figure*}[t]
     \centering
@@ -994,6 +989,11 @@ Our experimental evaluation compares the effectiveness of different co-clusterin
 
     }
 
+
+\subsubsection{Small Co-cluster Detection Analysis}
+{\color{blue}
+    To validate small co-cluster preservation, we conducted controlled experiments on synthetic $5000 \times 5000$ matrices with planted co-clusters ranging from $5 \times 5$ to $20 \times 20$ with minimum thresholds $T_m = T_n = 5$. As demonstrated in~\Cref{fig:small-co-cluster-detection}, DiMergeCo-SCC consistently outperforms NMTF and PNMTF across all co-cluster sizes, confirming that the proposed multi-sampling, adaptive sizing, and merging mechanisms effectively protect small co-clusters from fragmentation. Notably, for $20 \times 20$ co-clusters, it achieves NMI=0.74 and ARI=0.62, closely matching SCC's performance (NMI=0.76, ARI=0.68) while offering distributed processing capabilities that SCC lacks. This empirically validates our theoretical guarantees and supports DiMergeCo's applicability to real-world datasets where small co-clusters are common.
+}
 
 \subsection{Scalability Analysis}
 \label{subsec:scalability-analysis}
