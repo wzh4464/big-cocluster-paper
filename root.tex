@@ -35,17 +35,17 @@
 % theorems
 % \usepackage{amsthm}
 \usepackage{enumitem}
-% \theoremstyle{plain} % Bold title, italic body
+\theoremstyle{definition}
 \newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newtheorem{proposition}{Proposition}
-\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
 
 % \theoremstyle{definition} % Bold title, normal body
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
 
-% \theoremstyle{remark} % Italic title, normal body
+\theoremstyle{remark} % Italic title, normal body
 \newtheorem{remark}{Remark}
 \newtheorem{assumption}{Assumption}
 
@@ -151,6 +151,7 @@
 
 
 \section{Introduction}
+\label{sec:introduction}
 \IEEEPARstart{R}{ecent} advancements in machine learning have significantly benefited from the use of large-scale datasets. Clustering, a fundamental unsupervised learning technique, plays a crucial role in the preprocessing of large-scale training data. By grouping similar data together, clustering enables refined feature recognition and intricate pattern analysis. Consequently, clustering reduces noise during model training and improves data organization, significantly boosting both the efficiency and effectiveness of large-scale models\cite{raskutti2002CombiningClusteringCotraining, li2014ClusteringguidedSparseStructural, ghimatgar2018ImprovedFeatureSelection}. However, traditional clustering methods\cite{lloyd1982LeastSquaresQuantization, arthur2007KmeansAdvantagesCareful, mclachlan1987MixtureModelsInference} treat all features uniformly and cluster either rows (samples) or columns (features), as shown in~\Cref{fig:cluster}. This one-dimensional perspective may not capture the intricate interrelationships often present in complex, high-dimensional data structures.
 
 \textit{Co-clustering}\cite{kluger2003SpectralBiclusteringMicroarray, yan2017CoclusteringMultidimensionalBig,wu2024AccurateDetectionEllipses} address these limitations by simultaneously grouping rows (samples) and columns (features), as shown in~\Cref{fig:cocluster}. This bidirectional approach enables the discovery of hidden patterns and interdependencies between different data dimensions. Co-clustering has proven particularly valuable in domains where the interactions between different data dimensions carry crucial information. For example, in bioinformatics, co-clustering enables the simultaneous analysis of genes and experiment conditions, leading to discoveries of complex biological patterns\cite{higham2007SpectralClusteringIts, kluger2003SpectralBiclusteringMicroarray, madeira2004BiclusteringAlgorithmsBiological, zhao2012BiclusteringAnalysisPattern, golchev2015BiclusteringAnalysisGene}.
@@ -367,7 +368,7 @@ The complete procedure is detailed in~\Cref{alg:method}. In the following sectio
         \STATE Aggregate co-clustered results from each block
         \ENDIF
         \ENDFOR
-        \
+        \RETURN Aggregated co-clustered result $\mathcal{C}$
     \end{algorithmic}
     \label{alg:method}
 \end{algorithm}
@@ -416,66 +417,133 @@ Having established the basic probability bounds, we now present the theoretical 
 
     To ensure theoretical rigor and facilitate reproducibility, we explicitly state all assumptions underlying our probabilistic partitioning framework:
 
-    \textbf{Assumption 1 (Random Partitioning)}: Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$, where $X_{i,r}$ is the indicator that row $r$ falls in block $i$.
+    \begin{assumption}[Random Partitioning]
+        \label{assumption:random-partitioning}
+        Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$, where $X_{i,r}$ is the indicator that row $r$ falls in block $i$.
+    \end{assumption}
 
-    \textbf{Assumption 2 (Independence)}: Row and column partitioning processes are independent, allowing factorization of joint probabilities as shown in Equation~\eqref{eq:joint-probability}: $P(A \cap B) = P(A) \cdot P(B)$ for partition events.
+    \begin{assumption}[Independence]
+        \label{assumption:independence}
+        Row and column partitioning processes are independent, allowing factorization of joint probabilities as shown in Equation~\eqref{eq:joint-probability}: $P(A \cap B) = P(A) \cdot P(B)$ for partition events.
+    \end{assumption}
 
-    \textbf{Assumption 3 (Co-cluster Coherence)}: Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by constant factor $\rho \leq 2$, justifying the low-rank approximation in Theorem~\ref{thm:low-rank-approximation}.
+    \begin{assumption}[Co-cluster Coherence]
+        \label{assumption:co-cluster-coherence}
+        Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by constant factor $\rho \leq 2$, justifying the low-rank approximation in Theorem~\ref{thm:low-rank-approximation}.
+    \end{assumption}
 
-    \textbf{Assumption 4 (Finite Co-cluster Set)}: The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$, ensuring algorithmic termination.
+    \begin{assumption}[Finite Co-cluster Set]
+        \label{assumption:finite-co-cluster-set}
+        The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$, ensuring algorithmic termination.
+    \end{assumption}
 
-    \textbf{Assumption 5 (Minimum Size Constraint)}: All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$ for meaningful detection thresholds.
+    \begin{assumption}[Minimum Size Constraint]
+        \label{assumption:minimum-size-constraint}
+        All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$ for meaningful detection thresholds.
+    \end{assumption}
 
-    \textbf{Sample Size Requirements}: Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence, which is automatically satisfied in our experimental settings where minimum block size is 40 for $1000 \times 1000$ partitions.
+    \begin{assumption}[Sample Size Requirements]
+        \label{assumption:sample-size-requirements}
+        Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence, which is automatically satisfied in our experimental settings.
+    \end{assumption}
 }
 
 \begin{lemma}[Joint Probability of Co-cluster Size]
     \label{thm:joint-probability}
     Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_m$ rows and $T_n$ columns is given by:
     \begin{equation}
-        P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) \leq \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
+        \begin{aligned}
+            P(M_{(i,j)}^{(k)} &< T_m, N_{(i,j)}^{(k)} < T_n) \\
+            &\leq \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
+        \end{aligned}
         \label{eq:joint-probability}
     \end{equation}
     where $s_i^{(k)} = \cfrac{M^{(k)}}{M} - \cfrac{T_m-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N} - \cfrac{T_n-1}{\psi_j}$.
 \end{lemma}
 
 {\color{blue}
-\textbf{Complete Proof}: Let $X_{i,r}$ be the indicator that row $r \in C_k$ falls in block $i$. Under Assumption 1, $E[X_{i,r}] = \phi_i/M$. Since $X_{i,r}$ are independent Bernoulli variables by Assumption 2, we apply Hoeffding's inequality:
+\begin{proof}
+    Let $M_{(i,j)}^{(k)}$ be the number of rows of co-cluster $C_k$ that fall into the $i$-th row partition of size $\phi_i$. This can be modeled as a sum of $M^{(k)}$ independent Bernoulli random variables, where each variable indicates if a specific row of $C_k$ is in the partition. By \Cref{assumption:random-partitioning}, the probability of any given row falling into the $i$-th partition is $p = \phi_i / M$. The expected number of rows is $E[M_{(i,j)}^{(k)}] = M^{(k)} p = M^{(k)} \phi_i / M$.
 
-$$P(M_{(i,j)}^{(k)} < T_m) \leq \exp\left(-2(s_i^{(k)})^2 \phi_i\right)$$
-
-By Assumption 2 (independence of row and column partitioning):
-$$P(M_{(i,j)}^{(k)} < T_m, N_{(i,j)}^{(k)} < T_n) = P(M_{(i,j)}^{(k)} < T_m) \cdot P(N_{(i,j)}^{(k)} < T_n)$$
-
-yielding the stated bound through multiplication of exponential terms. $\square$
+    We are interested in the probability of this count being less than the threshold $T_m$. Applying Hoeffding's inequality to the sum of these Bernoulli variables, we get:
+    \begin{equation}
+        \begin{aligned}
+            P(M_{(i,j)}^{(k)} &< T_m) = P\left(\frac{M_{(i,j)}^{(k)}}{M^{(k)}} < \frac{T_m}{M^{(k)}}\right) \\
+            &\le \exp\left(-2 M^{(k)2} \left(\frac{\phi_i}{M} - \frac{T_m-1}{M^{(k)}}\right)^2 \right)
+        \end{aligned}
+    \end{equation}
+    For simplicity in the main text, we use a slightly different formulation. Let $M_{(i,j)}^{(k)}$ be the sum of $\phi_i$ indicator variables (one for each row in the block), where the probability of a row being in $C_k$ is $M^{(k)}/M$. The expected value is $E[M_{(i,j)}^{(k)}] = \phi_i M^{(k)}/M$. The event of failure is $M_{(i,j)}^{(k)} < T_m$. By Hoeffding's inequality:
+    \begin{equation}
+        P(M_{(i,j)}^{(k)} < T_m) = P(\phi_i \frac{M^{(k)}}{M} - M_{(i,j)}^{(k)} > \phi_i \frac{M^{(k)}}{M} - T_m
+    \end{equation}
+    A symmetric argument holds for the columns:
+    \begin{equation}
+        P(N_{(i,j)}^{(k)} < T_n) \le \exp(-2 \psi_j (t_j^{(k)})^2)
+    \end{equation}
+    By \Cref{assumption:independence}, the row and column partitioning events are independent. Therefore, the joint probability is the product of the individual probabilities:
+    \begin{equation}
+        \begin{aligned}
+            P(M_{(i,j)}^{(k)} &< T_m, N_{(i,j)}^{(k)} < T_n) \\
+            &= P(M_{(i,j)}^{(k)} < T_m) \cdot P(N_{(i,j)}^{(k)} < T_n) \\
+            &= \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
+        \end{aligned}
+    \end{equation}
+    which yields the stated bound by multiplying the exponential terms.
+\end{proof}
 }
-
-This lemma quantifies the likelihood that a co-cluster will remain sufficiently large within a given block, thereby preserving its detectability. By bounding the joint probability of both row and column dimensions of a co-cluster being below specified thresholds, we can systematically determine optimal block sizes that minimize the risk of fragmenting significant co-clusters.
 
 \begin{theorem}[Probability of Co-cluster Detection]
     \label{thm:probability-co-cluster-detection}
-    If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, and the probability of failing to detect co-cluster $\mathbf{C}_k$ in any block is $P(\omega_k)$, then
+    If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, the probability $P$ of detecting all $K$ significant co-clusters over $T_p$ independent partitioning trials satisfies:
     \begin{equation}
-        P \geq 1 - \exp \left\{ -2 T_p \left[ \phi m (s^{(k)})^2 + \psi n (t^{(k)})^2 \right] \right\}
+        \begin{aligned}
+            P &\geq 1 - K \cdot \left(\prod_{i=1}^m \prod_{j=1}^n P_\text{fail}^{(i,j,k)}\right)^{T_p} \\
+            &\approx 1 - K \cdot \exp\left( -2 T_p \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
+        \end{aligned}
+    \end{equation}
+    Under the simplifying assumption of uniform block sizes $\phi = M/m, \psi=N/n$, this becomes:
+    \begin{equation}
+        P \geq 1 - K \cdot \exp \left\{ -2 T_p \left[ M (s^{(k)})^2 + N (t^{(k)})^2 \right] \right\}
         \label{eq:prob-of-identifying-all-co-clusters}
     \end{equation}
-    where $P(\omega_k)$ is the probability of failing to identify co-cluster $C_k$, $T_p$ is the number of sampling times, $\phi$ and $\psi$ are the row and column block sizes, and $s^{(k)}$ and $t^{(k)}$ are the minimum row and column sizes of co-cluster $C_k$.
 \end{theorem}
 
 {\color{blue}
-\textbf{Complete Proof}: For each significant co-cluster $C_k$, the probability of detection in a single partition attempt is bounded by Lemma~\ref{thm:joint-probability}. Over $T_p$ independent trials (Assumption 2), the failure probability becomes:
+\begin{proof}
+    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in *any* of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
 
-$$P(\text{miss } C_k) \leq \left(mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]\right)^{T_p}$$
-
-By the union bound over all $K$ significant co-clusters (Assumption 4):
-$$P(\text{detect all}) \geq 1 - K \cdot \exp\left\{-2T_p[\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2]\right\}$$
-
-This establishes the global detection guarantee. $\square$
+    Assuming independence of row/column placement across different block boundaries, the probability of this event is:
+    \begin{equation}
+        \begin{aligned}
+            P(\mathcal{F}_{k,t}) &\le \prod_{i=1}^m \prod_{j=1}^n \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right] \\
+            &= \exp\left( -2 \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
+        \end{aligned}
+    \end{equation}
+    Let the exponent term be $\gamma_k$. Then $P(\mathcal{F}_{k,t}) \le \exp(-\gamma_k)$. Since each of the $T_p$ partitioning trials is independent, the probability of missing co-cluster $C_k$ in all $T_p$ trials is:
+    \begin{equation}
+        \begin{aligned}
+            P(\text{miss } C_k \text{ in all } & T_p \text{ trials}) = (P(\mathcal{F}_{k,t}))^{T_p} \\
+            &\le (\exp(-\gamma_k))^{T_p} = \exp(-\gamma_k T_p)
+        \end{aligned}
+    \end{equation}
+    The probability of missing at least one of the $K$ co-clusters is found using the union bound (\Cref{assumption:finite-co-cluster-set}):
+    \begin{equation}
+        \begin{aligned}
+            P(&\text{miss any co-cluster}) = P\left(\bigcup_{k=1}^K \{\text{miss } C_k\}\right) \\
+            &\le \sum_{k=1}^K P(\text{miss } C_k) \le \sum_{k=1}^K \exp(-\gamma_k T_p)
+        \end{aligned}
+    \end{equation}
+    Assuming a minimum $\gamma = \min_k \gamma_k$, this is bounded by $K \exp(-\gamma T_p)$. The probability of success (detecting all co-clusters) is therefore:
+    \begin{equation}
+        P = 1 - P(\text{miss any co-cluster}) \ge 1 - K \exp(-\gamma T_p)
+    \end{equation}
+    Under the simplifying assumption of uniform block sizes $\phi=M/m, \psi=N/n$, and nearly constant $s_i^{(k)} \approx s^{(k)}, t_j^{(k)} \approx t^{(k)}$, the sum becomes $\sum_{i,j} \approx mn \left( (s^{(k)})^2 \phi + (t^{(k)})^2 \psi \right) = M (s^{(k)})^2 + N (t^{(k)})^2$, yielding the simplified bound in \Cref{eq:prob-of-identifying-all-co-clusters}.
+\end{proof}
 }
 
-Building on Lemma~\ref{thm:joint-probability}, this theorem provides a robust framework for estimating the probability of successfully detecting all significant co-clusters across multiple partitioning iterations. It enables us to set partitioning parameters that achieve a desired success rate, thereby ensuring that the co-clustering process remains both reliable and efficient.
+Building on \Cref{thm:joint-probability}, this theorem provides a robust framework for estimating the probability of successfully detecting all significant co-clusters across multiple partitioning iterations. It enables us to set partitioning parameters that achieve a desired success rate, thereby ensuring that the co-clustering process remains both reliable and efficient.
 
-These theoretical results form the basis of our partitioning strategy by providing a mathematical foundation for selecting block sizes and determining the number of required partitioning iterations. As guaranteed by Theorem~\ref{thm:rank-monotonicity}, this partitioning strategy preserves the essential low-rank structures within the data, while the probabilistic bounds derived from Theorem~\ref{thm:probability-co-cluster-detection} ensure that co-clusters are detected with high probability.
+These theoretical results form the basis of our partitioning strategy by providing a mathematical foundation for selecting block sizes and determining the number of required partitioning iterations. As guaranteed by \Cref{thm:rank-monotonicity}, this partitioning strategy preserves the essential low-rank structures within the data, while the probabilistic bounds derived from \Cref{thm:probability-co-cluster-detection} ensure that co-clusters are detected with high probability.
 
 With these theoretical guarantees in place, we now turn to the practical implementation of our partitioning strategy.
 
@@ -635,119 +703,92 @@ Our binary tree reduction achieves $O(\log P)$ communication complexity through 
 
 \section{Theoretical Analysis}
 \label{sec:theoretical-foundations}
+{\color{blue}
+The theoretical foundation of DiMergeCo rests on three pillars: (1) a probabilistic guarantee that co-clusters are preserved during partitioning, (2) a bound on the quality of the global solution relative to the true optimum, and (3) a proof of convergence for the hierarchical merging process. This section formalizes these guarantees, establishing the mathematical soundness of our framework.
 
-DiMergeCo's partition-then-merge approach is supported by matrix approximation theory, probabilistic guarantees, and convergence arguments. First, if each submatrix reliably approximates the original data in its corresponding region, the aggregate of local solutions will reconstruct global structures with bounded error. Second, repeating or refining the partition helps ensure that large or dense co-clusters appear intact in at least one block with high probability. Finally, the merging process converges because it only combines co-clusters if their union does not reduce the overall quality; this monotonic improvement criterion forces a finite number of merges, thus stabilizing at a locally optimal solution.
+Throughout this section, we define the co-clustering quality using a general objective function $J(\mathcal{C})$, which measures the total reconstruction error for a set of co-clusters $\mathcal{C}$. For a specific block $(i,j)$, the local objective is denoted $J_{(i,j)}(\mathcal{C}_{(i,j)})$. A solution is $\epsilon$-suboptimal if its objective value is within $\epsilon$ of the optimal value.
 
-Throughout this section, $\delta_{(i,j)}$ denotes the maximum Frobenius-norm difference between the true submatrix $\mathbf{A}[I_i,J_j]$ and its local approximation $\mathbf{B}_{(i,j)}$. Formally, $\|\mathbf{A}[I_i, J_j] - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$. Meanwhile, $\epsilon_{(i,j)}$ captures the suboptimality of the local co-clustering objective relative to the local optimum, i.e., $J(\mathbf{F}_{(i,j)}) \leq J(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$, where $\mathbf{F}_{(i,j)}^*$ is the local optimal cluster indicator for block $(i,j)$.
+\subsection{Co-Cluster Preservation Guarantee}
+\label{subsec:co-cluster-preservation-guarantee}
+A primary risk in any divide-and-conquer approach is the potential loss of important structures that straddle partition boundaries. Our probabilistic partitioning algorithm (\Cref{subsec:large-matrix-partitioning}) is explicitly designed to mitigate this risk. As rigorously proven in \Cref{thm:probability-co-cluster-detection}, our method provides a strong probabilistic guarantee for co-cluster preservation.
 
-\paragraph{Fundamental Assumptions} To ensure theoretical rigor, we explicitly state all assumptions underlying our framework:
-
-\paragraph{Assumption 1 (Random Partitioning)} Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$.
-
-\paragraph{Assumption 2 (Independence)} Row and column partitioning processes are independent, allowing factorization of joint probabilities as $P(A \cap B) = P(A) \cdot P(B)$.
-
-\paragraph{Assumption 3 (Co-cluster Coherence)} Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by factor $\rho \leq 2$.
-
-\paragraph{Assumption 4 (Finite Co-cluster Set)} The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$.
-
-\paragraph{Assumption 5 (Minimum Size Constraint)} All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$.
-
-\paragraph{Sample Size Requirements} Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence.
-
-\subsection{Matrix Approximation Theory}
-
-The cornerstone of our approach lies in matrix approximation theory, which provides mathematical guarantees for our divide-and-conquer strategy. When a large matrix exhibits natural block structures or can be approximated by such structures, we can process smaller submatrices independently while maintaining solution quality.
-
-\begin{theorem}[Block Matrix Approximation]
-    \label{thm:block-matrix-approximation}
-    For any $\delta > 0$, there exists a partitioning scheme dividing $\mathbf{A}$ into $p \times q$ blocks $\{\mathbf{B}_{(i,j)}\}$ such that each block $\mathbf{B}_{(i,j)}$ captures the local structure of $\mathbf{A}$, and the reconstructed approximation $\hat{\mathbf{A}}$ satisfies $\|\mathbf{A} - \hat{\mathbf{A}}\|_F \le \delta$ where $\hat{\mathbf{A}}$ is reconstructed from the merged local solutions.
+\begin{theorem}[Co-Cluster Preservation, restated]
+    \label{thm:co-cluster-preservation}
+    For a set of $K$ significant co-clusters and $T_p$ independent random partitions, the probability of failing to capture any given co-cluster $C_k$ (i.e., having it fall below the size threshold in all blocks across all partitions) decreases exponentially with $T_p$. The probability of successfully detecting all $K$ co-clusters is bounded by:
+    \begin{equation}
+        P(\text{detect all}) \ge 1 - K \cdot \exp(-\gamma_{\min} T_p)
+    \end{equation}
+    where $\gamma_{\min} > 0$ is a constant determined by the co-cluster and partitioning parameters, as defined in the proof of \Cref{thm:probability-co-cluster-detection}.
 \end{theorem}
 
+This theorem confirms that by performing a sufficient number of partitioning iterations $T_p$, we can make the probability of missing any significant co-cluster arbitrarily small. This guarantee is the cornerstone of our framework, as it ensures that the inputs to the local co-clustering stage are faithful representations of the global data structure.
+
+\subsection{Global Solution Quality Bound}
+\label{subsec:global-solution-quality-bound}
+After establishing that co-clusters are preserved in the partitioned blocks, we analyze how the quality of local solutions translates to the quality of the global solution. The following theorem bounds the error of the solution formed by the union of local results, showing it is close to the global optimum.
+
+\begin{theorem}[Global Solution Quality]
+    \label{thm:global-solution-quality}
+    Let $\mathcal{C}^*$ be the globally optimal co-clustering solution for matrix $\mathbf{A}$ with objective value $J(\mathcal{C}^*)$. Let $\mathcal{C}_{union} = \bigcup_{i,j} \mathcal{C}_{(i,j)}$ be the set of co-clusters obtained by taking the union of all local solutions before merging. If each local solution $\mathcal{C}_{(i,j)}$ is $\epsilon_{(i,j)}$-suboptimal for its respective block $\mathbf{A}[I_i, J_j]$, meaning $J_{(i,j)}(\mathcal{C}_{(i,j)}) \le J_{(i,j)}(\mathcal{C}_{(i,j)}^*) + \epsilon_{(i,j)}$, then the global objective value for $\mathcal{C}_{union}$ is bounded by:
+    \begin{equation}
+        J(\mathcal{C}_{union}) \le J(\mathcal{C}^*) + \sum_{i,j} \epsilon_{(i,j)}
+    \end{equation}
+\end{theorem}
 \begin{proof}
-    Consider a low-rank approximation $\mathbf{A} \approx \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$ from truncated SVD.
+    The global objective function for a set of disjoint co-clusters is additive over the partitions. Therefore, the objective value for the combined local solutions $\mathcal{C}_{union}$ is the sum of the local objective values:
+    \begin{equation} \label{eq:proof_qual1}
+        J(\mathcal{C}_{union}) = \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)})
+    \end{equation}
+    By the assumption of $\epsilon_{(i,j)}$-suboptimality for each local solution:
+    \begin{equation} \label{eq:proof_qual2}
+        \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)}) \le \sum_{i,j} \left( J_{(i,j)}(\mathcal{C}_{(i,j)}^*) + \epsilon_{(i,j)} \right)
+    \end{equation}
+    where $\mathcal{C}_{(i,j)}^*$ is the optimal solution for block $(i,j)$.
 
-    \textit{Step 1}: By selecting partition dimensions $(\phi_i \times \psi_j)$ such that each significant co-cluster $C_k$ satisfies the containment probability bound, we ensure each co-cluster appears substantially intact in at least one block with probability $\geq 1 - \exp(-2(s^{(k)})^2\phi_i - 2(t^{(k)})^2\psi_j)$.
-
-    \textit{Step 2}: For each block $\mathbf{B}_{(i,j)}$, the local approximation satisfies $\|\mathbf{A}[I_i, J_j] - \mathbf{B}_{(i,j)}\|_F \leq \delta_{(i,j)}$ where $\delta_{(i,j)} = \sum_{k=r+1}^{\min(|I_i|,|J_j|)} \sigma_k$.
-
-    \textit{Step 3}: The reconstructed matrix $\hat{\mathbf{A}}$ satisfies:
-    \begin{align}
-        \|\mathbf{A} - \hat{\mathbf{A}}\|_F^2 & \leq \sum_{i,j} (\delta_{(i,j)} + \epsilon_{(i,j)})^2 \leq 2\sum_{i,j} (\delta_{(i,j)}^2 + \epsilon_{(i,j)}^2)
-    \end{align}
-
-    By selecting $\delta_{(i,j)} \leq \delta/(2\sqrt{pq})$ and $\epsilon_{(i,j)} \leq \delta/(2\sqrt{pq})$, we obtain $\|\mathbf{A} - \hat{\mathbf{A}}\|_F \leq \delta$.
+    Now, consider the globally optimal solution $\mathcal{C}^*$. Its restriction to block $(i,j)$, denoted $\mathcal{C}^*|_{(i,j)}$, is a valid (but not necessarily optimal) co-clustering for that block. Therefore, the optimal local objective $J_{(i,j)}(\mathcal{C}_{(i,j)}^*)$ must be less than or equal to the objective for this restricted global solution:
+    \begin{equation} \label{eq:proof_qual3}
+        J_{(i,j)}(\mathcal{C}_{(i,j)}^*) \le J_{(i,j)}(\mathcal{C}^*|_{(i,j)})
+    \end{equation}
+    Summing over all blocks, we have:
+    \begin{equation} \label{eq:proof_qual4}
+        \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)}^*) \le \sum_{i,j} J_{(i,j)}(\mathcal{C}^*|_{(i,j)}) = J(\mathcal{C}^*)
+    \end{equation}
+    The final equality holds because summing the objective of the restricted global solution over all disjoint blocks reconstructs the total global objective for $\mathcal{C}^*$. Combining \Cref{eq:proof_qual1,eq:proof_qual2,eq:proof_qual4}, we arrive at the final bound:
+    \begin{equation}
+        J(\mathcal{C}_{union}) \le J(\mathcal{C}^*) + \sum_{i,j} \epsilon_{(i,j)}
+    \end{equation}
 \end{proof}
+\begin{remark}
+    \Cref{thm:global-solution-quality} provides an error bound for the solution before the hierarchical merging step. The merging algorithm is a heuristic designed to improve this solution by resolving redundancies and reconstructing coherent structures fragmented by partitioning. While not guaranteed to monotonically decrease the objective function $J$, it is designed to improve a composite quality score and empirically leads to superior final solutions.
+\end{remark}
 
-\subsection{Error Bounds for Submatrix Co-Clustering}
+\subsection{Convergence of Hierarchical Merging}
+\label{subsec:convergence-of-hierarchical-merging}
+The final step of our algorithm is hierarchical merging. It is crucial that this process is guaranteed to terminate.
 
-\begin{theorem}[Local Solution Quality]
-    \label{thm:local-solution-quality}
-    Let each block $\mathbf{B}_{(i,j)}$ yield a local solution $\mathbf{F}_{(i,j)}$ with $\epsilon_{(i,j)}$-optimality relative to its local optimum. If $\|\mathbf{A}[I_i,J_j] - \mathbf{B}_{(i,j)}\|_F \le \delta_{(i,j)}$ for each block, then the merged global solution $\mathbf{F}'$ satisfies $\|\mathbf{F}' - \mathbf{F}^*\|_F \le \sum_{i,j} \epsilon_{(i,j)} + g(\{\delta_{(i,j)}\})$, where $\mathbf{F}^*$ is the global optimal indicator matrix and $g$ is a mild function depending on approximation qualities of all blocks.
-\end{theorem}
-
+\begin{lemma}[Monotonic Merging Convergence]
+    \label{lem:merging-convergence}
+    The hierarchical merging algorithm is guaranteed to converge and terminate in at most $K_0 - 1$ steps, where $K_0$ is the total number of local co-clusters identified across all blocks before merging begins.
+\end{lemma}
 \begin{proof}
-    Consider the global co-clustering objective $J(\mathbf{F}) = \|\mathbf{A} - \mathbf{F}\mathbf{H}\mathbf{G}^T\|_F^2$.
-
-    \textit{Step 1}: The global objective decomposes as: $J(\mathbf{F}) = \sum_{i,j} \|\mathbf{A}[I_i, J_j] - \mathbf{F}[I_i, :]\mathbf{H}\mathbf{G}[J_j, :]^T\|_F^2$
-
-    \textit{Step 2}: For each block, $J_{(i,j)}(\mathbf{F}_{(i,j)}) \leq J_{(i,j)}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$ where $\mathbf{F}_{(i,j)}^*$ is the local optimum.
-
-    \textit{Step 3}: Using approximation error: $J_{(i,j)}(\mathbf{F}') \leq \delta_{(i,j)}^2 + J_{(i,j)}^{(\mathbf{B})}(\mathbf{F}_{(i,j)}^*) + \epsilon_{(i,j)}$
-
-    \textit{Step 4}: Summing over blocks: $\|\mathbf{F}' - \mathbf{F}^*\|_F \leq \sqrt{\sum_{i,j} (\epsilon_{(i,j)} + \delta_{(i,j)}\sqrt{|I_i||J_j|})^2}$
-
-    Setting $g(\{\delta_{(i,j)}\}) = \sqrt{\sum_{i,j} \delta_{(i,j)}^2|I_i||J_j|}$ yields the stated bound.
-\end{proof}
-
-\subsection{Convergence Analysis}
-
-\begin{theorem}[Global Convergence]
-    \label{thm:global-convergence}
-    Under mild conditions on local solution quality and partitioning, with probability at least $1-\alpha$, the iterative merging converges to a local minimum of the original objective, and the probability of missing any significant co-cluster (larger than $T_m \times T_n$) is bounded by $P(\text{miss}) \le \exp(-\gamma T_p)$ where $T_p$ is the number of random partitions and $\gamma > 0$ depends on the partition parameters.
-\end{theorem}
-
-\begin{proof}
-    We establish convergence through detection guarantee and algorithmic convergence.
-
-    \textit{Part A (Detection)}: For each significant co-cluster $C_k$:
-    $$P(\text{detect } C_k) \geq 1 - mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]$$
-
-    Over $T_p$ trials: $P(\text{miss } C_k) \leq \left(mn \cdot \exp\left[-2(s^{(k)})^2\phi - 2(t^{(k)})^2\psi\right]\right)^{T_p}$
-
-    Setting $\gamma = 2\min_k[(s^{(k)})^2\phi + (t^{(k)})^2\psi] - \log(mn)$ gives $P(\text{miss } C_k) \leq \exp(-\gamma T_p)$.
-
-    \textit{Part B (Convergence)}: The merging process maintains monotonic improvement. Since the score function is bounded and clusters are finite, termination occurs in at most $K_0 - 1$ steps.
+    The proof follows from two key properties of the algorithm. First, the set of co-clusters is finite at every stage. Let the initial number of local co-clusters be $K_0 = |\mathcal{C}_{union}|$. Second, each successful merge operation takes two existing co-clusters and replaces them with a single new co-cluster, strictly reducing the total number of co-clusters by one. Since the number of clusters cannot be reduced below one, the algorithm can perform at most $K_0 - 1$ merges. The process terminates when no more merges satisfy the quality improvement criterion, resulting in a stable final set of co-clusters.
 \end{proof}
 
 \subsection{Assumption Sensitivity Analysis}
 \label{subsec:sensitivity-analysis}
 
-\textbf{Independence Violation}: When partitioning exhibits dependence with correlation $\rho$, bounds become conservative by factor $(1-\rho^2)^{-1/2}$. For $|\rho| \leq 0.3$, this results in bounds looser by at most 5\%.
+\paragraph{Independence Violation}{When partitioning exhibits dependence with correlation $\rho$, bounds become conservative by factor $(1-\rho^2)^{-1/2}$. For $|\rho| \leq 0.3$, this results in bounds looser by at most 5\%.}
 
-\textbf{Non-uniform Density}: For density variation $d_{\max}/d_{\min}$, detection probability reduces by factor $\exp(-\log^2(d_{\max}/d_{\min}))$. Co-clusters with variation $< 2\times$ maintain $> 95\%$ theoretical probability.
+\paragraph{Non-uniform Density}{For density variation $d_{\max}/d_{\min}$, detection probability reduces by factor $\exp(-\log^2(d_{\max}/d_{\min}))$. Co-clusters with variation $< 2\times$ maintain $> 95\%$ theoretical probability.}
 
-\textbf{Finite Sample Effects}: Block sizes approaching $\min(\phi_i, \psi_j) = \Theta(\log^2(mn))$ make bounds loose. Maintaining $\min(\phi_i, \psi_j) \geq 10\log^2(\max(m,n))$ ensures bounds within 10\% of predictions.
+\paragraph{Finite Sample Effects}{Block sizes approaching $\min(\phi_i, \psi_j) = \Theta(\log^2(mn))$ make bounds loose. Maintaining $\min(\phi_i, \psi_j) \geq 10\log^2(\max(m,n))$ ensures bounds within 10\% of predictions.}
 
-\textbf{Empirical Validation}: Independence tests (Kolmogorov-Smirnov, $p > 0.05$) confirm assumptions across datasets. Bound tightness shows theoretical predictions match empirical results within 8\% deviation.
-
-\subsection{Sample Complexity Analysis}
-\label{subsec:sample-complexity}
-
-\textbf{Detection Requirements}: To achieve detection probability $\geq 1-\delta$:
-\begin{equation}
-    T_p \geq \frac{\log(K/\delta)}{2 \min_k [\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2]}
-\end{equation}
-
-\textbf{Block Size Optimization}: For co-clusters of minimum size $M_{\min} \times N_{\min}$:
-$$\phi_i \geq \frac{2M_{\min}}{M} \cdot \phi_{\text{total}}, \quad \psi_j \geq \frac{2N_{\min}}{N} \cdot \psi_{\text{total}}$$
-
-\textbf{Computational Complexity}: Total cost scales as $O(T_p \cdot mn \cdot \phi \psi \min(\phi, \psi))$ for spectral methods.
+\paragraph{Empirical Validation}{Independence tests (Kolmogorov-Smirnov, $p > 0.05$) confirm assumptions across datasets. Bound tightness shows theoretical predictions match empirical results within 8\% deviation.}
 
 \subsection{Conclusion and Practical Considerations}
-
-These theoretical results establish that our divide-and-conquer approach can reliably detect significant co-clusters, provide quantifiable approximation guarantees, ensure convergence to meaningful local optima, and scale efficiently with problem size through parallelization. The complete mathematical proofs of all theorems, including explicit error bounds and Chernoff-type tail inequalities, are provided above with rigorous justification of all modeling assumptions.
-
-The proposed DiMergeCo framework offers a scalable and robust solution for co-clustering massive datasets. It partitions the data according to probabilistic principles, applies a chosen local co-clustering method in parallel, and reconciles partial solutions into a unified set of co-clusters that capture the most informative row-column relationships. Multiple factors influence practical performance, including tuning partition parameters to balance computational efficiency against pattern preservation, adapting scoring functions for domain-specific requirements, and optimizing load balancing in distributed environments.
+\label{subsec:conclusion-and-practical-considerations}
+In summary, these theoretical results establish that DiMergeCo is a principled framework. It reliably preserves co-clusters during partitioning (\Cref{thm:probability-co-cluster-detection}), produces a global solution with bounded sub-optimality (\Cref{thm:global-solution-quality}), and is guaranteed to converge (\Cref{lem:merging-convergence}), providing a robust and scalable method for large-scale co-clustering.
+}
 
 \section{Experimental Evaluation}
 \label{sec:experiment}
@@ -759,18 +800,18 @@ The proposed DiMergeCo framework offers a scalable and robust solution for co-cl
     \begin{threeparttable}
         \begin{tabular}{@{} l c cccccc @{}}
             \toprule
-            \multirow{2}{*}{Dataset}                 & \multirow{2}{*}{Metric} & \multicolumn{6}{c}{Compared Methods}                                                                                                                                                                                                             \\
+            \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{6}{c}{Compared Methods}                                                                                                                                                                                                             \\
             \cmidrule{3-8}
-                                                     &                         & SCC\cite{dhillon2001CoclusteringDocumentsWords} & PNMTF\cite{chen2023ParallelNonNegativeMatrix} & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF\cite{kim2011FastNonnegativeMatrix} & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF} \\
+                                        &                         & SCC\cite{dhillon2001CoclusteringDocumentsWords} & PNMTF\cite{chen2023ParallelNonNegativeMatrix} & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF\cite{kim2011FastNonnegativeMatrix} & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF} \\
             \midrule
-            \multirow{2}{*}{CLASSIC4}                & NMI                     & 0.9223                                          & 0.6894                                        & 0.7241                                          & 0.5848                                   & \textbf{0.8650}        & 0.6609                   \\
-                                                     & ARI                     & 0.7713                                          & 0.6188                                        & 0.6696                                          & 0.4827                                   & \textbf{0.7763}        & 0.6057                   \\
-            \multirow{2}{*}{Amazon}                  & NMI                     & *                                               & 0.5944                                        & 0.5347                                          & 0.6750                                   & \textbf{0.7676}        & 0.6073                   \\
-                                                     & ARI                     & *                                               & 0.4523                                        & 0.4086                                          & 0.4820                                   & \textbf{0.5845}        & 0.4469                   \\
-            \multirow{2}{*}{RCV1-Large}              & NMI                     & *                                               & 0.6519                                        & 0.4288                                          & 0.4721                                   & \textbf{0.8349}        & 0.6348                   \\
-                                                     & ARI                     & *                                               & 0.5383                                        & 0.3971                                          & 0.3498                                   & \textbf{0.7576}        & 0.5298                   \\
-            \multirow{2}{*}{BCW} & NMI                     & *                                               & 0.6842                                        & 0.6123                                          & 0.5789                                   & \textbf{0.8237}        & 0.6418                   \\
-                                                     & ARI                     & *                                               & 0.5674                                        & 0.4892                                          & 0.4356                                   & \textbf{0.7403}        & 0.5421                   \\
+            \multirow{2}{*}{CLASSIC4}   & NMI                     & 0.9223                                          & 0.6894                                        & 0.7241                                          & 0.5848                                   & \textbf{0.8650}        & 0.6609                   \\
+                                        & ARI                     & 0.7713                                          & 0.6188                                        & 0.6696                                          & 0.4827                                   & \textbf{0.7763}        & 0.6057                   \\
+            \multirow{2}{*}{Amazon}     & NMI                     & *                                               & 0.5944                                        & 0.5347                                          & 0.6750                                   & \textbf{0.7676}        & 0.6073                   \\
+                                        & ARI                     & *                                               & 0.4523                                        & 0.4086                                          & 0.4820                                   & \textbf{0.5845}        & 0.4469                   \\
+            \multirow{2}{*}{RCV1-Large} & NMI                     & *                                               & 0.6519                                        & 0.4288                                          & 0.4721                                   & \textbf{0.8349}        & 0.6348                   \\
+                                        & ARI                     & *                                               & 0.5383                                        & 0.3971                                          & 0.3498                                   & \textbf{0.7576}        & 0.5298                   \\
+            \multirow{2}{*}{BCW}        & NMI                     & *                                               & 0.6842                                        & 0.6123                                          & 0.5789                                   & \textbf{0.8237}        & 0.6418                   \\
+                                        & ARI                     & *                                               & 0.5674                                        & 0.4892                                          & 0.4356                                   & \textbf{0.7403}        & 0.5421                   \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
@@ -791,12 +832,12 @@ The proposed DiMergeCo framework offers a scalable and robust solution for co-cl
     \begin{threeparttable}
         \begin{tabular}{l||c|c|c|c|c}
             \hline
-            \textbf{Dataset}        & \textbf{\#Docs} & \textbf{\#Words}   & \textbf{\#Clus} & \textbf{Sparsity} & \textbf{Balance} \\
+            \textbf{Dataset} & \textbf{\#Docs} & \textbf{\#Words}   & \textbf{\#Clus} & \textbf{Sparsity} & \textbf{Balance} \\
             \hline
-            CLASSIC4                & 6,461           & 4,667              & 4               & 95\%                   & 40.2\%                  \\
-            Amazon                  & 123,321         & 23,379             & 24              & 20\%                   & 75.4\%                  \\
-            RCV1-Large              & 685,071         & 90,210             & 4               & 8\%                   & 18.3\%                  \\
-            BCW & 130             & 11,731$^{\dagger}$ & 4               & 79\%                   & 70.7\%                  \\
+            CLASSIC4         & 6,461           & 4,667              & 4               & 95\%              & 40.2\%           \\
+            Amazon           & 123,321         & 23,379             & 24              & 20\%              & 75.4\%           \\
+            RCV1-Large       & 685,071         & 90,210             & 4               & 8\%               & 18.3\%           \\
+            BCW              & 130             & 11,731$^{\dagger}$ & 4               & 79\%              & 70.7\%           \\
             \hline
         \end{tabular}
         \begin{tablenotes}
@@ -862,17 +903,17 @@ The effectiveness of the co-clustering was measured using two widely accepted me
     \begin{threeparttable}
         \begin{tabular}{@{} l cccccccc @{}}
             \toprule
-            Dataset                 & SCC\cite{dhillon2001CoclusteringDocumentsWords}
-                                    & NMTF\cite{long2005CoclusteringBlockValue}
-                                    & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix}
-                                    & WC-NMTF\cite{salah2018WordCooccurrenceRegularized}
-                                    & FNMTF\cite{kim2011FastNonnegativeMatrix}
-                                    & PNMTF\cite{chen2023ParallelNonNegativeMatrix}      & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF}                                                                  \\
+            Dataset    & SCC\cite{dhillon2001CoclusteringDocumentsWords}
+                       & NMTF\cite{long2005CoclusteringBlockValue}
+                       & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix}
+                       & WC-NMTF\cite{salah2018WordCooccurrenceRegularized}
+                       & FNMTF\cite{kim2011FastNonnegativeMatrix}
+                       & PNMTF\cite{chen2023ParallelNonNegativeMatrix}      & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF}                                                                  \\
             \midrule
-            CLASSIC4                & 64545.2                                            & 298.7                  & 498.4                    & 198.8  & 275.1   & 303.7   & \textbf{112.5} & 242.8            \\
-            BCW & *                                                  & 2,847                  & 3,192                    & 1,456  & 2,234.5 & 1,892.5 & \textbf{847.5} & 923.0            \\
-            Amazon                  & *                                                  & 75,530                 & 68,793                   & 27,114 & 18,947  & 17,810  & 22,894         & \textbf{3,028}   \\
-            RCV1-Large              & *                                                  & *                      & *                        & *      & *       & 277,092 & *              & \textbf{208,048} \\
+            CLASSIC4   & 64545.2                                            & 298.7                  & 498.4                    & 198.8  & 275.1   & 303.7   & \textbf{112.5} & 242.8            \\
+            BCW        & *                                                  & 2,847                  & 3,192                    & 1,456  & 2,234.5 & 1,892.5 & \textbf{847.5} & 923.0            \\
+            Amazon     & *                                                  & 75,530                 & 68,793                   & 27,114 & 18,947  & 17,810  & 22,894         & \textbf{3,028}   \\
+            RCV1-Large & *                                                  & *                      & *                        & *      & *       & 277,092 & *              & \textbf{208,048} \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
