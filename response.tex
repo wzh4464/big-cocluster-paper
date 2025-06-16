@@ -157,7 +157,7 @@ In this revised manuscript, we have comprehensively addressed all concerns raise
 
 We believe these revisions have substantially strengthened the paper and adequately addressed all identified issues.
 
-Notations: \textbf{RC:} \textbf{\textit{Review Comment}}; \textbf{AR:} \textbf{Authors' Response}; $\square$ Manuscript Text
+Notations: \textbf{RC:} \textbf{\textit{Review Comment}}; \textbf{AR:} Authors' Response; $\square$ Manuscript Text
 
 %====================================== Editorial Comments ============================================
 
@@ -485,30 +485,39 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \RC{1. Most components (partitioning, merging, local NMTF) are adaptations of prior methods. The integration is useful but lacks algorithmic novelty.}
 
-\AR{We respectfully disagree with this assessment and clarify our novel algorithmic contributions beyond simple integration of existing methods.}
+\AR{Our work introduces three fundamental algorithmic innovations that go far beyond simple adaptation of existing methods: (1) We develop the first theoretically-guaranteed probabilistic partitioning algorithm specifically designed for co-cluster preservation, fundamentally different from existing uniform or load-based partitioning methods, (2) We design a communication-optimal hierarchical merging strategy that eliminates centralized bottlenecks and reduces per-node communication complexity from $O(n)$ to $O(\log n)$, and (3) We establish an integrated algorithmic framework with complete theoretical foundations providing the first rigorous analysis for distributed co-clustering performance guarantees. Each component represents a significant algorithmic advancement addressing fundamental challenges in large-scale co-clustering.}
 
-\paragraph{Novel Probabilistic Partitioning Algorithm}
+\paragraph{Contribution 1: Theoretically-Guaranteed Probabilistic Partitioning}
 
-Our probabilistic partitioning fundamentally differs from existing matrix partitioning approaches. We introduce the first theoretically-guaranteed probabilistic model specifically designed for co-cluster preservation. The core innovation lies in our adaptive algorithm (\Cref{alg:method}) that provides explicit probability bounds:
+Our probabilistic partitioning algorithm represents a fundamental departure from existing matrix partitioning approaches:
 
-$P \geq 1 - \exp\left\{-2T_p\left[\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2\right]\right\}$
+\textbf{Co-cluster Preservation Design:} Unlike existing uniform or load-based partitioning methods that ignore data structure, we introduce the first matrix partitioning algorithm specifically designed for co-cluster preservation. Our algorithm adaptively determines partition configurations and sampling iterations based on co-cluster characteristics, providing explicit probabilistic guarantees:
+$$P \geq 1 - \exp\left\{-2T_p\left[\phi m (s^{(k)})^2 + \psi n (t^{(k)})^2\right]\right\}$$
 
-The adaptive block sizing mechanism in Lines 8-9 of \Cref{alg:method}:
-$\phi_i \leftarrow \max\left(\phi_i, \left\lceil\frac{M^{(k)}T_m}{Ms^{(k)}}\right\rceil\right)$
+\textbf{Adaptive Mechanism:} The core algorithmic innovation lies in our adaptive block sizing mechanism (Lines 8-9 of \Cref{alg:partitioning}) where partition sizes are dynamically determined by co-cluster density characteristics:
+$$\phi_i \leftarrow \max\left(\phi_i, \left\lceil\frac{M^{(k)}T_m}{Ms^{(k)}}\right\rceil\right)$$
 
-represents a novel algorithmic contribution where partition sizes are determined by co-cluster density characteristics through our constrained optimization framework, fundamentally different from existing uniform or load-based partitioning methods.
+This adaptive mechanism provides explicit probabilistic guarantees for preserving co-clusters of varying sizes, enabling reliable decomposition of global co-clustering into independent local problems—a capability that existing partitioning methods fundamentally lack.
 
-\paragraph{Communication-Efficient Hierarchical Merging}
+\paragraph{Contribution 2: Communication-Optimal Hierarchical Merging Strategy}
 
-Our hierarchical merging strategy introduces algorithmic innovations that reduce communication complexity from $O(n)$ to $O(\log n)$ per node. Unlike standard hierarchical clustering that operates on distance matrices with $O(n^2)$ space complexity, our approach operates directly on co-cluster structures through a binary tree-based coordination mechanism.
+Our hierarchical merging strategy introduces fundamental architectural innovations for distributed coordination:
 
-\paragraph{Integrated Theoretical Framework}
+\textbf{Centralized Bottleneck Elimination:} We design a binary tree-based coordination algorithm that eliminates the centralized bottlenecks inherent in existing distributed co-clustering methods. Unlike prior approaches requiring centralized coordination or broadcast communication, our hierarchical strategy operates through peer-to-peer communication in $\lceil \log_2 P \rceil$ steps.
 
-We prove that local $\epsilon$-optimal solutions combine to achieve bounded global deviation:
+\textbf{Communication Complexity Reduction:} Our approach reduces per-node communication complexity from $O(n)$ to $O(\log n)$ while providing theoretical convergence guarantees. This represents a fundamental architectural advancement for distributed co-clustering, enabling scalability to thousands of processing nodes.
 
-$\|F' - F^*\|_F \leq \sum_{i,j} \epsilon_{(i,j)} + g(\{\delta_{(i,j)}\})$
+\textbf{Theoretical Convergence Guarantees:} Our merging strategy maintains co-cluster preservation properties while providing bounded convergence in at most $K_0-1$ steps, where $K_0$ is the initial number of local co-clusters, ensuring predictable termination.
 
-This joint analysis of partition approximation error and local optimization quality provides novel theoretical guarantees for distributed co-clustering.
+\paragraph{Contribution 3: Integrated Algorithmic Framework with Theoretical Foundations}
+
+We establish the first complete theoretical framework for distributed co-clustering with rigorous performance guarantees:
+
+\textbf{Global Optimality Bounds:} We establish a complete theoretical framework connecting local solution quality to global optimality bounds.
+
+\textbf{First Rigorous Analysis:} Our framework provides the first rigorous analysis for distributed co-clustering performance guarantees, establishing theoretical bounds that span the entire distributed pipeline from partitioning through merging to final solution quality.
+
+\textbf{Practical Implementation with Theoretical Guarantees:} Our MPI implementation demonstrates that these algorithmic innovations enable processing scales where existing methods fail due to computational limitations while achieving superior clustering quality and significant computational efficiency improvements. The theoretical framework guides practical parameter selection and ensures solution quality.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  response.tex  (excerpt) – Reviewer 3, Comment 2  – FINAL
