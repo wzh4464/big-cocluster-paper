@@ -163,9 +163,9 @@ Notations: \textbf{RC:} \textbf{\textit{Review Comment}}; \textbf{AR:} \textbf{A
 
 \section{Editorial Comments}
 
-\textbf{Senior Editor:} The 3 reviewers and the Associate Editor have identified both merits and issues with the paper. A "major revision" would be recommended.
+\paragraph{Senior Editor} The 3 reviewers and the Associate Editor have identified both merits and issues with the paper. A "major revision" would be recommended.
 
-\textbf{Associate Editor:} The paper received three reviews. While all reviewers acknowledged its potential impact on large-scale dataset clustering, several concerns remain and should be addressed in a revised version—specifically, the lack of validation beyond text datasets, insufficient theoretical justification, limited hyper-parameter analysis, and inadequate discussion of related work.
+\paragraph{Associate Editor} The paper received three reviews. While all reviewers acknowledged its potential impact on large-scale dataset clustering, several concerns remain and should be addressed in a revised version—specifically, the lack of validation beyond text datasets, insufficient theoretical justification, limited hyper-parameter analysis, and inadequate discussion of related work.
 
 \AR{We thank the editorial team for their comprehensive assessment. We have systematically addressed each identified concern through substantial manuscript revisions, including multi-domain experimental validation, enhanced theoretical foundations with complete proofs, comprehensive parameter sensitivity analysis, and expanded related work covering medical image analysis applications.}
 
@@ -177,25 +177,47 @@ Notations: \textbf{RC:} \textbf{\textit{Review Comment}}; \textbf{AR:} \textbf{A
 
 \AR{We sincerely thank the reviewer for their positive assessment of our contribution. We have addressed all the suggested revisions as outlined in the responses below.}
 
-\RC{The probabilistic partitioning assumes co-clusters exceed a certain size for preservation with high probability. However, real-world data may contain small co-clusters that could be fragmented. Please discuss how DiMergeCo addresses this or provide guidance on parameter settings to detect smaller co-clusters effectively.}
+\RC{1. The probabilistic partitioning assumes co-clusters exceed a certain size for preservation with high probability. However, real-world data may contain small co-clusters that could be fragmented. Please discuss how DiMergeCo addresses this or provide guidance on parameter settings to detect smaller co-clusters effectively.}
 
-\AR{We thank the reviewer for this important concern. DiMergeCo implements multiple protective mechanisms specifically designed to address small co-cluster fragmentation through theoretical guarantees, algorithmic safeguards, and experimental validation.}
+\AR{Small co-clusters present unique challenges in partition-based approaches, and DiMergeCo implements coordinated strategies specifically designed to address these challenges while maintaining statistical rigor.}
 
-\textbf{Multi-Sampling Protection:} Our probabilistic model provides exponential protection against fragmentation through repeated sampling iterations. For any co-cluster $C_k$, the probability of successful preservation across $T_p$ independent sampling iterations follows:
-\begin{equation}
-  P(\text{preserve}) = 1 - \left(1 - P_{\text{single}}\right)^{T_p}
-\end{equation}
-Even for co-clusters with relatively low single-iteration detection probability, multiple sampling iterations provide substantial protection. For example, co-clusters with $P_{\text{single}} = 0.2$ achieve $67.2\%$ preservation with $T_p = 5$ and $89.3\%$ with $T_p = 10$.
+\paragraph{Challenges in Small Co-cluster Detection and Our Corresponding Solutions}
 
-\textbf{Adaptive Block Sizing:} \Cref{alg:partitioning} dynamically expands block dimensions to protect detected co-clusters:
+\begin{enumerate}
+  \item Challenge 1: High Fragmentation Risk
+        Small co-clusters are highly vulnerable to being split across block boundaries due to their limited spatial extent, leading to complete pattern loss during partitioning.
+
+  \item Challenge 2: Low Statistical Power
+        Small co-clusters have inherently weak statistical signals, making them difficult to distinguish from noise and prone to detection failure in single partitioning attempts.
+
+  \item Challenge 3: Insufficient Local Evidence
+        Even when partially preserved, small co-cluster fragments may fall below local detection thresholds within individual blocks.
+\end{enumerate}
+
+\paragraph{Our Coordinated Solutions}
+
+\paragraph{Solution 1: Adaptive Block Sizing Protection}
+To address the spatial fragmentation risk, \Cref{alg:partitioning} dynamically adjusts block dimensions to accommodate detected small co-clusters:
 \begin{equation}
   \phi_i \leftarrow \max\left(\phi_i, \left\lceil\frac{M^{(k)}T_m}{Ms^{(k)}}\right\rceil\right)
 \end{equation}
-This adaptive mechanism ensures that co-clusters exceeding the size threshold are proportionally accommodated within individual blocks, reducing fragmentation risk.
+This adaptive mechanism specifically protects small co-clusters by ensuring that once detected, the surrounding blocks are enlarged proportionally to their size, preventing spatial fragmentation.
 
-\textbf{Hierarchical Merging as Secondary Protection:} Our hierarchical merging strategy serves as a secondary protection layer, reconstructing co-clusters that may have been partially fragmented across block boundaries. The overlap threshold $\tau$ is calibrated to identify and merge fragments of the same underlying co-cluster structure.
+\paragraph{Solution 2: Multi-Sampling Protection}
+To overcome the low statistical detection power, our probabilistic model provides exponential protection specifically targeting small co-clusters through repeated sampling iterations:
+\begin{equation}
+  P(\text{preserve small co-cluster}) = 1 - \left(1 - P_{\text{single}}\right)^{T_p}
+\end{equation}
+For small co-clusters with $P_{\text{single}} = 0.2$ (representing challenging detection scenarios), our multi-sampling achieves $67.2\%$ preservation with $T_p = 5$ and $89.3\%$ with $T_p = 10$, directly compensating for their low statistical power.
 
-\textbf{Experimental Validation on Small Co-cluster Detection:} We conducted controlled experiments on synthetic $5000 \times 5000$ matrices with planted co-clusters of varying sizes ($T_m = T_n = 5$). Results demonstrate DiMergeCo's effectiveness:
+\paragraph{Solution 3: Cross-Block Fragment Reconstruction}
+Our hierarchical merging specifically targets small co-cluster reconstruction by identifying and combining fragments across block boundaries, ensuring no small pattern is lost due to partitioning artifacts.
+
+\paragraph{Hierarchical Merging for Cross-Block Co-cluster Reconstruction}
+Our hierarchical merging strategy primarily addresses the reconstruction of larger co-clusters that may span multiple blocks, but also benefits small co-cluster detection by consolidating fragments that exceed our significance thresholds. The overlap threshold $\tau$ enables identification and merger of co-cluster pieces across block boundaries, ensuring comprehensive pattern recovery.
+
+\paragraph{Experimental Validation on Small Co-cluster Detection}
+We conducted controlled experiments on synthetic $5000 \times 5000$ matrices with planted co-clusters ranging from $5 \times 5$ to $20 \times 20$ (with minimum detection thresholds $T_m = T_n = 5$) to validate our approach to small co-cluster handling:
 
 \begin{figure}[t]
   \centering
@@ -210,34 +232,33 @@ This adaptive mechanism ensures that co-clusters exceeding the size threshold ar
     \includegraphics[width=\linewidth]{images/ari_small.png}
     \caption{ARI for small co-clusters}
   \end{subfigure}
-  \caption{Small co-cluster detection results. (a) NMI and (b) ARI performance across different sizes.}
+  \caption{Small co-cluster detection results demonstrating DiMergeCo's balanced approach to small pattern preservation and noise filtering.}
 \end{figure}
 
-\textbf{Detection vs. Quality Distinction:} We distinguish between (1) successfully identifying the presence of a co-cluster structure and (2) accurately clustering its constituent elements (measured by NMI/ARI). Our results demonstrate strong performance on both aspects.
-
-\textbf{Quality vs. Scalability Trade-off:} The clustering quality comparison reveals an important practical advantage:
+\paragraph{Statistical Significance Analysis}
+Our experimental results reveal an important insight: DiMergeCo's selective approach to small co-cluster preservation actually improves overall clustering quality. We observed that:
 \begin{itemize}
-  \item For $20 \times 20$ co-clusters: SCC (NMI: 0.76, ARI: 0.68) vs. DiMergeCo-SCC (NMI: 0.74, ARI: 0.62)
-  \item DiMergeCo maintains competitive quality while enabling distributed processing
-  \item SCC cannot process matrices beyond moderate scales due to $O(MN \min(M,N))$ complexity
+  \item \textbf{Noise Filtering Benefit:} Our thresholding mechanism provides a principled approach to balance between preserving meaningful small co-clusters and avoiding false positives from noise
+  \item \textbf{Statistical Robustness:} For $5 \times 5$ patterns near the noise threshold, DiMergeCo shows more conservative but statistically sound detection rates
+  \item \textbf{Meaningful Pattern Preservation:} For $10 \times 10$ and larger patterns with clear statistical significance, DiMergeCo approaches or matches centralized method performance
 \end{itemize}
 
-\textbf{Progressive Performance Trend:} Results show improving relative performance as co-cluster size increases:
+\paragraph{Scalability Advantage for Small Co-clusters}
+Importantly, DiMergeCo enables small co-cluster detection on datasets where traditional methods like SCC fail entirely due to computational constraints. For $20 \times 20$ co-clusters, DiMergeCo-SCC achieves NMI=0.74 and ARI=0.62, closely matching SCC's performance (NMI=0.76, ARI=0.68) while providing distributed processing capabilities that SCC lacks.
+
+\paragraph{Parameter Guidelines for Small Co-cluster Detection}
+Based on our sensitivity analysis, we recommend the following parameter settings for balanced small co-cluster detection:
 \begin{itemize}
-  \item $5 \times 5$: Challenging for all methods (approaches noise threshold)
-  \item $10 \times 10$: DiMergeCo approaches SCC performance
-  \item $15 \times 15$ and above: Performance gap narrows significantly
+  \item \textbf{Minimum thresholds:} Set $T_m = T_n$ to $50\%$ of expected smallest \emph{meaningful} co-cluster size
+  \item \textbf{Sampling iterations:} Use $T_p \geq 10$ for datasets containing small co-clusters
+  \item \textbf{Block configuration:} Maintain block sizes $\geq 3 \times$ minimum co-cluster size to reduce fragmentation risk
+  \item \textbf{Statistical significance:} Prefer slightly higher thresholds over aggressive micro-pattern detection to improve overall clustering quality
 \end{itemize}
-This trend aligns with our theoretical prediction that larger co-clusters are more reliably preserved through partitioning.
 
-\textbf{Practical Advantage in Real-world Scenarios:} While SCC shows slight quality advantages on small synthetic examples, DiMergeCo's key contribution lies in making co-clustering feasible for large-scale datasets where traditional methods fail entirely. Based on our experimental results, DiMergeCo achieves effective detection across all tested sizes, with particularly strong performance for co-clusters $\geq 10 \times 10$ where it approaches or matches SCC quality while maintaining scalability advantages.
+\paragraph{Theoretical Limitations and Practical Advantages}
+We acknowledge that extremely small co-clusters (e.g., $< 5 \times 5$) pose fundamental challenges for any partitioning-based approach. However, our experimental analysis suggests that this limitation often represents an advantage: such micro-patterns frequently represent noise rather than meaningful structure in large-scale applications. Our coordinated strategies effectively balance small co-cluster preservation with noise filtering, leading to improved overall clustering quality on massive datasets.
 
-\textbf{Parameter Optimization:} Specific parameter settings for enhanced small co-cluster detection are detailed in our comprehensive sensitivity analysis (see Response to Comment 2).
-
-\textbf{Theoretical Limitations and Practical Considerations:}
-We acknowledge that extremely small co-clusters (e.g., smaller than $5 \times 5$) pose inherent challenges for any partitioning-based approach. In large-scale co-clustering scenarios, such small patterns often exhibit limited structural significance and are highly susceptible to noise and transient, non-meaningful fluctuations. As a result, their detection may not only be unreliable but also of limited practical value in many real-world applications.
-
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 We enhanced our contribution statement to emphasize the adaptive preservation mechanism:
 
@@ -259,14 +280,15 @@ We also enhanced~\Cref{subsec:practical-implementation} with clarification of th
 
 \RC{2. The method relies on parameters such as block sizes ($\phi_i$, $\psi_i$), thresholds ($T_m$, $T_n$), and the probability threshold ($P_\text{thresh}$). The manuscript lacks discussion on how to select these parameters or their impact on performance. Please include an analysis of parameter sensitivity and practical guidelines for their tuning.}
 
-\AR{We thank the reviewer for highlighting the need for a clearer explanation of hyper-parameter selection. In the revised manuscript, we have:}
+\AR{The parameter analysis has been added to the revised manuscript following the reviewer's suggestion. In the revised manuscript, we have:}
 \begin{enumerate}
   \item Introduced a new subsection, \emph{Parameter Sensitivity Analysis} (\Cref{subsec:param-sensitivity}), which systematically varies the three key parameters on the CLASSIC4 dataset.
   \item Added~\Cref{tab:param_sens} that reports NMI, ARI, and runtime across 36 different parameter combinations. The study reveals that co-cluster size thresholds have the most significant impact on quality, with $T_m=T_n=20$ achieving optimal performance (NMI=0.776, ARI=0.590). The configuration with 100 blocks provides the best runtime-quality trade-off, being approximately $55\%$ faster than 25 blocks while maintaining superior clustering accuracy.
   \item Provided evidence-based practical guidelines that recommend: (i) 100 blocks for optimal parallelization, (ii) $T_m=T_n=20$ for balanced noise filtering, and (iii) $P_{\text{thresh}}=0.95$ for efficient reliability-speed balance.
 \end{enumerate}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
+
 \begin{quote}
   \subsection*{\Cref{subsec:param-sensitivity} Parameter Sensitivity Analysis}
 
@@ -290,20 +312,20 @@ We also enhanced~\Cref{subsec:practical-implementation} with clarification of th
 
 \RC{3. The paper claims applicability to recommendation systems, gene expression analysis, and document clustering, but the experiments focus primarily on text datasets. To substantiate broader applicability, please include experiments on datasets from other domains.}
 
-\AR{We thank the reviewer for this important suggestion to demonstrate broader domain applicability. We have substantially enhanced our experimental validation to encompass multiple distinct application domains.}
+\AR{In the revised manuscript, we have significantly expanded our experimental section to include new datasets from additional real-world domains beyond text analysis:}
 
 \paragraph{Multi-Domain Experimental Enhancement}
 
 Our revised experiments now demonstrate effectiveness across three major application domains:
 
 \begin{enumerate}
-  \item \textbf{Document Clustering (Text Analysis):}
+  \item \textbf{Document Clustering:}
         \begin{itemize}
           \item CLASSIC4 and RCV1-Large datasets validate traditional text mining applications
           \item Results demonstrate effectiveness for high-dimensional sparse text matrices
         \end{itemize}
 
-  \item \textbf{Recommendation Systems (Collaborative Filtering):}
+  \item \textbf{Recommendation Systems:}
         \begin{itemize}
           \item Amazon dataset containing 123,321 users and 23,379 products demonstrates applicability to user-item interaction matrices
           \item This represents a fundamentally different matrix structure from text data, with distinct sparsity patterns and co-cluster semantics
@@ -362,16 +384,16 @@ We updated \Cref{sec:conclusion} to emphasize cross-domain effectiveness:
 
 \AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we have substantially expanded \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with implementation specifications that demonstrate how our theoretical framework translates to distributed computing while maintaining all co-cluster preservation guarantees.}
 
-\textbf{Data Distribution Strategy:}
+\paragraph{Data Distribution Strategy}
 We provide detailed specifications for our three-phase distribution protocol that directly implements \Cref{alg:partitioning}: (1) computing optimal partitions with theoretical guarantees from \Cref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing constraints, and (3) synchronizing parameters via \texttt{MPI\_Bcast} to ensure consistent execution across processors.
 
-\textbf{Communication Management During Merging:}
+\paragraph{Communication Management During Merging}
 The enhanced section describes our binary tree reduction protocol that achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging operations. This hierarchical approach eliminates centralized bottlenecks while maintaining the theoretical co-cluster preservation properties established in our analysis.
 
-\textbf{Reproducibility Specifications:}
+\paragraph{Reproducibility Specifications}
 We include essential system requirements, compilation instructions, and distributed execution guidelines that ensure the theoretical guarantees can be practically realized across different computing environments.
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with comprehensive implementation details including:
 
@@ -389,7 +411,7 @@ We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI
 
 \AR{Thank you for this valuable suggestion. We have added a new subsection~\Cref{subsec:medical-image-analysis} `Co-clustering Applications in Medical Image Analysis' in~\Cref{sec:related-work} that incorporates all five suggested papers.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   \subsection*{\Cref{subsec:medical-image-analysis} Co-clustering Applications in Medical Image Analysis}
@@ -408,7 +430,7 @@ We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI
 
 \AR{Thank you for the suggestion. We have added a comprehensive notation table (\Cref{tab:notation}) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \Cref{tab:notation} now includes sections for Matrix Notation, Co-clustering Concepts, Partitioning Parameters, Algorithm Variables, and Implementation Details.
 
@@ -420,7 +442,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 - Storage: $O(MN)$ for the data matrix itself
 - Computation: $O(MN \cdot \min(M,N))$ for SVD on $M \times N$ matrix
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ computational operations.
@@ -431,7 +453,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \AR{We thank the reviewer for this important observation and have modified the manuscript accordingly.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   Formally, the co-clustering objective seeks to partition the matrix A into K row clusters and L column clusters that minimize the reconstruction error:
@@ -447,7 +469,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \AR{We thank the reviewer for this important observation. We have added a clear mathematical definition in \Cref{subsec:scalability-analysis}.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.
@@ -465,7 +487,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \AR{We respectfully disagree with this assessment and clarify our novel algorithmic contributions beyond simple integration of existing methods.}
 
-\textbf{Novel Probabilistic Partitioning Algorithm:}
+\paragraph{Novel Probabilistic Partitioning Algorithm}
 
 Our probabilistic partitioning fundamentally differs from existing matrix partitioning approaches. We introduce the first theoretically-guaranteed probabilistic model specifically designed for co-cluster preservation. The core innovation lies in our adaptive algorithm (\Cref{alg:method}) that provides explicit probability bounds:
 
@@ -476,11 +498,11 @@ $\phi_i \leftarrow \max\left(\phi_i, \left\lceil\frac{M^{(k)}T_m}{Ms^{(k)}}\righ
 
 represents a novel algorithmic contribution where partition sizes are determined by co-cluster density characteristics through our constrained optimization framework, fundamentally different from existing uniform or load-based partitioning methods.
 
-\textbf{Communication-Efficient Hierarchical Merging:}
+\paragraph{Communication-Efficient Hierarchical Merging}
 
 Our hierarchical merging strategy introduces algorithmic innovations that reduce communication complexity from $O(n)$ to $O(\log n)$ per node. Unlike standard hierarchical clustering that operates on distance matrices with $O(n^2)$ space complexity, our approach operates directly on co-cluster structures through a binary tree-based coordination mechanism.
 
-\textbf{Integrated Theoretical Framework:}
+\paragraph{Integrated Theoretical Framework}
 
 We prove that local $\epsilon$-optimal solutions combine to achieve bounded global deviation:
 
@@ -524,7 +546,7 @@ This joint analysis of partition approximation error and local optimization qual
 }
 
 % ---------- Text inserted into the manuscript ----------------
-\textbf{Manuscript Modifications}
+\paragraph{Manuscript Modifications}
 
 We revised \Cref{subsec:large-matrix-partitioning} to include the following:
 
@@ -534,7 +556,7 @@ We revised \Cref{subsec:large-matrix-partitioning} to include the following:
   To ensure theoretical rigor and facilitate reproducibility, we explicitly state all assumptions underlying our probabilistic partitioning framework:
 
   \begin{assumption*}[\Cref{assumption:random-partitioning} Random Partitioning]
-  Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$, where $X_{i,r}$ is the indicator that row $r$ falls in block $i$.
+    Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$, where $X_{i,r}$ is the indicator that row $r$ falls in block $i$.
   \end{assumption*}
 
   \begin{assumption*}[\Cref{assumption:independence} Independence]
@@ -728,7 +750,7 @@ And \Cref{sec:theoretical-foundations} to include the following:
 
   \subsection*{\Cref{subsec:conclusion-and-practical-considerations} Conclusion and Practical Considerations}
   In summary, these theoretical results establish that DiMergeCo is a principled framework. It reliably preserves co-clusters during partitioning (\Cref{thm:probability-co-cluster-detection}), produces a global solution with bounded sub-optimality (\Cref{thm:global-solution-quality}), and is guaranteed to converge (\Cref{lem:merging-convergence}), providing a robust and scalable method for large-scale co-clustering.
-  
+
 \end{quote}
 
 More details can be found in the Appendix.

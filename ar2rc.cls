@@ -46,6 +46,8 @@
 \titleformat{\section}{\normalfont\large}{\makebox[0pt][r]{\bf \thesection.\hspace{4mm}}}{0em}{\bfseries}
 \titleformat{\subsection}{\normalfont}{\makebox[0pt][r]{\bf \thesubsection.\hspace{4mm}}}{0em}{\bfseries}
 \titlespacing{\subsection}{0em}{1em}{-0.3em} % left before after
+\titleformat{\paragraph}[display]{\normalfont\bfseries}{}{0em}{}
+\titlespacing{\paragraph}{0em}{1em}{0.5em}
 
 % Paragraph styles
 \setlength{\parskip}{0.6\baselineskip}%
