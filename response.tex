@@ -280,14 +280,15 @@ We also enhanced~\Cref{subsec:practical-implementation} with clarification of th
 
 \RC{2. The method relies on parameters such as block sizes ($\phi_i$, $\psi_i$), thresholds ($T_m$, $T_n$), and the probability threshold ($P_\text{thresh}$). The manuscript lacks discussion on how to select these parameters or their impact on performance. Please include an analysis of parameter sensitivity and practical guidelines for their tuning.}
 
-\AR{We thank the reviewer for highlighting the need for a clearer explanation of hyper-parameter selection. In the revised manuscript, we have:}
+\AR{The parameter analysis has been added to the revised manuscript following the reviewer's suggestion. In the revised manuscript, we have:}
 \begin{enumerate}
   \item Introduced a new subsection, \emph{Parameter Sensitivity Analysis} (\Cref{subsec:param-sensitivity}), which systematically varies the three key parameters on the CLASSIC4 dataset.
   \item Added~\Cref{tab:param_sens} that reports NMI, ARI, and runtime across 36 different parameter combinations. The study reveals that co-cluster size thresholds have the most significant impact on quality, with $T_m=T_n=20$ achieving optimal performance (NMI=0.776, ARI=0.590). The configuration with 100 blocks provides the best runtime-quality trade-off, being approximately $55\%$ faster than 25 blocks while maintaining superior clustering accuracy.
   \item Provided evidence-based practical guidelines that recommend: (i) 100 blocks for optimal parallelization, (ii) $T_m=T_n=20$ for balanced noise filtering, and (iii) $P_{\text{thresh}}=0.95$ for efficient reliability-speed balance.
 \end{enumerate}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
+
 \begin{quote}
   \subsection*{\Cref{subsec:param-sensitivity} Parameter Sensitivity Analysis}
 
