@@ -79,10 +79,10 @@
 \NewDocumentCommand{\RC}{s+m}{%
   \par\medskip
   \IfBooleanTF{#1}
-    {\noindent{\bfseries\itshape #2}\hspace{1em}} % Starred version (\RC*)
+    {\noindent{\color{blue}\bfseries\itshape #2}\hspace{1em}} % Starred version (\RC*)
     {
-      \noindent\textbf{RC:}\hspace{1em}
-      {\bfseries\itshape #2}\par % Unstarred version (\RC)
+      \noindent{\color{blue}\textbf{RC:}\hspace{1em}
+      {\bfseries\itshape #2}}\par % Unstarred version (\RC)
     }
 }
 
