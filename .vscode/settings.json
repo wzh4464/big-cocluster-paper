@@ -42,7 +42,8 @@
             "name": "arara",
             "command": "arara",
             "args": [
-                "%DOC%"
+                "%DOC%",
+                "-v"
             ]
         },
         {
@@ -63,5 +64,12 @@
                 "%DOCFILE%"
             ]
         }
+    ],
+    "latex-workshop.view.outline.sections": [
+        "part",
+        "chapter",
+        "section",
+        "subsection|RC",
+        "subsubsection"
     ],
 }

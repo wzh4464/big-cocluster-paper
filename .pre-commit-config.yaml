@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: latexindent-all-tex
+        name: Format all .tex files with latexindent
+        entry: /Library/TeX/texbin/latexindent
+        language: system
+        types: [tex]
+        files: \.tex$ 
