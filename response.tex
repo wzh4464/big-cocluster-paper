@@ -163,9 +163,9 @@ Notations: \textbf{RC:} \textbf{\textit{Review Comment}}; \textbf{AR:} \textbf{A
 
 \section{Editorial Comments}
 
-\textbf{Senior Editor:} The 3 reviewers and the Associate Editor have identified both merits and issues with the paper. A "major revision" would be recommended.
+\paragraph{Senior Editor} The 3 reviewers and the Associate Editor have identified both merits and issues with the paper. A "major revision" would be recommended.
 
-\textbf{Associate Editor:} The paper received three reviews. While all reviewers acknowledged its potential impact on large-scale dataset clustering, several concerns remain and should be addressed in a revised version—specifically, the lack of validation beyond text datasets, insufficient theoretical justification, limited hyper-parameter analysis, and inadequate discussion of related work.
+\paragraph{Associate Editor} The paper received three reviews. While all reviewers acknowledged its potential impact on large-scale dataset clustering, several concerns remain and should be addressed in a revised version—specifically, the lack of validation beyond text datasets, insufficient theoretical justification, limited hyper-parameter analysis, and inadequate discussion of related work.
 
 \AR{We thank the editorial team for their comprehensive assessment. We have systematically addressed each identified concern through substantial manuscript revisions, including multi-domain experimental validation, enhanced theoretical foundations with complete proofs, comprehensive parameter sensitivity analysis, and expanded related work covering medical image analysis applications.}
 
@@ -384,16 +384,16 @@ We updated \Cref{sec:conclusion} to emphasize cross-domain effectiveness:
 
 \AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we have substantially expanded \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with implementation specifications that demonstrate how our theoretical framework translates to distributed computing while maintaining all co-cluster preservation guarantees.}
 
-\textbf{Data Distribution Strategy:}
+\paragraph{Data Distribution Strategy}
 We provide detailed specifications for our three-phase distribution protocol that directly implements \Cref{alg:partitioning}: (1) computing optimal partitions with theoretical guarantees from \Cref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing constraints, and (3) synchronizing parameters via \texttt{MPI\_Bcast} to ensure consistent execution across processors.
 
-\textbf{Communication Management During Merging:}
+\paragraph{Communication Management During Merging}
 The enhanced section describes our binary tree reduction protocol that achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging operations. This hierarchical approach eliminates centralized bottlenecks while maintaining the theoretical co-cluster preservation properties established in our analysis.
 
-\textbf{Reproducibility Specifications:}
+\paragraph{Reproducibility Specifications}
 We include essential system requirements, compilation instructions, and distributed execution guidelines that ensure the theoretical guarantees can be practically realized across different computing environments.
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with comprehensive implementation details including:
 
@@ -411,7 +411,7 @@ We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI
 
 \AR{Thank you for this valuable suggestion. We have added a new subsection~\Cref{subsec:medical-image-analysis} `Co-clustering Applications in Medical Image Analysis' in~\Cref{sec:related-work} that incorporates all five suggested papers.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   \subsection*{\Cref{subsec:medical-image-analysis} Co-clustering Applications in Medical Image Analysis}
@@ -430,7 +430,7 @@ We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI
 
 \AR{Thank you for the suggestion. We have added a comprehensive notation table (\Cref{tab:notation}) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \Cref{tab:notation} now includes sections for Matrix Notation, Co-clustering Concepts, Partitioning Parameters, Algorithm Variables, and Implementation Details.
 
@@ -442,7 +442,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 - Storage: $O(MN)$ for the data matrix itself
 - Computation: $O(MN \cdot \min(M,N))$ for SVD on $M \times N$ matrix
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ computational operations.
@@ -453,7 +453,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \AR{We thank the reviewer for this important observation and have modified the manuscript accordingly.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   Formally, the co-clustering objective seeks to partition the matrix A into K row clusters and L column clusters that minimize the reconstruction error:
@@ -469,7 +469,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \AR{We thank the reviewer for this important observation. We have added a clear mathematical definition in \Cref{subsec:scalability-analysis}.}
 
-\textbf{Manuscript Modifications:}
+\paragraph{Manuscript Modifications}
 
 \begin{quote}
   The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.
@@ -487,7 +487,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 
 \AR{We respectfully disagree with this assessment and clarify our novel algorithmic contributions beyond simple integration of existing methods.}
 
-\textbf{Novel Probabilistic Partitioning Algorithm:}
+\paragraph{Novel Probabilistic Partitioning Algorithm}
 
 Our probabilistic partitioning fundamentally differs from existing matrix partitioning approaches. We introduce the first theoretically-guaranteed probabilistic model specifically designed for co-cluster preservation. The core innovation lies in our adaptive algorithm (\Cref{alg:method}) that provides explicit probability bounds:
 
@@ -498,11 +498,11 @@ $\phi_i \leftarrow \max\left(\phi_i, \left\lceil\frac{M^{(k)}T_m}{Ms^{(k)}}\righ
 
 represents a novel algorithmic contribution where partition sizes are determined by co-cluster density characteristics through our constrained optimization framework, fundamentally different from existing uniform or load-based partitioning methods.
 
-\textbf{Communication-Efficient Hierarchical Merging:}
+\paragraph{Communication-Efficient Hierarchical Merging}
 
 Our hierarchical merging strategy introduces algorithmic innovations that reduce communication complexity from $O(n)$ to $O(\log n)$ per node. Unlike standard hierarchical clustering that operates on distance matrices with $O(n^2)$ space complexity, our approach operates directly on co-cluster structures through a binary tree-based coordination mechanism.
 
-\textbf{Integrated Theoretical Framework:}
+\paragraph{Integrated Theoretical Framework}
 
 We prove that local $\epsilon$-optimal solutions combine to achieve bounded global deviation:
 
@@ -546,7 +546,7 @@ This joint analysis of partition approximation error and local optimization qual
 }
 
 % ---------- Text inserted into the manuscript ----------------
-\textbf{Manuscript Modifications}
+\paragraph{Manuscript Modifications}
 
 We revised \Cref{subsec:large-matrix-partitioning} to include the following:
 
