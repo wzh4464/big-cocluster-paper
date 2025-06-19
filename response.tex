@@ -27,7 +27,21 @@
 \usepackage{xcolor}
 \usepackage{tabularray}
 \usepackage{array}
-\usepackage{xr-hyper}
+\usepackage{xr}
+% \makeatletter
+% \newcommand*{\addFileDependency}[1]{%
+%   \typeout{(#1)}%
+%   \@addtofilelist{#1}%
+%   \IfFileExists{#1}{}{\typeout{No file #1.}}%
+% }
+% \makeatother
+
+% \newcommand*{\myexternaldocument}[1]{%
+%   \externaldocument[]{#1}%  % 添加空前缀 []
+%   \addFileDependency{#1.tex}%
+%   \addFileDependency{#1.aux}%
+% }
+% \myexternaldocument{root}
 \externaldocument{root}
 \usepackage{hyperref}
 \usepackage{cleveref}
