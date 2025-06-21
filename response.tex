@@ -380,7 +380,8 @@ We enhanced \Cref{tab:dataset-statistics} to include the Breast Cancer dataset w
 We clarified the dataset descriptions in \Cref{subsec:datasets} to emphasize domain diversity:
 
 \begin{quote}
-  \textbf{Amazon}: A medium-sized recommendation system dataset containing user-product interaction matrices with 123,321 users and 23,379 products, demonstrating applicability beyond text data to recommendation systems.
+  \textbf{Amazon}: A medium-sized recommendation system dataset containing user-product interaction matrices with 123,321 users and 23,379 products, demonstrating applicability beyond text data to recommendation systems. \\ 
+  \textbf{Breast Cancer Wisconsin (BCW)}: A high-dimensional gene expression dataset containing 130 breast cancer samples and 11,731 genes after preprocessing, demonstrating the application of co-clustering to genomic data analysis.
 \end{quote}
 
 We added domain-specific analysis in \Cref{subsec:clustering-quality} for genomics applications:
@@ -460,7 +461,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
 \paragraph{Manuscript Modifications}
 
 \begin{quote}
-  In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ computational operations.
+  In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory space, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ multiplication operations.
 \end{quote}
 
 
@@ -477,7 +478,7 @@ Co-clustering methods directly apply SVD to the $M \times N$ data matrix:
     J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
   \end{equation}
 
-  where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster, $x_{ij}$ is the original matrix element, and $u_{kl}$ is the reconstructed value for co-cluster $(k,l)$.
+  where $R_k$ denotes the $k$-th row cluster, $C_l$ denotes the $l$-th column cluster, $x_{ij}$ is the original matrix element, and $u_{kl}$ is the reconstructed value for co-cluster $(k,l)$.
 \end{quote}
 
 \RC{4. \Cref{fig:efficiency} references `efficiency' but does not specify how this metric is defined. Please provide a clear definition.}
@@ -577,7 +578,7 @@ We revised \Cref{subsec:large-matrix-partitioning} to include the following:
 \begin{quote}
   \subsubsection*{\Cref{subsec:large-matrix-partitioning} Probabilistic Model for Partitioning}
 
-  To ensure theoretical rigor and facilitate reproducibility, we explicitly state all assumptions underlying our probabilistic partitioning framework:
+  To ensure theoretical rigor and facilitate reproducibility, we make the following assumptions underlying our probabilistic partitioning framework:
 
   \begin{assumption*}[\Cref{assumption:random-partitioning} Random Partitioning]
     Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$, where $X_{i,r}$ is the indicator that row $r$ falls in block $i$.
@@ -662,7 +663,7 @@ We revised \Cref{subsec:large-matrix-partitioning} to include the following:
 
 
   \begin{proof}
-    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in *any* of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
+    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in \textbf{any} of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
 
     Assuming independence of row/column placement across different block boundaries, the probability of this event is:
     \begin{equation}
