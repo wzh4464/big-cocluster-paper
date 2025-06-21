@@ -81,7 +81,7 @@
   \IfBooleanTF{#1}
     {\noindent{\color{blue}\bfseries\itshape #2}\hspace{1em}} % Starred version (\RC*)
     {
-      \noindent{\color{blue}\textbf{RC:}\hspace{1em}
+      \noindent{\color{blue}\textbf{Comment:}\hspace{1em}
       {\bfseries\itshape #2}}\par % Unstarred version (\RC)
     }
 }
@@ -91,7 +91,7 @@
   \IfBooleanTF{#1}
     {\noindent #2\hspace{1em}} % Starred version (\AR*)
     {
-      \noindent\textbf{AR:}\hspace{1em}
+      \noindent\textbf{Response:}\hspace{1em}
       {#2}\par % Unstarred version (\AR)
     }
 }

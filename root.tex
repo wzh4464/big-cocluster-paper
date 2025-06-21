@@ -124,7 +124,7 @@
 % \IEEEpubid{0000--0000/00\$00.00~\copyright~2021 IEEE}
 % Remember, if you use this you must call \IEEEpubidadjcol in the second
 % column for its text to clear the IEEEpubid mark.
-\author{Zihan Wu$^{1}$, Zhaoke Huang$^{2}$, and Hong Yan$^{3}$, \textit{Fellow, IEEE}% <-this % stops a space
+\author{Zihan Wu$^{1}$, Zhaoke Huang$^{2}$, and Hong Yan$^{3}$, \textit{Life Fellow, IEEE}% <-this % stops a space
     \thanks{This work is supported by Hong Kong Innovation and
         Technology Commission (InnoHK Project CIMDA), Hong
         Kong Research Grants Council (Project CityU 11204821), and the Institute of Digital Medicine of City University of Hong Kong (Project 9229503). }% <-this % stops a space
@@ -134,7 +134,7 @@
     \thanks{$^{2}$Zhaoke Huang is with the Department of Electrical Engineering,
         City University of Hong Kong, Hong Kong
             {\tt\small rogerhzk@gmail.com}}%
-    \thanks{$^{3}$Hong Yan, \textit{Fellow, IEEE}, is with the Department of Electrical Engineering,
+    \thanks{$^{3}$Hong Yan is with the Department of Electrical Engineering,
         City University of Hong Kong, Hong Kong
             {\tt\small h.yan@cityu.edu.hk}}%
 }
@@ -234,42 +234,42 @@ Our work addresses these limitations through a novel divide-and-conquer strategy
             \label{tab:notation}
             \begin{tabular}{@{} p{0.08\textwidth} p{0.35\textwidth} @{}}
                 \toprule
-                \textbf{Symbol}                    & \textbf{Definition}                                                             \\
+                \textbf{Symbol}                    & \textbf{Definition}                                                                           \\
                 \midrule
-                $\mathbf{A}$                       & Input data matrix $\in \mathbb{R}^{M \times N}$                                 \\
-                $M, N$                             & Number of rows (samples) and columns (features)                                 \\
-                $a_{ij}$                           & Element at position $(i,j)$ in matrix $\mathbf{A}$                              \\
-                $I, J$                             & Sets of row and column indices: $I = \{1,2,\ldots,M\}$, $J = \{1,2,\ldots,N\}$  \\
-                $\|\mathbf{A}\|_F$                 & Frobenius norm of matrix $\mathbf{A}$                                           \\
-                $\text{rank}(\mathbf{A})$          & Rank of matrix $\mathbf{A}$                                                     \\
-                $\mathcal{C}$                      & Set of discovered co-clusters $\{\mathbf{C}_k\}_{k=1}^K$                        \\
-                $\mathbf{C}_k$                     & $k$-th co-cluster, subset of $I \times J$                                       \\
-                $K$                                & Total number of co-clusters                                                     \\
-                $M^{(k)}, N^{(k)}$                 & Row and column sizes of co-cluster $\mathbf{C}_k$                               \\
-                $s(\mathbf{A}), S(\mathbf{A})$     & Singular value ratio score and normalized score                                 \\
-                $s_1, s_2$                         & Largest and second largest singular values                                      \\
-                $\mathbf{B}_{(i,j)}$               & Block $(i,j)$ in partitioned matrix                                             \\
-                $m, n$                             & Number of row and column blocks                                                 \\
-                $\phi_i, \psi_j$                   & Size of $i$-th row block and $j$-th column block                                \\
-                $T_m, T_n$                         & Threshold sizes for row and column co-clusters                                  \\
-                $T_p$                              & Number of sampling/partitioning iterations                                      \\
-                $P_{\text{thresh}}$                & Probability threshold for co-cluster detection                                  \\
-                $P(\omega_k)$                      & Probability of failing to detect co-cluster $\mathbf{C}_k$                      \\
-                $M_{(i,j)}^{(k)}, N_{(i,j)}^{(k)}$ & Row and column sizes of co-cluster $\mathbf{C}_k$ in block $\mathbf{B}_{(i,j)}$ \\
-                $s_i^{(k)}, t_j^{(k)}$             & Minimum row and column ratios for co-cluster $\mathbf{C}_k$                     \\
-                $\alpha$                           & Probability bound parameter                                                     \\
-                $\mathcal{L}$                      & Base co-clustering algorithm                                                    \\
-                $\theta$                           & Parameters for base algorithm                                                   \\
-                $\tau$                             & Overlap threshold for merging                                                   \\
-                $\alpha_1, \alpha_2, \alpha_3$     & Weighting parameters in score function                                          \\
-                $\epsilon$                         & Minimum block size ratio (typically 0.01)                                       \\
-                $\delta_{(i,j)}$                   & Maximum approximation error for block $(i,j)$                                   \\
-                $\epsilon_{(i,j)}$                 & Suboptimality of local solution in block $(i,j)$                                \\
-                $\mathbf{F}^*, \mathbf{F}'$        & Global optimal and merged solution indicator matrices                           \\
-                $J(\mathbf{F})$                    & Co-clustering objective function                                                \\
-                $P$                                & Number of processors in MPI implementation                                      \\
-                $\mathcal{B}_k$                    & Set of blocks overlapping with co-cluster $\mathbf{C}_k$                        \\
-                $\mathcal{C}_{(i,j)}$              & Local co-clusters discovered in block $(i,j)$                                   \\
+                $\mathbf{A}$                       & Input data matrix $\in \mathbb{R}^{M \times N}$                                               \\
+                $M, N$                             & Numbers of rows (samples) and columns (features), respectively                                \\
+                $a_{ij}$                           & Element at position $(i,j)$ in matrix $\mathbf{A}$                                            \\
+                $I, J$                             & Sets of row and column indices: $I = \{1,2,\ldots,M\}$, $J = \{1,2,\ldots,N\}$                \\
+                $\|\mathbf{A}\|_F$                 & Frobenius norm of matrix $\mathbf{A}$                                                         \\
+                $\text{rank}(\mathbf{A})$          & Rank of matrix $\mathbf{A}$                                                                   \\
+                $\mathcal{C}$                      & Set of detected co-clusters $\{\mathbf{C}_k\}_{k=1}^K$                                        \\
+                $\mathbf{C}_k$                     & The $k$-th co-cluster which is a subset of $I \times J$                                       \\
+                $K$                                & Total number of co-clusters                                                                   \\
+                $M^{(k)}, N^{(k)}$                 & Row and column sizes of co-cluster $\mathbf{C}_k$, respectively                               \\
+                $s(\mathbf{A}), S(\mathbf{A})$     & Singular value ratio score and normalized score, respectively                                 \\
+                $s_1, s_2$                         & Largest and second largest singular values, respectively                                      \\
+                $\mathbf{B}_{(i,j)}$               & Block $(i,j)$ in partitioned matrix                                                           \\
+                $m, n$                             & Numbers of row and column blocks, respectively                                                \\
+                $\phi_i, \psi_j$                   & Sizes of $i$-th row block and $j$-th column block, respectively                               \\
+                $T_m, T_n$                         & Threshold sizes for row and column co-clusters, respectively                                  \\
+                $T_p$                              & Number of sampling/partitioning iterations                                                    \\
+                $P_{\text{thresh}}$                & Probability threshold for co-cluster detection                                                \\
+                $P(\omega_k)$                      & Probability of failing to detect co-cluster $\mathbf{C}_k$                                    \\
+                $M_{(i,j)}^{(k)}, N_{(i,j)}^{(k)}$ & Row and column sizes of co-cluster $\mathbf{C}_k$ in block $\mathbf{B}_{(i,j)}$, respectively \\
+                $s_i^{(k)}, t_j^{(k)}$             & Minimum row and column ratios for co-cluster $\mathbf{C}_k$, respectively                     \\
+                $\alpha$                           & Probability bound parameter                                                                   \\
+                $\mathcal{L}$                      & Base co-clustering algorithm                                                                  \\
+                $\theta$                           & Parameters for base algorithm                                                                 \\
+                $\tau$                             & Overlap threshold for merging                                                                 \\
+                $\alpha_1, \alpha_2, \alpha_3$     & Weighting parameters in score function                                                        \\
+                $\epsilon$                         & Minimum block size ratio (typically 0.01)                                                     \\
+                $\delta_{(i,j)}$                   & Maximum approximation error for block $(i,j)$                                                 \\
+                $\epsilon_{(i,j)}$                 & Suboptimality of local solution in block $(i,j)$                                              \\
+                $\mathbf{F}^*, \mathbf{F}'$        & Global optimal and merged solution indicator matrices, respectively                           \\
+                $J(\mathbf{F})$                    & Co-clustering objective function                                                              \\
+                $P$                                & Number of processors in MPI implementation                                                    \\
+                $\mathcal{B}_k$                    & Set of blocks overlapping with co-cluster $\mathbf{C}_k$                                      \\
+                $\mathcal{C}_{(i,j)}$              & Local co-clusters discovered in block $(i,j)$                                                 \\
                 \bottomrule
             \end{tabular}
         \end{table}
@@ -320,13 +320,13 @@ To quantify the coherence of potential co-clusters and guide the discovery proce
 
 \subsection{Problem Statement}
 \label{subsec:problem-statement}
-Modern applications increasingly involve massive datasets where both dimensions exceed millions ($M, N \gg 10^6$). At this scale, traditional co-clustering methods become computationally infeasible due to the significant complexity of managing and processing such data. {\color{blue}In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ computational operations.}
+Modern applications increasingly involve massive datasets where both dimensions exceed millions ($M, N \gg 10^6$). At this scale, traditional co-clustering methods become computationally infeasible due to the significant complexity of managing and processing such data. {\color{blue}In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory space, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ multiplication operations.}
 
     {\color{blue}Formally, the co-clustering objective seeks to partition the matrix $A$ into $K$ row clusters and $L$ column clusters that minimize the reconstruction error:
         \begin{equation}\label{eq:co-clustering-objective}
             J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
         \end{equation}
-        where $R_k$ denotes the k-th row cluster, $C_l$ denotes the l-th column cluster, $x_{ij}$ is the original matrix element, and $u_{kl}$ is the reconstructed value for co-cluster $(k,l)$.}
+        where $R_k$ denotes the $k$-th row cluster, $C_l$ denotes the $l$-th column cluster, $x_{ij}$ is the original matrix element, and $u_{kl}$ is the reconstructed value for co-cluster $(k,l)$.}
 Together with probabilistic guarantees that significant co-clusters (those exceeding size threshold $T_m \times T_n$) are preserved with probability $P \geq 1 - \alpha$, this framework ensures reliable capture of the intrinsic data structure while maintaining computational tractability.
 
 \section{The Scalable Co-clustering Method}
@@ -415,7 +415,7 @@ Having established the basic probability bounds, we now present the theoretical 
 {\color{blue}
 
 
-    To ensure theoretical rigor and facilitate reproducibility, we explicitly state all assumptions underlying our probabilistic partitioning framework:
+    To ensure theoretical rigor and facilitate reproducibility, we make the following assumptions underlying our probabilistic partitioning framework:
 
     \begin{assumption}[Random Partitioning]
         \label{assumption:random-partitioning}
@@ -453,8 +453,8 @@ Having established the basic probability bounds, we now present the theoretical 
     Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_m$ rows and $T_n$ columns is given by:
     \begin{equation}
         \begin{aligned}
-            P(M_{(i,j)}^{(k)} &< T_m, N_{(i,j)}^{(k)} < T_n) \\
-            &\leq \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
+            P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                         \\
+                              & \leq \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
         \end{aligned}
         \label{eq:joint-probability}
     \end{equation}
@@ -468,8 +468,8 @@ Having established the basic probability bounds, we now present the theoretical 
     We are interested in the probability of this count being less than the threshold $T_m$. Applying Hoeffding's inequality to the sum of these Bernoulli variables, we get:
     \begin{equation}
         \begin{aligned}
-            P(M_{(i,j)}^{(k)} &< T_m) = P\left(\frac{M_{(i,j)}^{(k)}}{M^{(k)}} < \frac{T_m}{M^{(k)}}\right) \\
-            &\le \exp\left(-2 M^{(k)2} \left(\frac{\phi_i}{M} - \frac{T_m-1}{M^{(k)}}\right)^2 \right)
+            P(M_{(i,j)}^{(k)} & < T_m) = P\left(\frac{M_{(i,j)}^{(k)}}{M^{(k)}} < \frac{T_m}{M^{(k)}}\right)              \\
+                              & \le \exp\left(-2 M^{(k)2} \left(\frac{\phi_i}{M} - \frac{T_m-1}{M^{(k)}}\right)^2 \right)
         \end{aligned}
     \end{equation}
     For simplicity in the main text, we use a slightly different formulation. Let $M_{(i,j)}^{(k)}$ be the sum of $\phi_i$ indicator variables (one for each row in the block), where the probability of a row being in $C_k$ is $M^{(k)}/M$. The expected value is $E[M_{(i,j)}^{(k)}] = \phi_i M^{(k)}/M$. The event of failure is $M_{(i,j)}^{(k)} < T_m$. By Hoeffding's inequality:
@@ -483,9 +483,9 @@ Having established the basic probability bounds, we now present the theoretical 
     By \Cref{assumption:independence}, the row and column partitioning events are independent. Therefore, the joint probability is the product of the individual probabilities:
     \begin{equation}
         \begin{aligned}
-            P(M_{(i,j)}^{(k)} &< T_m, N_{(i,j)}^{(k)} < T_n) \\
-            &= P(M_{(i,j)}^{(k)} < T_m) \cdot P(N_{(i,j)}^{(k)} < T_n) \\
-            &= \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
+            P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                      \\
+                              & = P(M_{(i,j)}^{(k)} < T_m) \cdot P(N_{(i,j)}^{(k)} < T_n)          \\
+                              & = \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
         \end{aligned}
     \end{equation}
     which yields the stated bound by multiplying the exponential terms.
@@ -497,8 +497,8 @@ Having established the basic probability bounds, we now present the theoretical 
     If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, the probability $P$ of detecting all $K$ significant co-clusters over $T_p$ independent partitioning trials satisfies:
     \begin{equation}
         \begin{aligned}
-            P &\geq 1 - K \cdot \left(\prod_{i=1}^m \prod_{j=1}^n P_\text{fail}^{(i,j,k)}\right)^{T_p} \\
-            &\approx 1 - K \cdot \exp\left( -2 T_p \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
+            P & \geq 1 - K \cdot \left(\prod_{i=1}^m \prod_{j=1}^n P_\text{fail}^{(i,j,k)}\right)^{T_p}                             \\
+              & \approx 1 - K \cdot \exp\left( -2 T_p \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
         \end{aligned}
     \end{equation}
     Under the simplifying assumption of uniform block sizes $\phi = M/m, \psi=N/n$, this becomes:
@@ -510,27 +510,27 @@ Having established the basic probability bounds, we now present the theoretical 
 
 {\color{blue}
 \begin{proof}
-    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in *any* of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
+    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in \textbf{any} of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
 
     Assuming independence of row/column placement across different block boundaries, the probability of this event is:
     \begin{equation}
         \begin{aligned}
-            P(\mathcal{F}_{k,t}) &\le \prod_{i=1}^m \prod_{j=1}^n \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right] \\
-            &= \exp\left( -2 \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
+            P(\mathcal{F}_{k,t}) & \le \prod_{i=1}^m \prod_{j=1}^n \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right] \\
+                                 & = \exp\left( -2 \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
         \end{aligned}
     \end{equation}
     Let the exponent term be $\gamma_k$. Then $P(\mathcal{F}_{k,t}) \le \exp(-\gamma_k)$. Since each of the $T_p$ partitioning trials is independent, the probability of missing co-cluster $C_k$ in all $T_p$ trials is:
     \begin{equation}
         \begin{aligned}
             P(\text{miss } C_k \text{ in all } & T_p \text{ trials}) = (P(\mathcal{F}_{k,t}))^{T_p} \\
-            &\le (\exp(-\gamma_k))^{T_p} = \exp(-\gamma_k T_p)
+                                               & \le (\exp(-\gamma_k))^{T_p} = \exp(-\gamma_k T_p)
         \end{aligned}
     \end{equation}
     The probability of missing at least one of the $K$ co-clusters is found using the union bound (\Cref{assumption:finite-co-cluster-set}):
     \begin{equation}
         \begin{aligned}
-            P(&\text{miss any co-cluster}) = P\left(\bigcup_{k=1}^K \{\text{miss } C_k\}\right) \\
-            &\le \sum_{k=1}^K P(\text{miss } C_k) \le \sum_{k=1}^K \exp(-\gamma_k T_p)
+            P( & \text{miss any co-cluster}) = P\left(\bigcup_{k=1}^K \{\text{miss } C_k\}\right) \\
+               & \le \sum_{k=1}^K P(\text{miss } C_k) \le \sum_{k=1}^K \exp(-\gamma_k T_p)
         \end{aligned}
     \end{equation}
     Assuming a minimum $\gamma = \min_k \gamma_k$, this is bounded by $K \exp(-\gamma T_p)$. The probability of success (detecting all co-clusters) is therefore:
@@ -804,7 +804,7 @@ In summary, these theoretical results establish that DiMergeCo is a principled f
             \cmidrule{3-8}
                                         &                         & SCC\cite{dhillon2001CoclusteringDocumentsWords} & PNMTF\cite{chen2023ParallelNonNegativeMatrix} & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF\cite{kim2011FastNonnegativeMatrix} & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF} \\
             \midrule
-            \multirow{2}{*}{CLASSIC4}   & NMI                     & 0.9223                                          & 0.6894                                        & 0.7241                                          & 0.5848                                   & \textbf{0.8650}        & 0.6609                   \\
+            \multirow{2}{*}{CLASSIC4}   & NMI                     & \textbf{0.9223}                                 & 0.6894                                        & 0.7241                                          & 0.5848                                   & 0.8650                 & 0.6609                   \\
                                         & ARI                     & 0.7713                                          & 0.6188                                        & 0.6696                                          & 0.4827                                   & \textbf{0.7763}        & 0.6057                   \\
             \multirow{2}{*}{Amazon}     & NMI                     & *                                               & 0.5944                                        & 0.5347                                          & 0.6750                                   & \textbf{0.7676}        & 0.6073                   \\
                                         & ARI                     & *                                               & 0.4523                                        & 0.4086                                          & 0.4820                                   & \textbf{0.5845}        & 0.4469                   \\
@@ -854,7 +854,7 @@ The experiments were conducted using four distinct datasets (see~\Cref{tab:datas
     \item \textbf{CLASSIC4}: A classic small dataset used for benchmarking co-clustering algorithms, consisting of document vectors for text analysis.
     \item \textbf{Amazon}: {\color{blue}A medium-sized recommendation system dataset containing user-product interaction matrices with 123,321 users and 23,379 products, demonstrating applicability beyond text data to recommendation systems.}
     \item \textbf{RCV1-Large}: A larger dataset used to test the scalability of our method, including a vast array of document vectors for high-dimensional data analysis.
-    \item \textbf{Breast Cancer Wisconsin (BCW)}: {\color{blue}A high-dimensional gene expression dataset containing 130 breast cancer samples and 11,731 genes after preprocessing, demonstrating the application of co-clustering in genomic data analysis.}
+    \item \textbf{Breast Cancer Wisconsin (BCW)}: {\color{blue}A high-dimensional gene expression dataset containing 130 breast cancer samples and 11,731 genes after preprocessing, demonstrating the application of co-clustering to genomic data analysis.}
 \end{itemize}
 
 \subsubsection{Implementation Details}
@@ -939,7 +939,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
         \caption{ARI for small co-clusters}
         \label{fig:ari_small}
     \end{subfigure}
-    \caption{Small co-cluster detection results. (a) NMI and (b) ARI performance across different sizes.}
+    \caption{Small co-cluster detection results demonstrating DiMergeCo's practical advantage over theoretical baselines. (a) NMI and (b) ARI performance across co-cluster sizes from $5 \times 5$ to $20 \times 20$. SCC provides optimal performance on this synthetic test but fails on larger real datasets (see Table~\ref{tab:running-time}), while DiMergeCo-SCC maintains competitive accuracy (NMI=0.74 vs 0.76 for $20 \times 20$ patterns) across all scales, validating the necessity of distributed processing for practical applications.}
     \label{fig:small-co-cluster-detection}
 \end{figure*}
 
