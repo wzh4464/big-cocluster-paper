@@ -166,13 +166,9 @@ DiMergeCo: A Scalable Framework for Large-Scale Co-Clustering with Theoretical G
 \maketitle
 
 \noindent
-The authors extend their sincere gratitude to the editorial board and reviewers for their valuable feedback and recommendations for major revision. We greatly appreciate the insightful suggestions, which have significantly improved the quality and clarity of our work.
+The authors extend their sincere gratitude to the Senior Editor, Associate Editor and reviewers for their valuable feedback on our paper. We greatly appreciate the insightful suggestions, which have significantly improved the quality and clarity of our work.
 
 In this revised manuscript, we have comprehensively addressed all concerns raised by the three reviewers and the Associate Editor. The modifications include enhanced theoretical analysis, expanded experimental validation across multiple domains, detailed parameter sensitivity analysis, improved figure quality, and comprehensive additions to the related work section.
-
-We believe these revisions have substantially strengthened the paper and adequately addressed all identified issues.
-
-Notations: \textbf{RC:} \textbf{\color{blue}\textit{Review Comment}}; \textbf{AR:} Authors' Response; $\square$ Manuscript Text
 
 %====================================== Editorial Comments ============================================
 
@@ -182,7 +178,7 @@ Notations: \textbf{RC:} \textbf{\color{blue}\textit{Review Comment}}; \textbf{AR
 
 \paragraph{Associate Editor} \textbf{\color{blue}\textit{The paper received three reviews. While all reviewers acknowledged its potential impact on large-scale dataset clustering, several concerns remain and should be addressed in a revised version—specifically, the lack of validation beyond text datasets, insufficient theoretical justification, limited hyper-parameter analysis, and inadequate discussion of related work.}}
 
-\AR{We thank the editorial team for their comprehensive assessment. We have systematically addressed each identified concern through substantial manuscript revisions, including multi-domain experimental validation, enhanced theoretical foundations with complete proofs, comprehensive parameter sensitivity analysis, and expanded related work covering medical image analysis applications.}
+\AR{We thank the Senior Editor and Associate Editor for their comprehensive assessment. We have systematically addressed each identified concern through substantial manuscript revisions, including multi-domain experimental validation, enhanced theoretical foundations with complete proofs, comprehensive parameter sensitivity analysis, and expanded related work covering medical image analysis applications.}
 
 %====================================== Reviewer 1 ============================================
 
@@ -199,13 +195,13 @@ Notations: \textbf{RC:} \textbf{\color{blue}\textit{Review Comment}}; \textbf{AR
 \paragraph{Challenges in Small Co-cluster Detection and Our Corresponding Solutions}
 
 \begin{enumerate}
-  \item Challenge 1: High Fragmentation Risk
+  \item Challenge 1: High Fragmentation Risk \\
         Small co-clusters are highly vulnerable to being split across block boundaries due to their limited spatial extent, leading to complete pattern loss during partitioning.
 
-  \item Challenge 2: Low Statistical Power
+  \item Challenge 2: Low Statistical Power \\
         Small co-clusters have inherently weak statistical signals, making them difficult to distinguish from noise and prone to detection failure in single partitioning attempts.
 
-  \item Challenge 3: Insufficient Local Evidence
+  \item Challenge 3: Insufficient Local Evidence \\
         Even when partially preserved, small co-cluster fragments may fall below local detection thresholds within individual blocks.
 \end{enumerate}
 
@@ -247,7 +243,7 @@ We conducted controlled experiments on synthetic $5000 \times 5000$ matrices wit
     \includegraphics[width=\linewidth]{images/ari_small.png}
     \caption{ARI for small co-clusters}
   \end{subfigure}
-  \caption{Small co-cluster detection results demonstrating DiMergeCo's balanced approach to small pattern preservation and noise filtering.}
+  \caption{Small co-cluster detection results demonstrating DiMergeCo's practical advantage over theoretical baselines. (a) NMI and (b) ARI performance across co-cluster sizes from $5 \times 5$ to $20 \times 20$. SCC provides optimal performance on this synthetic test but fails on larger real datasets (see Table~\ref{tab:running-time}), while DiMergeCo-SCC maintains competitive accuracy (NMI=0.74 vs 0.76 for $20 \times 20$ patterns) across all scales, validating the necessity of distributed processing for practical applications.}
 \end{figure}
 
 \paragraph{Statistical Significance Analysis}
@@ -327,7 +323,7 @@ We also enhanced~\Cref{subsec:practical-implementation} with clarification of th
 
 \RC{3. The paper claims applicability to recommendation systems, gene expression analysis, and document clustering, but the experiments focus primarily on text datasets. To substantiate broader applicability, please include experiments on datasets from other domains.}
 
-\AR{In the revised manuscript, we have significantly expanded our experimental section to include new datasets from additional real-world domains beyond text analysis:}
+\AR{In the revised manuscript, we have significantly expanded our experiment section to include new datasets from additional real-world domains beyond text analysis:}
 
 \paragraph{Multi-Domain Experimental Enhancement}
 
@@ -368,9 +364,9 @@ Our theoretical framework proves domain-agnostic because:
 
 Each domain demonstrates different matrix characteristics that validate our method's robustness:
 \begin{itemize}
-  \item \textbf{Text Data:} High sparsity (0.08--0.95\%), document-term relationships
-  \item \textbf{Recommendation Systems:} User-product interactions, implicit feedback patterns
-  \item \textbf{Gene Expression:} High-dimensional biological networks, sample-gene associations
+  \item \textbf{Text Data:} High sparsity (0.08--0.95\%) in document-term relationships
+  \item \textbf{Recommendation Systems:} User-product interactions and implicit feedback patterns
+  \item \textbf{Gene Expression:} High-dimensional biological networks with sample-gene associations
 \end{itemize}
 
 \paragraph{Manuscript Modifications}
@@ -380,7 +376,7 @@ We enhanced \Cref{tab:dataset-statistics} to include the Breast Cancer dataset w
 We clarified the dataset descriptions in \Cref{subsec:datasets} to emphasize domain diversity:
 
 \begin{quote}
-  \textbf{Amazon}: A medium-sized recommendation system dataset containing user-product interaction matrices with 123,321 users and 23,379 products, demonstrating applicability beyond text data to recommendation systems. \\ 
+  \textbf{Amazon}: A medium-sized recommendation system dataset containing user-product interaction matrices with 123,321 users and 23,379 products, demonstrating applicability beyond text data to recommendation systems. \\
   \textbf{Breast Cancer Wisconsin (BCW)}: A high-dimensional gene expression dataset containing 130 breast cancer samples and 11,731 genes after preprocessing, demonstrating the application of co-clustering to genomic data analysis.
 \end{quote}
 
@@ -401,7 +397,7 @@ We updated \Cref{sec:conclusion} to emphasize cross-domain effectiveness:
 \AR{We appreciate the reviewer's feedback regarding MPI implementation details. To enhance reproducibility, we have substantially expanded \Cref{subsec:mpi-implementation} `Distributed MPI Implementation and Communication Framework' with implementation specifications that demonstrate how our theoretical framework translates to distributed computing while maintaining all co-cluster preservation guarantees.}
 
 \paragraph{Data Distribution Strategy}
-We provide detailed specifications for our three-phase distribution protocol that directly implements \Cref{alg:partitioning}: (1) computing optimal partitions with theoretical guarantees from \Cref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing constraints, and (3) synchronizing parameters via \texttt{MPI\_Bcast} to ensure consistent execution across processors.
+We have now provided detailed specifications for our three-phase distribution protocol that directly implements \Cref{alg:partitioning}: (1) computing optimal partitions with theoretical guarantees from \Cref{thm:probability-co-cluster-detection}, (2) distributing blocks via \texttt{MPI\_Scatter} with load balancing constraints, and (3) synchronizing parameters via \texttt{MPI\_Bcast} to ensure consistent execution across processors.
 
 \paragraph{Communication Management During Merging}
 The enhanced section describes our binary tree reduction protocol that achieves $O(\log P)$ communication complexity through $\lceil \log_2 P \rceil$-step merging operations. This hierarchical approach eliminates centralized bottlenecks while maintaining the theoretical co-cluster preservation properties established in our analysis.
@@ -444,7 +440,7 @@ We have substantially enhanced \Cref{subsec:mpi-implementation} `Distributed MPI
 
 \RC{1. A notation table should be added to improve readability, as was done in the conference version.}
 
-\AR{Thank you for the suggestion. We have added a comprehensive notation table (\Cref{tab:notation}) that systematically organizes all mathematical symbols used in the paper into logical categories, making it easy for readers to reference unfamiliar notation.}
+\AR{Thank you for the suggestion. We have added a comprehensive notation table (\Cref{tab:notation}) that systematically organizes all mathematical symbols used in the paper into logical categories}
 
 \paragraph{Manuscript Modifications}
 
@@ -573,7 +569,7 @@ We establish the first complete theoretical framework for distributed co-cluster
 % ---------- Text inserted into the manuscript ----------------
 \paragraph{Manuscript Modifications}
 
-We revised \Cref{subsec:large-matrix-partitioning} to include the following:
+We revised \Cref{subsec:large-matrix-partitioning} to include the following proofs:
 
 \begin{quote}
   \subsubsection*{\Cref{subsec:large-matrix-partitioning} Probabilistic Model for Partitioning}
@@ -695,7 +691,7 @@ We revised \Cref{subsec:large-matrix-partitioning} to include the following:
 
 \end{quote}
 
-And \Cref{sec:theoretical-foundations} to include the following:
+\Cref{sec:theoretical-foundations} includes the following analysis:
 
 \begin{quote}
   \section*{\Cref{sec:theoretical-foundations} Theoretical Analysis}
@@ -790,7 +786,7 @@ More details can be found in the Appendix.
 
 \RC{3. Only text datasets are used. No validation on other matrix domains such as images, bioinformatics, or sensor data.}
 
-\AR{This concern has been comprehensively addressed in our response to Reviewer 1, Comment 3. Our experimental validation encompasses multiple distinct domains including recommendation systems (Amazon dataset) and bioinformatics (Breast Cancer Wisconsin dataset), demonstrating effectiveness across different matrix types and sparsity patterns. Please refer to our detailed response to Reviewer 1 for complete domain-specific analysis and performance results.}
+\AR{This concern has been comprehensively addressed in our response to Reviewer 1, Comment 3. Our experimental validation now encompasses multiple distinct domains including recommendation systems (Amazon dataset) and bioinformatics (Breast Cancer Wisconsin dataset), demonstrating effectiveness across different matrix types and sparsity patterns. Please refer to our detailed response to Reviewer 1 for complete domain-specific analysis and performance results.}
 
 \RC{4. The effect of core hyperparameters and algorithmic stages is unexplored.}
 
@@ -815,7 +811,7 @@ We have comprehensively addressed all reviewer concerns through the following ma
   \item \textbf{Improved Presentation:} Added comprehensive notation table (\Cref{tab:notation}) and enhanced all figures with proper axis labels, legends, and self-contained captions
 \end{enumerate}
 
-We believe these substantial revisions have addressed all identified concerns and significantly strengthened the manuscript. We thank the reviewers for their valuable feedback and look forward to their assessment of the revised version.
+We believe these substantial revisions have addressed all concerns and significantly strengthened the manuscript. We thank the reviewers for their valuable feedback and look forward to their assessment of the revised version.
 
 \printbibliography
 \end{document}
