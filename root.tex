@@ -463,32 +463,7 @@ Having established the basic probability bounds, we now present the theoretical 
 
 {\color{blue}
 \begin{proof}
-    Let $M_{(i,j)}^{(k)}$ be the number of rows of co-cluster $C_k$ that fall into the $i$-th row partition of size $\phi_i$. This can be modeled as a sum of $M^{(k)}$ independent Bernoulli random variables, where each variable indicates if a specific row of $C_k$ is in the partition. By \Cref{assumption:random-partitioning}, the probability of any given row falling into the $i$-th partition is $p = \phi_i / M$. The expected number of rows is $E[M_{(i,j)}^{(k)}] = M^{(k)} p = M^{(k)} \phi_i / M$.
-
-    We are interested in the probability of this count being less than the threshold $T_m$. Applying Hoeffding's inequality to the sum of these Bernoulli variables, we get:
-    \begin{equation}
-        \begin{aligned}
-            P(M_{(i,j)}^{(k)} & < T_m) = P\left(\frac{M_{(i,j)}^{(k)}}{M^{(k)}} < \frac{T_m}{M^{(k)}}\right)              \\
-                              & \le \exp\left(-2 M^{(k)2} \left(\frac{\phi_i}{M} - \frac{T_m-1}{M^{(k)}}\right)^2 \right)
-        \end{aligned}
-    \end{equation}
-    For simplicity in the main text, we use a slightly different formulation. Let $M_{(i,j)}^{(k)}$ be the sum of $\phi_i$ indicator variables (one for each row in the block), where the probability of a row being in $C_k$ is $M^{(k)}/M$. The expected value is $E[M_{(i,j)}^{(k)}] = \phi_i M^{(k)}/M$. The event of failure is $M_{(i,j)}^{(k)} < T_m$. By Hoeffding's inequality:
-    \begin{equation}
-        P(M_{(i,j)}^{(k)} < T_m) = P(\phi_i \frac{M^{(k)}}{M} - M_{(i,j)}^{(k)} > \phi_i \frac{M^{(k)}}{M} - T_m
-    \end{equation}
-    A symmetric argument holds for the columns:
-    \begin{equation}
-        P(N_{(i,j)}^{(k)} < T_n) \le \exp(-2 \psi_j (t_j^{(k)})^2)
-    \end{equation}
-    By \Cref{assumption:independence}, the row and column partitioning events are independent. Therefore, the joint probability is the product of the individual probabilities:
-    \begin{equation}
-        \begin{aligned}
-            P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                      \\
-                              & = P(M_{(i,j)}^{(k)} < T_m) \cdot P(N_{(i,j)}^{(k)} < T_n)          \\
-                              & = \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
-        \end{aligned}
-    \end{equation}
-    which yields the stated bound by multiplying the exponential terms.
+    The proof follows from applying Hoeffding's inequality to the binomial distribution of co-cluster elements across partitions, treating row and column distributions independently. See \Cref{appendix:proofs} for the detailed proof.
 \end{proof}
 }
 
@@ -510,34 +485,7 @@ Having established the basic probability bounds, we now present the theoretical 
 
 {\color{blue}
 \begin{proof}
-    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in \textbf{any} of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
-
-    Assuming independence of row/column placement across different block boundaries, the probability of this event is:
-    \begin{equation}
-        \begin{aligned}
-            P(\mathcal{F}_{k,t}) & \le \prod_{i=1}^m \prod_{j=1}^n \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right] \\
-                                 & = \exp\left( -2 \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
-        \end{aligned}
-    \end{equation}
-    Let the exponent term be $\gamma_k$. Then $P(\mathcal{F}_{k,t}) \le \exp(-\gamma_k)$. Since each of the $T_p$ partitioning trials is independent, the probability of missing co-cluster $C_k$ in all $T_p$ trials is:
-    \begin{equation}
-        \begin{aligned}
-            P(\text{miss } C_k \text{ in all } & T_p \text{ trials}) = (P(\mathcal{F}_{k,t}))^{T_p} \\
-                                               & \le (\exp(-\gamma_k))^{T_p} = \exp(-\gamma_k T_p)
-        \end{aligned}
-    \end{equation}
-    The probability of missing at least one of the $K$ co-clusters is found using the union bound (\Cref{assumption:finite-co-cluster-set}):
-    \begin{equation}
-        \begin{aligned}
-            P( & \text{miss any co-cluster}) = P\left(\bigcup_{k=1}^K \{\text{miss } C_k\}\right) \\
-               & \le \sum_{k=1}^K P(\text{miss } C_k) \le \sum_{k=1}^K \exp(-\gamma_k T_p)
-        \end{aligned}
-    \end{equation}
-    Assuming a minimum $\gamma = \min_k \gamma_k$, this is bounded by $K \exp(-\gamma T_p)$. The probability of success (detecting all co-clusters) is therefore:
-    \begin{equation}
-        P = 1 - P(\text{miss any co-cluster}) \ge 1 - K \exp(-\gamma T_p)
-    \end{equation}
-    Under the simplifying assumption of uniform block sizes $\phi=M/m, \psi=N/n$, and nearly constant $s_i^{(k)} \approx s^{(k)}, t_j^{(k)} \approx t^{(k)}$, the sum becomes $\sum_{i,j} \approx mn \left( (s^{(k)})^2 \phi + (t^{(k)})^2 \psi \right) = M (s^{(k)})^2 + N (t^{(k)})^2$, yielding the simplified bound in \Cref{eq:prob-of-identifying-all-co-clusters}.
+    The proof uses independence assumptions across multiple partitioning trials and applies the union bound over all co-clusters. See \Cref{appendix:proofs} for the detailed proof.
 \end{proof}
 }
 
@@ -735,28 +683,7 @@ After establishing that co-clusters are preserved in the partitioned blocks, we 
     \end{equation}
 \end{theorem}
 \begin{proof}
-    The global objective function for a set of disjoint co-clusters is additive over the partitions. Therefore, the objective value for the combined local solutions $\mathcal{C}_{union}$ is the sum of the local objective values:
-    \begin{equation} \label{eq:proof_qual1}
-        J(\mathcal{C}_{union}) = \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)})
-    \end{equation}
-    By the assumption of $\epsilon_{(i,j)}$-suboptimality for each local solution:
-    \begin{equation} \label{eq:proof_qual2}
-        \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)}) \le \sum_{i,j} \left( J_{(i,j)}(\mathcal{C}_{(i,j)}^*) + \epsilon_{(i,j)} \right)
-    \end{equation}
-    where $\mathcal{C}_{(i,j)}^*$ is the optimal solution for block $(i,j)$.
-
-    Now, consider the globally optimal solution $\mathcal{C}^*$. Its restriction to block $(i,j)$, denoted $\mathcal{C}^*|_{(i,j)}$, is a valid (but not necessarily optimal) co-clustering for that block. Therefore, the optimal local objective $J_{(i,j)}(\mathcal{C}_{(i,j)}^*)$ must be less than or equal to the objective for this restricted global solution:
-    \begin{equation} \label{eq:proof_qual3}
-        J_{(i,j)}(\mathcal{C}_{(i,j)}^*) \le J_{(i,j)}(\mathcal{C}^*|_{(i,j)})
-    \end{equation}
-    Summing over all blocks, we have:
-    \begin{equation} \label{eq:proof_qual4}
-        \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)}^*) \le \sum_{i,j} J_{(i,j)}(\mathcal{C}^*|_{(i,j)}) = J(\mathcal{C}^*)
-    \end{equation}
-    The final equality holds because summing the objective of the restricted global solution over all disjoint blocks reconstructs the total global objective for $\mathcal{C}^*$. Combining \Cref{eq:proof_qual1,eq:proof_qual2,eq:proof_qual4}, we arrive at the final bound:
-    \begin{equation}
-        J(\mathcal{C}_{union}) \le J(\mathcal{C}^*) + \sum_{i,j} \epsilon_{(i,j)}
-    \end{equation}
+    The proof follows from the additivity of the global objective function over disjoint partitions and the suboptimality assumption of local solutions. See \Cref{appendix:proofs} for the detailed proof.
 \end{proof}
 \begin{remark}
     \Cref{thm:global-solution-quality} provides an error bound for the solution before the hierarchical merging step. The merging algorithm is a heuristic designed to improve this solution by resolving redundancies and reconstructing coherent structures fragmented by partitioning. While not guaranteed to monotonically decrease the objective function $J$, it is designed to improve a composite quality score and empirically leads to superior final solutions.
@@ -771,7 +698,7 @@ The final step of our algorithm is hierarchical merging. It is crucial that this
     The hierarchical merging algorithm is guaranteed to converge and terminate in at most $K_0 - 1$ steps, where $K_0$ is the total number of local co-clusters identified across all blocks before merging begins.
 \end{lemma}
 \begin{proof}
-    The proof follows from two key properties of the algorithm. First, the set of co-clusters is finite at every stage. Let the initial number of local co-clusters be $K_0 = |\mathcal{C}_{union}|$. Second, each successful merge operation takes two existing co-clusters and replaces them with a single new co-cluster, strictly reducing the total number of co-clusters by one. Since the number of clusters cannot be reduced below one, the algorithm can perform at most $K_0 - 1$ merges. The process terminates when no more merges satisfy the quality improvement criterion, resulting in a stable final set of co-clusters.
+    The proof follows from the finite nature of the co-cluster set and the strictly decreasing property of the merge operation. See \Cref{appendix:proofs} for the detailed proof.
 \end{proof}
 
 \subsection{Assumption Sensitivity Analysis}
@@ -1026,4 +953,99 @@ Based on our empirical findings, we propose the following parameter settings for
 We presented DiMergeCo, a scalable co-clustering method for large-scale datasets, leveraging a divide-and-conquer strategy to partition the input matrix into smaller submatrices for parallel processing, thereby significantly reducing computational overhead. Each submatrix is co-clustered independently using a probabilistic model-based optimal partitioning algorithm, ensuring the integrity of co-clusters, and the results are combined using a hierarchical co-cluster merging algorithm to enhance accuracy and reliability. Our implementation using MPI distributes the computational load across multiple nodes, improving scalability and making the approach practical for large-scale applications without requiring specialized performance from any single node. {\color{blue}Experimental results on diverse datasets spanning text documents, recommendation systems, and gene expression data demonstrate substantial improvements in computational efficiency and scalability, confirming the method's effectiveness across different data types and scales.} This work addresses the challenges of co-clustering large-scale data by integrating efficient partitioning, parallel processing, and robust merging techniques, setting a new benchmark for scalable co-clustering and paving the way for future research in scalable data analysis technologies.
 
 \printbibliography
+
+\appendix
+
+\section{Detailed Proofs}
+\label{appendix:proofs}
+
+\begin{proof}[Proof of \Cref{thm:joint-probability}]
+    Let $M_{(i,j)}^{(k)}$ be the number of rows of co-cluster $C_k$ that fall into the $i$-th row partition of size $\phi_i$. This can be modeled as a sum of $M^{(k)}$ independent Bernoulli random variables, where each variable indicates if a specific row of $C_k$ is in the partition. By \Cref{assumption:random-partitioning}, the probability of any given row falling into the $i$-th partition is $p = \phi_i / M$. The expected number of rows is $E[M_{(i,j)}^{(k)}] = M^{(k)} p = M^{(k)} \phi_i / M$.
+
+    We are interested in the probability of this count being less than the threshold $T_m$. Applying Hoeffding's inequality to the sum of these Bernoulli variables, we get:
+    \begin{equation}
+        \begin{aligned}
+            P(M_{(i,j)}^{(k)} & < T_m) = P\left(\frac{M_{(i,j)}^{(k)}}{M^{(k)}} < \frac{T_m}{M^{(k)}}\right)              \\
+                              & \le \exp\left(-2 M^{(k)2} \left(\frac{\phi_i}{M} - \frac{T_m-1}{M^{(k)}}\right)^2 \right)
+        \end{aligned}
+    \end{equation}
+    For simplicity in the main text, we use a slightly different formulation. Let $M_{(i,j)}^{(k)}$ be the sum of $\phi_i$ indicator variables (one for each row in the block), where the probability of a row being in $C_k$ is $M^{(k)}/M$. The expected value is $E[M_{(i,j)}^{(k)}] = \phi_i M^{(k)}/M$. The event of failure is $M_{(i,j)}^{(k)} < T_m$. By Hoeffding's inequality:
+    \begin{equation}
+        P(M_{(i,j)}^{(k)} < T_m) = P(\phi_i \frac{M^{(k)}}{M} - M_{(i,j)}^{(k)} > \phi_i \frac{M^{(k)}}{M} - T_m
+    \end{equation}
+    A symmetric argument holds for the columns:
+    \begin{equation}
+        P(N_{(i,j)}^{(k)} < T_n) \le \exp(-2 \psi_j (t_j^{(k)})^2)
+    \end{equation}
+    By \Cref{assumption:independence}, the row and column partitioning events are independent. Therefore, the joint probability is the product of the individual probabilities:
+    \begin{equation}
+        \begin{aligned}
+            P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                      \\
+                              & = P(M_{(i,j)}^{(k)} < T_m) \cdot P(N_{(i,j)}^{(k)} < T_n)          \\
+                              & = \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
+        \end{aligned}
+    \end{equation}
+    which yields the stated bound by multiplying the exponential terms.
+\end{proof}
+
+\begin{proof}[Proof of \Cref{thm:probability-co-cluster-detection}]
+    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in \textbf{any} of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
+
+    Assuming independence of row/column placement across different block boundaries, the probability of this event is:
+    \begin{equation}
+        \begin{aligned}
+            P(\mathcal{F}_{k,t}) & \le \prod_{i=1}^m \prod_{j=1}^n \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right] \\
+                                 & = \exp\left( -2 \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
+        \end{aligned}
+    \end{equation}
+    Let the exponent term be $\gamma_k$. Then $P(\mathcal{F}_{k,t}) \le \exp(-\gamma_k)$. Since each of the $T_p$ partitioning trials is independent, the probability of missing co-cluster $C_k$ in all $T_p$ trials is:
+    \begin{equation}
+        \begin{aligned}
+            P(\text{miss } C_k \text{ in all } & T_p \text{ trials}) = (P(\mathcal{F}_{k,t}))^{T_p} \\
+                                               & \le (\exp(-\gamma_k))^{T_p} = \exp(-\gamma_k T_p)
+        \end{aligned}
+    \end{equation}
+    The probability of missing at least one of the $K$ co-clusters is found using the union bound (\Cref{assumption:finite-co-cluster-set}):
+    \begin{equation}
+        \begin{aligned}
+            P( & \text{miss any co-cluster}) = P\left(\bigcup_{k=1}^K \{\text{miss } C_k\}\right) \\
+               & \le \sum_{k=1}^K P(\text{miss } C_k) \le \sum_{k=1}^K \exp(-\gamma_k T_p)
+        \end{aligned}
+    \end{equation}
+    Assuming a minimum $\gamma = \min_k \gamma_k$, this is bounded by $K \exp(-\gamma T_p)$. The probability of success (detecting all co-clusters) is therefore:
+    \begin{equation}
+        P = 1 - P(\text{miss any co-cluster}) \ge 1 - K \exp(-\gamma T_p)
+    \end{equation}
+    Under the simplifying assumption of uniform block sizes $\phi=M/m, \psi=N/n$, and nearly constant $s_i^{(k)} \approx s^{(k)}, t_j^{(k)} \approx t^{(k)}$, the sum becomes $\sum_{i,j} \approx mn \left( (s^{(k)})^2 \phi + (t^{(k)})^2 \psi \right) = M (s^{(k)})^2 + N (t^{(k)})^2$, yielding the simplified bound in \Cref{eq:prob-of-identifying-all-co-clusters}.
+\end{proof}
+
+\begin{proof}[Proof of \Cref{thm:global-solution-quality}]
+    The global objective function for a set of disjoint co-clusters is additive over the partitions. Therefore, the objective value for the combined local solutions $\mathcal{C}_{union}$ is the sum of the local objective values:
+    \begin{equation}
+        J(\mathcal{C}_{union}) = \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)})
+    \end{equation}
+    By the assumption of $\epsilon_{(i,j)}$-suboptimality for each local solution:
+    \begin{equation}
+        \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)}) \le \sum_{i,j} \left( J_{(i,j)}(\mathcal{C}_{(i,j)}^*) + \epsilon_{(i,j)} \right)
+    \end{equation}
+    where $\mathcal{C}_{(i,j)}^*$ is the optimal solution for block $(i,j)$.
+
+    Now, consider the globally optimal solution $\mathcal{C}^*$. Its restriction to block $(i,j)$, denoted $\mathcal{C}^*|_{(i,j)}$, is a valid (but not necessarily optimal) co-clustering for that block. Therefore, the optimal local objective $J_{(i,j)}(\mathcal{C}_{(i,j)}^*)$ must be less than or equal to the objective for this restricted global solution:
+    \begin{equation}
+        J_{(i,j)}(\mathcal{C}_{(i,j)}^*) \le J_{(i,j)}(\mathcal{C}^*|_{(i,j)})
+    \end{equation}
+    Summing over all blocks, we have:
+    \begin{equation}
+        \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)}^*) \le \sum_{i,j} J_{(i,j)}(\mathcal{C}^*|_{(i,j)}) = J(\mathcal{C}^*)
+    \end{equation}
+    The final equality holds because summing the objective of the restricted global solution over all disjoint blocks reconstructs the total global objective for $\mathcal{C}^*$. Combining these inequalities, we arrive at the final bound:
+    \begin{equation}
+        J(\mathcal{C}_{union}) \le J(\mathcal{C}^*) + \sum_{i,j} \epsilon_{(i,j)}
+    \end{equation}
+\end{proof}
+
+\begin{proof}[Proof of \Cref{lem:merging-convergence}]
+    The proof follows from two key properties of the algorithm. First, the set of co-clusters is finite at every stage. Let the initial number of local co-clusters be $K_0 = |\mathcal{C}_{union}|$. Second, each successful merge operation takes two existing co-clusters and replaces them with a single new co-cluster, strictly reducing the total number of co-clusters by one. Since the number of clusters cannot be reduced below one, the algorithm can perform at most $K_0 - 1$ merges. The process terminates when no more merges satisfy the quality improvement criterion, resulting in a stable final set of co-clusters.
+\end{proof}
+
 \end{document}
