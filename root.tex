@@ -227,60 +227,13 @@ Our work addresses these limitations through a novel divide-and-conquer strategy
         Modern medical imaging requires simultaneous analysis of thousands of high-resolution images. These medical applications face scalability limitations when processing large-scale datasets, highlighting the need for distributed co-clustering methods like our proposed DiMergeCo framework.}
 
 
-    {\color{blue}
-        \begin{table}[htbp]
-            \centering
-            \caption{Notation Table}
-            \label{tab:notation}
-            \begin{tabular}{@{} p{0.08\textwidth} p{0.35\textwidth} @{}}
-                \toprule
-                \textbf{Symbol}                    & \textbf{Definition}                                                                           \\
-                \midrule
-                $\mathbf{A}$                       & Input data matrix $\in \mathbb{R}^{M \times N}$                                               \\
-                $M, N$                             & Numbers of rows (samples) and columns (features), respectively                                \\
-                $a_{ij}$                           & Element at position $(i,j)$ in matrix $\mathbf{A}$                                            \\
-                $I, J$                             & Sets of row and column indices: $I = \{1,2,\ldots,M\}$, $J = \{1,2,\ldots,N\}$                \\
-                $\|\mathbf{A}\|_F$                 & Frobenius norm of matrix $\mathbf{A}$                                                         \\
-                $\text{rank}(\mathbf{A})$          & Rank of matrix $\mathbf{A}$                                                                   \\
-                $\mathcal{C}$                      & Set of detected co-clusters $\{\mathbf{C}_k\}_{k=1}^K$                                        \\
-                $\mathbf{C}_k$                     & The $k$-th co-cluster which is a subset of $I \times J$                                       \\
-                $K$                                & Total number of co-clusters                                                                   \\
-                $M^{(k)}, N^{(k)}$                 & Row and column sizes of co-cluster $\mathbf{C}_k$, respectively                               \\
-                $s(\mathbf{A}), S(\mathbf{A})$     & Singular value ratio score and normalized score, respectively                                 \\
-                $s_1, s_2$                         & Largest and second largest singular values, respectively                                      \\
-                $\mathbf{B}_{(i,j)}$               & Block $(i,j)$ in partitioned matrix                                                           \\
-                $m, n$                             & Numbers of row and column blocks, respectively                                                \\
-                $\phi_i, \psi_j$                   & Sizes of $i$-th row block and $j$-th column block, respectively                               \\
-                $T_m, T_n$                         & Threshold sizes for row and column co-clusters, respectively                                  \\
-                $T_p$                              & Number of sampling/partitioning iterations                                                    \\
-                $P_{\text{thresh}}$                & Probability threshold for co-cluster detection                                                \\
-                $P(\omega_k)$                      & Probability of failing to detect co-cluster $\mathbf{C}_k$                                    \\
-                $M_{(i,j)}^{(k)}, N_{(i,j)}^{(k)}$ & Row and column sizes of co-cluster $\mathbf{C}_k$ in block $\mathbf{B}_{(i,j)}$, respectively \\
-                $s_i^{(k)}, t_j^{(k)}$             & Minimum row and column ratios for co-cluster $\mathbf{C}_k$, respectively                     \\
-                $\alpha$                           & Probability bound parameter                                                                   \\
-                $\mathcal{L}$                      & Base co-clustering algorithm                                                                  \\
-                $\theta$                           & Parameters for base algorithm                                                                 \\
-                $\tau$                             & Overlap threshold for merging                                                                 \\
-                $\alpha_1, \alpha_2, \alpha_3$     & Weighting parameters in score function                                                        \\
-                $\epsilon$                         & Minimum block size ratio (typically 0.01)                                                     \\
-                $\delta_{(i,j)}$                   & Maximum approximation error for block $(i,j)$                                                 \\
-                $\epsilon_{(i,j)}$                 & Suboptimality of local solution in block $(i,j)$                                              \\
-                $\mathbf{F}^*, \mathbf{F}'$        & Global optimal and merged solution indicator matrices, respectively                           \\
-                $J(\mathbf{F})$                    & Co-clustering objective function                                                              \\
-                $P$                                & Number of processors in MPI implementation                                                    \\
-                $\mathcal{B}_k$                    & Set of blocks overlapping with co-cluster $\mathbf{C}_k$                                      \\
-                $\mathcal{C}_{(i,j)}$              & Local co-clusters discovered in block $(i,j)$                                                 \\
-                \bottomrule
-            \end{tabular}
-        \end{table}
-    }
 
 \section{Preliminaries and Problem Statement}
 \label{sec:problem-formulation}
 \subsection{Preliminaries}
 Co-clustering, also known as biclustering for two-dimensional (2D) data, discovers coherent substructures by simultaneously grouping rows and columns in data matrices. This technique has broad applications in recommendation systems, gene expression analysis, and document clustering, where identifying underlying local patterns is crucial for understanding complex relationships in the data.
 
-    {\color{blue} For easy reference throughout this paper, \Cref{tab:notation} provides a comprehensive overview of all mathematical symbols and notation used in our framework.} Given a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$ where $M$ and $N$ denote the number of samples and features respectively, each element $a_{ij}$ represents the $i$-th sample with $j$-th feature. We denote the sets of row and column indices as $I = \{1,2,\ldots,M\}$ and $J = \{1,2,\ldots,N\}$ respectively. The set of discovered co-clusters is represented as $\mathcal{C} = \{\mathbf{C}_k\}_{k=1}^K$, where each $\mathbf{C}_k \subseteq I \times J$ represents a submatrix exhibiting coherent patterns. For any matrix $\mathbf{A}$, its Frobenius norm is defined as $\|\mathbf{A}\|_F = \sqrt{\sum_{i=1}^M \sum_{j=1}^N a_{ij}^2}$.
+    {\color{blue} For easy reference throughout this paper, the comprehensive notation table is provided in \Cref{tab:notation} (Appendix~\ref{appendix:notation}).} Given a data matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$ where $M$ and $N$ denote the number of samples and features respectively, each element $a_{ij}$ represents the $i$-th sample with $j$-th feature. We denote the sets of row and column indices as $I = \{1,2,\ldots,M\}$ and $J = \{1,2,\ldots,N\}$ respectively. The set of discovered co-clusters is represented as $\mathcal{C} = \{\mathbf{C}_k\}_{k=1}^K$, where each $\mathbf{C}_k \subseteq I \times J$ represents a submatrix exhibiting coherent patterns. For any matrix $\mathbf{A}$, its Frobenius norm is defined as $\|\mathbf{A}\|_F = \sqrt{\sum_{i=1}^M \sum_{j=1}^N a_{ij}^2}$.
 
 
 Our approach is grounded in two fundamental theorems from matrix analysis that establish the theoretical basis for discovering co-clusters through matrix partitioning. The first theorem, Low-Rank Approximation, establishes that co-clusters, as coherent substructures, can be effectively approximated by low-rank matrices:
@@ -463,7 +416,7 @@ Having established the basic probability bounds, we now present the theoretical 
 
 {\color{blue}
 \begin{proof}
-    The proof follows from applying Hoeffding's inequality to the binomial distribution of co-cluster elements across partitions, treating row and column distributions independently. See \Cref{appendix:proofs} for the detailed proof.
+    The proof follows from applying Hoeffding's inequality to the binomial distribution of co-cluster elements across partitions, treating row and column distributions independently. See \Cref{appendix:proofs} in the appendix for the detailed proof.
 \end{proof}
 }
 
@@ -485,7 +438,7 @@ Having established the basic probability bounds, we now present the theoretical 
 
 {\color{blue}
 \begin{proof}
-    The proof uses independence assumptions across multiple partitioning trials and applies the union bound over all co-clusters. See \Cref{appendix:proofs} for the detailed proof.
+    The proof uses independence assumptions across multiple partitioning trials and applies the union bound over all co-clusters. See \Cref{appendix:proofs} in the appendix for the detailed proof.
 \end{proof}
 }
 
@@ -683,7 +636,7 @@ After establishing that co-clusters are preserved in the partitioned blocks, we 
     \end{equation}
 \end{theorem}
 \begin{proof}
-    The proof follows from the additivity of the global objective function over disjoint partitions and the suboptimality assumption of local solutions. See \Cref{appendix:proofs} for the detailed proof.
+    The proof follows from the additivity of the global objective function over disjoint partitions and the suboptimality assumption of local solutions. See \Cref{appendix:proofs} in the appendix for the detailed proof.
 \end{proof}
 \begin{remark}
     \Cref{thm:global-solution-quality} provides an error bound for the solution before the hierarchical merging step. The merging algorithm is a heuristic designed to improve this solution by resolving redundancies and reconstructing coherent structures fragmented by partitioning. While not guaranteed to monotonically decrease the objective function $J$, it is designed to improve a composite quality score and empirically leads to superior final solutions.
@@ -698,7 +651,7 @@ The final step of our algorithm is hierarchical merging. It is crucial that this
     The hierarchical merging algorithm is guaranteed to converge and terminate in at most $K_0 - 1$ steps, where $K_0$ is the total number of local co-clusters identified across all blocks before merging begins.
 \end{lemma}
 \begin{proof}
-    The proof follows from the finite nature of the co-cluster set and the strictly decreasing property of the merge operation. See \Cref{appendix:proofs} for the detailed proof.
+    The proof follows from the finite nature of the co-cluster set and the strictly decreasing property of the merge operation. See \Cref{appendix:proofs} in the appendix for the detailed proof.
 \end{proof}
 
 \subsection{Assumption Sensitivity Analysis}
@@ -853,14 +806,14 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 % blue picture
 \begin{figure*}[t]
     \centering
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{images/nmi_small.png}
         \caption{NMI for small co-clusters}
         \label{fig:nmi_small}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.48\textwidth}
+    \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\linewidth]{images/ari_small.png}
         \caption{ARI for small co-clusters}
@@ -950,14 +903,66 @@ Based on our empirical findings, we propose the following parameter settings for
 
 \section{Conclusion}
 \label{sec:conclusion}
-We presented DiMergeCo, a scalable co-clustering method for large-scale datasets, leveraging a divide-and-conquer strategy to partition the input matrix into smaller submatrices for parallel processing, thereby significantly reducing computational overhead. Each submatrix is co-clustered independently using a probabilistic model-based optimal partitioning algorithm, ensuring the integrity of co-clusters, and the results are combined using a hierarchical co-cluster merging algorithm to enhance accuracy and reliability. Our implementation using MPI distributes the computational load across multiple nodes, improving scalability and making the approach practical for large-scale applications without requiring specialized performance from any single node. {\color{blue}Experimental results on diverse datasets spanning text documents, recommendation systems, and gene expression data demonstrate substantial improvements in computational efficiency and scalability, confirming the method's effectiveness across different data types and scales.} This work addresses the challenges of co-clustering large-scale data by integrating efficient partitioning, parallel processing, and robust merging techniques, setting a new benchmark for scalable co-clustering and paving the way for future research in scalable data analysis technologies.
+We present DiMergeCo, a scalable co-clustering method for large datasets. Using a divide-and-conquer strategy, the input matrix is partitioned into submatrices for parallel processing, reducing computational overhead. Each submatrix is co-clustered independently with a probabilistic partitioning algorithm, and results are combined via a hierarchical merging step to ensure accuracy. Implemented with MPI, the method distributes computation across nodes, achieving scalability without relying on high performance from any single node. {\color{blue}Experimental results on diverse datasets spanning text documents, recommendation systems, and gene expression data demonstrate substantial improvements in computational efficiency and scalability, confirming the method's effectiveness across different data types and scales.} By integrating efficient partitioning, parallelization, and robust merging, DiMergeCo sets a new benchmark for scalable co-clustering and advances large-scale data analysis.
 
 \printbibliography
 
 \appendix
 
+\section{Notation Table}
+\label{appendix:notation}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Notation Table}
+    \label{tab:notation}
+    \begin{tabular}{@{} p{0.08\textwidth} p{0.35\textwidth} @{}}
+        \toprule
+        \textbf{Symbol}                    & \textbf{Definition}                                                                           \\
+        \midrule
+        $\mathbf{A}$                       & Input data matrix $\in \mathbb{R}^{M \times N}$                                               \\
+        $M, N$                             & Numbers of rows (samples) and columns (features), respectively                                \\
+        $a_{ij}$                           & Element at position $(i,j)$ in matrix $\mathbf{A}$                                            \\
+        $I, J$                             & Sets of row and column indices: $I = \{1,2,\ldots,M\}$, $J = \{1,2,\ldots,N\}$                \\
+        $\|\mathbf{A}\|_F$                 & Frobenius norm of matrix $\mathbf{A}$                                                         \\
+        $\text{rank}(\mathbf{A})$          & Rank of matrix $\mathbf{A}$                                                                   \\
+        $\mathcal{C}$                      & Set of detected co-clusters $\{\mathbf{C}_k\}_{k=1}^K$                                        \\
+        $\mathbf{C}_k$                     & The $k$-th co-cluster which is a subset of $I \times J$                                       \\
+        $K$                                & Total number of co-clusters                                                                   \\
+        $M^{(k)}, N^{(k)}$                 & Row and column sizes of co-cluster $\mathbf{C}_k$, respectively                               \\
+        $s(\mathbf{A}), S(\mathbf{A})$     & Singular value ratio score and normalized score, respectively                                 \\
+        $s_1, s_2$                         & Largest and second largest singular values, respectively                                      \\
+        $\mathbf{B}_{(i,j)}$               & Block $(i,j)$ in partitioned matrix                                                           \\
+        $m, n$                             & Numbers of row and column blocks, respectively                                                \\
+        $\phi_i, \psi_j$                   & Sizes of $i$-th row block and $j$-th column block, respectively                               \\
+        $T_m, T_n$                         & Threshold sizes for row and column co-clusters, respectively                                  \\
+        $T_p$                              & Number of sampling/partitioning iterations                                                    \\
+        $P_{\text{thresh}}$                & Probability threshold for co-cluster detection                                                \\
+        $P(\omega_k)$                      & Probability of failing to detect co-cluster $\mathbf{C}_k$                                    \\
+        $M_{(i,j)}^{(k)}, N_{(i,j)}^{(k)}$ & Row and column sizes of co-cluster $\mathbf{C}_k$ in block $\mathbf{B}_{(i,j)}$, respectively \\
+        $s_i^{(k)}, t_j^{(k)}$             & Minimum row and column ratios for co-cluster $\mathbf{C}_k$, respectively                     \\
+        $\alpha$                           & Probability bound parameter                                                                   \\
+        $\mathcal{L}$                      & Base co-clustering algorithm                                                                  \\
+        $\theta$                           & Parameters for base algorithm                                                                 \\
+        $\tau$                             & Overlap threshold for merging                                                                 \\
+        $\alpha_1, \alpha_2, \alpha_3$     & Weighting parameters in score function                                                        \\
+        $\epsilon$                         & Minimum block size ratio (typically 0.01)                                                     \\
+        $\delta_{(i,j)}$                   & Maximum approximation error for block $(i,j)$                                                 \\
+        $\epsilon_{(i,j)}$                 & Suboptimality of local solution in block $(i,j)$                                              \\
+        $\mathbf{F}^*, \mathbf{F}'$        & Global optimal and merged solution indicator matrices, respectively                           \\
+        $J(\mathbf{F})$                    & Co-clustering objective function                                                              \\
+        $P$                                & Number of processors in MPI implementation                                                    \\
+        $\mathcal{B}_k$                    & Set of blocks overlapping with co-cluster $\mathbf{C}_k$                                      \\
+        $\mathcal{C}_{(i,j)}$              & Local co-clusters discovered in block $(i,j)$                                                 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
 \section{Detailed Proofs}
 \label{appendix:proofs}
+
+\subsection{Proof of Joint Probability Theorem}
+\label{appendix:proof-joint-probability}
 
 \begin{proof}[Proof of \Cref{thm:joint-probability}]
     Let $M_{(i,j)}^{(k)}$ be the number of rows of co-cluster $C_k$ that fall into the $i$-th row partition of size $\phi_i$. This can be modeled as a sum of $M^{(k)}$ independent Bernoulli random variables, where each variable indicates if a specific row of $C_k$ is in the partition. By \Cref{assumption:random-partitioning}, the probability of any given row falling into the $i$-th partition is $p = \phi_i / M$. The expected number of rows is $E[M_{(i,j)}^{(k)}] = M^{(k)} p = M^{(k)} \phi_i / M$.
@@ -987,6 +992,9 @@ We presented DiMergeCo, a scalable co-clustering method for large-scale datasets
     \end{equation}
     which yields the stated bound by multiplying the exponential terms.
 \end{proof}
+
+\subsection{Proof of Co-Cluster Detection Probability Theorem}
+\label{appendix:proof-co-cluster-detection}
 
 \begin{proof}[Proof of \Cref{thm:probability-co-cluster-detection}]
     Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in \textbf{any} of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if its sub-cluster size is below the threshold, i.e., $M_{(i,j)}^{(k)} < T_m$ or $N_{(i,j)}^{(k)} < T_n$. For simplicity, we consider the stricter event from \Cref{thm:joint-probability} where both are below the threshold. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} = \bigcap_{i=1}^m \bigcap_{j=1}^n \{\text{size in block }(i,j) < \text{threshold}\}$.
@@ -1019,6 +1027,9 @@ We presented DiMergeCo, a scalable co-clustering method for large-scale datasets
     Under the simplifying assumption of uniform block sizes $\phi=M/m, \psi=N/n$, and nearly constant $s_i^{(k)} \approx s^{(k)}, t_j^{(k)} \approx t^{(k)}$, the sum becomes $\sum_{i,j} \approx mn \left( (s^{(k)})^2 \phi + (t^{(k)})^2 \psi \right) = M (s^{(k)})^2 + N (t^{(k)})^2$, yielding the simplified bound in \Cref{eq:prob-of-identifying-all-co-clusters}.
 \end{proof}
 
+\subsection{Proof of Global Solution Quality Theorem}
+\label{appendix:proof-global-solution-quality}
+
 \begin{proof}[Proof of \Cref{thm:global-solution-quality}]
     The global objective function for a set of disjoint co-clusters is additive over the partitions. Therefore, the objective value for the combined local solutions $\mathcal{C}_{union}$ is the sum of the local objective values:
     \begin{equation}
@@ -1043,6 +1054,9 @@ We presented DiMergeCo, a scalable co-clustering method for large-scale datasets
         J(\mathcal{C}_{union}) \le J(\mathcal{C}^*) + \sum_{i,j} \epsilon_{(i,j)}
     \end{equation}
 \end{proof}
+
+\subsection{Proof of Merging Convergence Lemma}
+\label{appendix:proof-merging-convergence}
 
 \begin{proof}[Proof of \Cref{lem:merging-convergence}]
     The proof follows from two key properties of the algorithm. First, the set of co-clusters is finite at every stage. Let the initial number of local co-clusters be $K_0 = |\mathcal{C}_{union}|$. Second, each successful merge operation takes two existing co-clusters and replaces them with a single new co-cluster, strictly reducing the total number of co-clusters by one. Since the number of clusters cannot be reduced below one, the algorithm can perform at most $K_0 - 1$ merges. The process terminates when no more merges satisfy the quality improvement criterion, resulting in a stable final set of co-clusters.
