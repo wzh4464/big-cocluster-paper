@@ -1,9 +1,10 @@
-# Classic4 Full Dataset Experiment Results
+# Classic4 Full Dataset Experiment Results (Complete: 57/57)
 
 ## Dataset
 - **Matrix**: 6460 x 4667 (matching paper's dimensions)
 - **Classes**: 4 (Cranfield: 1398, CISI: 1460, MEDLINE: 1033, CACM: 2569)
-- **Seeds**: 3 per config (note: effectively 1 due to deterministic partitioning bug)
+- **Seeds**: 3 per config (note: effectively 1 due to deterministic partitioning — outer seed not passed to partitioner)
+- **Wall time**: ~6 hours (57 configs in parallel on 144-core server)
 
 ## Baseline
 
@@ -21,7 +22,8 @@ Sorted by NMI. All using SVD as local clusterer.
 
 | Config | Blocks | T_p | NMI | ARI | Time (s) | NMI/Baseline |
 |--------|--------|-----|-----|-----|----------|--------------|
-| 2x2_tp20 | 2x2 | 20 | **0.7462** | 0.6815 | 5559 | 94.4% |
+| 2x2_tp30 | 2x2 | 30 | **0.7491** | 0.6806 | 7447 | **94.7%** |
+| 2x2_tp20 | 2x2 | 20 | 0.7462 | 0.6815 | 5559 | 94.4% |
 | 3x2_tp20 | 3x2 | 20 | 0.7438 | 0.6638 | 3681 | 94.1% |
 | 2x3_tp30 | 2x3 | 30 | 0.7435 | 0.6465 | 3176 | 94.0% |
 | 3x2_tp30 | 3x2 | 30 | 0.7424 | 0.6530 | 4583 | 93.9% |
@@ -42,6 +44,7 @@ Sorted by NMI. All using SVD as local clusterer.
 
 | Config | M | N | T_p | NMI | ARI | Time (s) |
 |--------|---|---|-----|-----|-----|----------|
+| 2x2_tp30 | 2 | 2 | 30 | 0.7491 | 0.6806 | 7447 |
 | 2x2_tp20 | 2 | 2 | 20 | 0.7462 | 0.6815 | 5559 |
 | 3x2_tp20 | 3 | 2 | 20 | 0.7438 | 0.6638 | 3681 |
 | 2x3_tp30 | 2 | 3 | 30 | 0.7435 | 0.6465 | 3176 |
@@ -105,7 +108,7 @@ For a fixed block grid, NMI improves with T_p but saturates:
 
 | Block Grid | T_p=5 | T_p=10 | T_p=20 | T_p=30 |
 |------------|-------|--------|--------|--------|
-| 2x2 | 0.7382 | 0.7418 | **0.7462** | (pending) |
+| 2x2 | 0.7382 | 0.7418 | 0.7462 | **0.7491** |
 | 2x3 | 0.7155 | 0.7251 | 0.7338 | 0.7435 |
 | 3x2 | 0.6189 | 0.7423 | **0.7438** | 0.7424 |
 | 3x3 | 0.5164 | 0.7244 | 0.7258 | 0.7289 |
@@ -129,8 +132,8 @@ Our best DiMergeCo achieves 94.4% of our baseline NMI. The paper reports DiMerge
 | | Paper | Ours |
 |--|-------|------|
 | Baseline NMI | 0.922 | 0.791 |
-| DiMergeCo NMI | 0.865 | 0.746 |
-| Ratio | 93.8% | 94.4% |
+| DiMergeCo NMI | 0.865 | 0.749 |
+| Ratio | 93.8% | 94.7% |
 
 ### 5. ARI Tells a Different Story
 
@@ -146,6 +149,7 @@ While NMI is best for 2x2_tp20, ARI is best for **2x2_tp10** (0.6905). The 2x2 g
 | 2x3_tp10 | 0.7251 | 1572 | 1.2x |
 | 2x2_tp5 | 0.7382 | 2057 | 0.9x (slower) |
 | 2x2_tp20 | 0.7462 | 5559 | 0.3x (3x slower) |
+| 2x2_tp30 | **0.7491** | 7447 | 0.3x (4x slower) |
 
 **DiMergeCo is NOT faster** for this dataset size with our implementation. The paper's 112.5s speedup likely comes from:
 1. More efficient local clustering (not full SVD on each sub-matrix)
@@ -158,4 +162,4 @@ While NMI is best for 2x2_tp20, ARI is best for **2x2_tp10** (0.6905). The 2x2 g
 - Parallelism: 57 configs run simultaneously via `xargs -P`, each using 2 OpenBLAS threads
 - Block grids tested: 2x2, 2x3, 3x2, 3x3, 2x4, 3x4, 4x3, 4x4, 5x4, 4x5, 5x5, 6x5, 8x6, 10x7
 - T_p values: 5, 10, 20, 30
-- Total experiment wall time: ~5 hours
+- Total experiment wall time: ~6 hours (9:24 PM – 3:36 AM)
