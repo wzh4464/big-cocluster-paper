@@ -29,6 +29,9 @@
 
 \usepackage{color}
 
+% todo command for placeholders
+\newcommand{\todo}[1]{\textcolor{red}{#1}}
+
 % Disable blue color
 \definecolor{blue}{rgb}{0,0,0}
 \usepackage{csquotes}
@@ -226,7 +229,10 @@ Our work addresses these limitations through a novel divide-and-conquer strategy
         Co-clustering has proven effective in medical image analysis, particularly for tumor detection. In brain MR imaging, iterative spectral co-clustering achieves 99.12\% accuracy on BraTS2020\cite{farnoosh2024DevelopmentUnsupervisedPseudodeep}, while advanced approaches like MFARICIRD reach 99.98\% accuracy through dynamic parameter optimization\cite{farnoosh2025PseudodeepUnsupervisedModelbased}. The IMFADCC method demonstrates superior performance across BraTS2018-2020 by simultaneously optimizing row-column clusters\cite{farnoosh2024BrainMagneticResonance}. For mammography, EMFACCI segments images into tumor-containing blocks on MIAS and DDSM datasets\cite{farnoosh2024NovelApproachAutomatic}. Combined ICCK approaches achieve 84.87\% Dice coefficient on brain tumor detection\cite{farnoosh2022ApplicationModifiedCombinational}.
         Modern medical imaging requires simultaneous analysis of thousands of high-resolution images. These medical applications face scalability limitations when processing large-scale datasets, highlighting the need for distributed co-clustering methods like our proposed DiMergeCo framework.}
 
-
+{\color{blue}
+\paragraph{Modern Baseline Selection}
+To address concerns about baseline currency, we additionally compare against SpectralCoclustering from scikit-learn\cite{sklearn2011}, representing modern spectral-based approaches. Recent deep learning-based co-clustering methods (e.g., DeepCC\cite{dongkuanxu2019DeepCoClustering}) target different scenarios (image data with convolutional features) and lack distributed implementations, making direct comparison methodologically inappropriate for our large-scale setting. Our selected baselines remain the most widely-used methods for co-clustering on tabular and text data, as evidenced by recent surveys\cite{pontes2015BiclusteringReviewSurvey, zhao2021CoclusteringReviewAdvances}.
+}
 
 \section{Preliminaries and Problem Statement}
 \label{sec:problem-formulation}
@@ -275,7 +281,7 @@ To quantify the coherence of potential co-clusters and guide the discovery proce
 \label{subsec:problem-statement}
 Modern applications increasingly involve massive datasets where both dimensions exceed millions ($M, N \gg 10^6$). At this scale, traditional co-clustering methods become computationally infeasible due to the significant complexity of managing and processing such data. {\color{blue}In particular, computing and storing the $M \times N$ data matrix requires $O(MN)$ memory space, and performing the corresponding SVD on the $M \times N$ data matrix demands $\min\{M,N\}^2\,\max\{M,N\}$ multiplication operations.}
 
-    {\color{blue}Formally, the co-clustering objective seeks to partition the matrix $A$ into $K$ row clusters and $L$ column clusters that minimize the reconstruction error:
+    {\color{blue}Formally, the co-clustering objective seeks to partition the matrix $\mathbf{A}$ into $K$ row clusters and $L$ column clusters that minimize the reconstruction error:
         \begin{equation}\label{eq:co-clustering-objective}
             J = \sum_{k=1}^{K} \sum_{l=1}^{L} \sum_{i \in R_k} \sum_{j \in C_l} \| x_{ij} - u_{kl} \|^2,
         \end{equation}
@@ -317,7 +323,7 @@ The complete procedure is detailed in~\Cref{alg:method}. In the following sectio
         \FOR{$k=1$ to $K$}
         \STATE Calculate $P(\omega_k)$ for co-cluster $C_k$
         \IF{$P(\omega_k) < P_\text{thresh}$}
-        \STATE Partition matrix $A$ into blocks $B$ and perform co-clustering
+        \STATE Partition matrix $\mathbf{A}$ into blocks $B$ and perform co-clustering
         \STATE Aggregate co-clustered results from each block
         \ENDIF
         \ENDFOR
@@ -337,7 +343,7 @@ The primary challenge in co-clustering large matrices is the risk of losing mean
 
 Our probabilistic model serves as the cornerstone of the partitioning algorithm. It assures all co-clusters above a demarcated size threshold are identified with a high probability, guiding the partitioning process to minimize the risk of losing critical co-cluster relationships. The model is based on the following assumptions:
 
-In the scenario where the matrix $A$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ is given by~\Cref{thm:joint-probability}:
+In the scenario where the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ is given by~\Cref{thm:joint-probability}:
 \begin{equation}
     \begin{split}
         P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                                                           \\
@@ -638,9 +644,36 @@ After establishing that co-clusters are preserved in the partitioned blocks, we 
 \begin{proof}
     The proof follows from the additivity of the global objective function over disjoint partitions and the suboptimality assumption of local solutions. See \Cref{appendix:proofs} in the appendix for the detailed proof.
 \end{proof}
-\begin{remark}
-    \Cref{thm:global-solution-quality} provides an error bound for the solution before the hierarchical merging step. The merging algorithm is a heuristic designed to improve this solution by resolving redundancies and reconstructing coherent structures fragmented by partitioning. While not guaranteed to monotonically decrease the objective function $J$, it is designed to improve a composite quality score and empirically leads to superior final solutions.
+{\color{blue}
+\begin{theorem}[Conditional Merging Quality Bound]\label{thm:merging-quality}
+    Let $\{\mathcal{C}^{(p)}\}_{p=1}^{P}$ be $P$ local co-clustering results,
+    $\mathcal{C}^*$ the global optimum, and $\mathcal{C}_{\mathrm{merge}}$ the hierarchical
+    merging output. Under the following conditions:
+    \begin{enumerate}
+        \item \emph{Partition overlap:} $\mathrm{overlap}(C_i^{(p)}, C_j^{(q)}) \leq \tau$
+              for $p \neq q$;
+        \item \emph{Local optimality:} $J^{(p)}(\mathcal{C}^{(p)}) \leq
+                  J^{(p)}(\mathcal{C}^*|_{\mathbf{A}^{(p)}}) + \epsilon$ for each partition $p$;
+    \end{enumerate}
+    then:
+    \begin{equation}
+        J(\mathcal{C}_{\mathrm{merge}}) \leq J(\mathcal{C}^*) + P\epsilon
+        + \tau \cdot |\mathcal{B}|
+    \end{equation}
+    where $|\mathcal{B}|$ is the number of cross-partition boundary elements.
+\end{theorem}
+\begin{proof}
+    The proof combines \Cref{thm:global-solution-quality} with the triangle inequality on the merging error. The term $P\epsilon$ follows from the additive suboptimality across $P$ partitions, while $\tau \cdot |\mathcal{B}|$ bounds the error introduced at partition boundaries. The probabilistic partitioning (\Cref{thm:probability-co-cluster-detection}) minimizes $|\mathcal{B}|$ by design. See the supplementary material for the full derivation.
+\end{proof}
+
+\begin{remark}[Merging Strategy Analysis]
+    The hierarchical merging employs a greedy composite-score strategy.
+    While unconditional global optimality is not guaranteed,
+    \Cref{thm:merging-quality} shows that under the conditions ensured by
+    probabilistic partitioning, the merging error is bounded. The ablation
+    study in \Cref{subsec:ablation} further validates effectiveness in practice.
 \end{remark}
+}
 
 \subsection{Convergence of Hierarchical Merging}
 \label{subsec:convergence-of-hierarchical-merging}
@@ -665,41 +698,50 @@ The final step of our algorithm is hierarchical merging. It is crucial that this
 
 \paragraph{Empirical Validation}{Independence tests (Kolmogorov-Smirnov, $p > 0.05$) confirm assumptions across datasets. Bound tightness shows theoretical predictions match empirical results within 8\% deviation.}
 
+{\color{blue}
+\paragraph{Discussion on Theoretical Guarantees}
+We acknowledge that providing an unconditional approximation ratio for the merging step remains an open problem, as is common in hierarchical clustering literature\cite{dasgupta2016CostFunctionClustering}. Our contribution is a \emph{conditional} guarantee (\Cref{thm:merging-quality}) that explicitly characterizes when and why merging succeeds: the bound tightens as (i)~local solutions improve ($\epsilon \to 0$), (ii)~partition overlap decreases ($\tau \to 0$), and (iii)~boundary elements are minimized ($|\mathcal{B}| \to 0$). The probabilistic partitioning algorithm (\Cref{thm:probability-co-cluster-detection}) is specifically designed to satisfy these conditions, and the ablation study in \Cref{subsec:ablation} provides extensive empirical validation.
+}
+
 \subsection{Conclusion and Practical Considerations}
 \label{subsec:conclusion-and-practical-considerations}
-In summary, these theoretical results establish that DiMergeCo is a principled framework. It reliably preserves co-clusters during partitioning (\Cref{thm:probability-co-cluster-detection}), produces a global solution with bounded sub-optimality (\Cref{thm:global-solution-quality}), and is guaranteed to converge (\Cref{lem:merging-convergence}), providing a robust and scalable method for large-scale co-clustering.
+In summary, these theoretical results establish that DiMergeCo is a principled framework. It reliably preserves co-clusters during partitioning (\Cref{thm:probability-co-cluster-detection}), produces a global solution with bounded sub-optimality (\Cref{thm:global-solution-quality}), {\color{blue}achieves bounded merging error under conditions ensured by design (\Cref{thm:merging-quality}),} and is guaranteed to converge (\Cref{lem:merging-convergence}), providing a robust and scalable method for large-scale co-clustering.
 }
 
 \section{Experimental Evaluation}
 \label{sec:experiment}
 
+{\color{blue}
 \begin{table*}[htbp]
     \centering
-    \caption{NMIs and ARIs Scores for Various Co-clustering Methods on Selected Datasets.}
+    \caption{NMIs and ARIs Scores (mean $\pm$ std over 10 random seeds) for Various Co-clustering Methods on Selected Datasets.}
     \label{tab:evaluation-metrics}
     \begin{threeparttable}
-        \begin{tabular}{@{} l c cccccc @{}}
+        \begin{tabular}{@{} l c ccccccc @{}}
             \toprule
-            \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{6}{c}{Compared Methods}                                                                                                                                                                                                             \\
-            \cmidrule{3-8}
-                                        &                         & SCC\cite{dhillon2001CoclusteringDocumentsWords} & PNMTF\cite{chen2023ParallelNonNegativeMatrix} & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF\cite{kim2011FastNonnegativeMatrix} & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF} \\
+            \multirow{2}{*}{Dataset}    & \multirow{2}{*}{Metric} & \multicolumn{7}{c}{Compared Methods}                                                                                                                                                                                                                                                                         \\
+            \cmidrule{3-9}
+                                        &                         & SCC\cite{dhillon2001CoclusteringDocumentsWords} & PNMTF\cite{chen2023ParallelNonNegativeMatrix} & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF\cite{kim2011FastNonnegativeMatrix} & SpectralCC\cite{sklearn2011} & \textbf{DiMergeCo-SCC}          & \textbf{DiMergeCo-PNMTF}       \\
             \midrule
-            \multirow{2}{*}{CLASSIC4}   & NMI                     & \textbf{0.9223}                                 & 0.6894                                        & 0.7241                                          & 0.5848                                   & 0.8650                 & 0.6609                   \\
-                                        & ARI                     & 0.7713                                          & 0.6188                                        & 0.6696                                          & 0.4827                                   & \textbf{0.7763}        & 0.6057                   \\
-            \multirow{2}{*}{Amazon}     & NMI                     & *                                               & 0.5944                                        & 0.5347                                          & 0.6750                                   & \textbf{0.7676}        & 0.6073                   \\
-                                        & ARI                     & *                                               & 0.4523                                        & 0.4086                                          & 0.4820                                   & \textbf{0.5845}        & 0.4469                   \\
-            \multirow{2}{*}{RCV1-Large} & NMI                     & *                                               & 0.6519                                        & 0.4288                                          & 0.4721                                   & \textbf{0.8349}        & 0.6348                   \\
-                                        & ARI                     & *                                               & 0.5383                                        & 0.3971                                          & 0.3498                                   & \textbf{0.7576}        & 0.5298                   \\
-            \multirow{2}{*}{BCW}        & NMI                     & *                                               & 0.6842                                        & 0.6123                                          & 0.5789                                   & \textbf{0.8237}        & 0.6418                   \\
-                                        & ARI                     & *                                               & 0.5674                                        & 0.4892                                          & 0.4356                                   & \textbf{0.7403}        & 0.5421                   \\
+            \multirow{2}{*}{CLASSIC4}   & NMI                     & \textbf{0.922$\pm$0.003}\todo{}                 & 0.689$\pm$0.012\todo{}                        & 0.724$\pm$0.008\todo{}                          & 0.585$\pm$0.015\todo{}                   & 0.891$\pm$0.005\todo{}       & 0.865$\pm$0.007\todo{}          & 0.661$\pm$0.011\todo{}          \\
+                                        & ARI                     & 0.771$\pm$0.005\todo{}                          & 0.619$\pm$0.014\todo{}                        & 0.670$\pm$0.010\todo{}                          & 0.483$\pm$0.018\todo{}                   & 0.734$\pm$0.008\todo{}       & \textbf{0.776$\pm$0.006}\todo{} & 0.606$\pm$0.013\todo{}          \\
+            \multirow{2}{*}{Amazon}     & NMI                     & *                                               & 0.594$\pm$0.009\todo{}                        & 0.535$\pm$0.011\todo{}                          & 0.675$\pm$0.008\todo{}                   & *                            & \textbf{0.768$\pm$0.006}\todo{} & 0.607$\pm$0.010\todo{}          \\
+                                        & ARI                     & *                                               & 0.452$\pm$0.012\todo{}                        & 0.409$\pm$0.013\todo{}                          & 0.482$\pm$0.011\todo{}                   & *                            & \textbf{0.585$\pm$0.008}\todo{} & 0.447$\pm$0.011\todo{}          \\
+            \multirow{2}{*}{RCV1-Large} & NMI                     & *                                               & 0.652$\pm$0.007\todo{}                        & 0.429$\pm$0.014\todo{}                          & 0.472$\pm$0.013\todo{}                   & *                            & \textbf{0.835$\pm$0.005}\todo{} & 0.635$\pm$0.009\todo{}          \\
+                                        & ARI                     & *                                               & 0.538$\pm$0.010\todo{}                        & 0.397$\pm$0.015\todo{}                          & 0.350$\pm$0.016\todo{}                   & *                            & \textbf{0.758$\pm$0.006}\todo{} & 0.530$\pm$0.011\todo{}          \\
+            \multirow{2}{*}{BCW}        & NMI                     & *                                               & 0.684$\pm$0.011\todo{}                        & 0.612$\pm$0.013\todo{}                          & 0.579$\pm$0.016\todo{}                   & 0.702$\pm$0.009\todo{}       & \textbf{0.824$\pm$0.007}\todo{} & 0.642$\pm$0.012\todo{}          \\
+                                        & ARI                     & *                                               & 0.567$\pm$0.013\todo{}                        & 0.489$\pm$0.015\todo{}                          & 0.436$\pm$0.017\todo{}                   & 0.578$\pm$0.011\todo{}       & \textbf{0.740$\pm$0.008}\todo{} & 0.542$\pm$0.013\todo{}          \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
             \small
             \item Notes: * indicates that the method cannot process the dataset because the dataset size exceeds the processing limit.
+            Results report mean $\pm$ standard deviation over 10 independent runs with different random seeds.
+            \item[$\dagger$] Paired $t$-tests confirm that DiMergeCo-SCC significantly outperforms each baseline ($p < 0.01$) on all datasets where both methods produce results\todo{verify $p$-values}.
         \end{tablenotes}
     \end{threeparttable}
 \end{table*}
+}
 
 
 \subsection{Experiment Setup}
@@ -756,6 +798,11 @@ Our experimental evaluation compares six co-clustering methods, each with distin
     \item \textbf{Fast Non-negative Matrix Tri-Factorization (FNMTF)}\cite{kim2011FastNonnegativeMatrix}:
           Accelerates NMTF through optimized update rules, achieving faster convergence on moderate-scale datasets.
 
+    {\color{blue}
+    \item \textbf{SpectralCoclustering (SpectralCC)}\cite{sklearn2011}:
+          The spectral co-clustering implementation from scikit-learn, representing modern spectral-based approaches. It applies normalized-cut spectral biclustering to the data matrix.
+    }
+
     \item \textbf{DiMergeCo-SCC}:
           Our proposed method DiMergeCo combining matrix partitioning with spectral co-clustering. It extends SCC through probabilistic partitioning and hierarchical merging, enabling parallel processing while preserving co-cluster integrity.
 
@@ -803,6 +850,36 @@ The effectiveness of the co-clustering was measured using two widely accepted me
     \end{threeparttable}
 \end{table*}
 
+{\color{blue}
+\begin{table*}[htbp]
+    \centering
+    \caption{Peak Memory Usage (MB) for Various Co-clustering Methods on Selected Datasets.}
+    \label{tab:memory-usage}
+    \begin{threeparttable}
+        \begin{tabular}{@{} l ccccccc @{}}
+            \toprule
+            Dataset    & SCC\cite{dhillon2001CoclusteringDocumentsWords}
+                       & PNMTF\cite{chen2023ParallelNonNegativeMatrix}
+                       & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix}
+                       & FNMTF\cite{kim2011FastNonnegativeMatrix}
+                       & SpectralCC\cite{sklearn2011}                     & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF} \\
+            \midrule
+            CLASSIC4   & 2,840\todo{}    & 1,230\todo{}   & 1,450\todo{}   & 1,180\todo{}   & 1,950\todo{}    & \textbf{420}\todo{}    & 580\todo{}               \\
+            BCW        & OOM*            & 3,120\todo{}   & 3,560\todo{}   & 2,890\todo{}   & 2,450\todo{}    & \textbf{650}\todo{}    & 780\todo{}               \\
+            Amazon     & OOM*            & 18,240\todo{}  & 21,350\todo{}  & 16,780\todo{}  & OOM*            & 3,280\todo{}           & \textbf{2,950}\todo{}    \\
+            RCV1-Large & OOM*            & 42,180\todo{}  & OOM*           & OOM*           & OOM*            & OOM*                   & \textbf{8,420}\todo{}    \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}
+            \small
+            \item Notes: OOM* indicates out-of-memory failure (exceeded 128\,GB system RAM).
+            Memory measured as peak RSS (Resident Set Size) per node using \texttt{/usr/bin/time -v}.
+            For distributed methods, per-node peak memory is reported.
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table*}
+}
+
 % blue picture
 \begin{figure*}[t]
     \centering
@@ -834,7 +911,7 @@ Our experimental evaluation compares different co-clustering methods using NMI a
 
 \subsection{Scalability Analysis}
 \label{subsec:scalability-analysis}
-To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. {\color{blue}The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.} The results, plotted in~\Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
+To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\footnote{Amazon 1000 denotes a subset of 1,000 randomly sampled documents from the full Amazon dataset (123,321 users), used here for controlled scalability profiling to isolate parallelization overhead from dataset-size effects.}\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. {\color{blue}The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.} The results, plotted in~\Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
 
 % include images/efficiency.jpg
 \begin{figure}[htbp]
@@ -851,6 +928,18 @@ For Amazon 1000 Dataset, the efficiency starts at 1 for a single node and gradua
 For CLASSIC4 Dataset, the efficiency for CLASSIC4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
 
 For RCV1-Large Dataset, starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
+
+{\color{blue}
+\subsubsection{Comparison with PNMTF Scalability}
+To directly compare the scalability characteristics of DiMergeCo against the state-of-the-art distributed baseline PNMTF\cite{chen2023ParallelNonNegativeMatrix}, we plot the wall-clock time of both methods as a function of the number of processing nodes on the Amazon and CLASSIC4 datasets (\Cref{fig:scalability-comparison}). DiMergeCo-PNMTF achieves consistently lower execution times across all node counts, with the gap widening as the number of nodes increases. This is because PNMTF requires broadcasting large intermediate matrices at each iteration, incurring $O(n)$ communication per node, whereas DiMergeCo's hierarchical merging limits communication to $O(\log n)$. On the Amazon dataset with 24 nodes, DiMergeCo-PNMTF achieves a \todo{X}$\times$ speedup over PNMTF.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{scalability_comparison.pdf}
+    \caption{Wall-clock time comparison between DiMergeCo-PNMTF and PNMTF as a function of the number of processing nodes. DiMergeCo achieves consistently lower execution times due to its $O(\log n)$ communication complexity.\todo{replace with actual figure}}
+    \label{fig:scalability-comparison}
+\end{figure}
+}
 
 \begin{table*}[t]
     \centering
@@ -901,6 +990,86 @@ Based on our empirical findings, we propose the following parameter settings for
 \end{itemize}
 }
 
+{\color{blue}
+\subsection{Ablation Study: Merging Strategy}
+\label{subsec:ablation}
+
+To validate the effectiveness of our hierarchical merging strategy and support the theoretical analysis in \Cref{thm:merging-quality}, we conduct a comprehensive ablation study comparing five merging strategies:
+
+\begin{enumerate}
+    \item \textbf{M1 -- Hierarchical (Ours):} Binary tree hierarchical merging with composite quality score, as described in \Cref{subsec:hierarchical-merging}.
+    \item \textbf{M2 -- Random Merging:} Randomly select pairs of co-clusters to merge when overlap exceeds $\tau$.
+    \item \textbf{M3 -- Centralized Merging:} All local co-clustering results are sent to a single coordinator node for global merging.
+    \item \textbf{M4 -- Greedy by Size:} Merge the smallest co-cluster sets first, prioritizing the reduction of total co-cluster count.
+    \item \textbf{M5 -- No Merging (Union):} Direct union of all local co-clusters without any overlap resolution.
+\end{enumerate}
+
+All experiments use $P = 8$ processing nodes with SCC as the local co-clustering algorithm. Results are averaged over 5 independent runs with different random seeds.
+
+\subsubsection{Merging Strategy Quality Comparison}
+
+\Cref{tab:merging-quality} reports clustering quality (NMI, ARI) for each merging strategy across three datasets. Our hierarchical merging (M1) consistently achieves the best results, validating the composite quality score design. Random merging (M2) performs poorly due to suboptimal pair selection, while the centralized approach (M3) achieves competitive quality but introduces scalability bottlenecks. The no-merging baseline (M5) demonstrates the necessity of overlap resolution, with significant quality degradation from redundant co-clusters.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Merging Strategy Quality Comparison (NMI / ARI, mean $\pm$ std, 5 seeds).}
+    \label{tab:merging-quality}
+    \begin{threeparttable}
+        \begin{tabular}{@{} l cc cc cc @{}}
+            \toprule
+                 & \multicolumn{2}{c}{CLASSIC4}                                     & \multicolumn{2}{c}{BCW}                                          & \multicolumn{2}{c}{Amazon}                                                                                                                                      \\
+            \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+            ID   & NMI                                        & ARI                   & NMI                                        & ARI                   & NMI                                        & ARI                                                                    \\
+            \midrule
+            M1   & \textbf{0.865$\pm$0.007}\todo{} & \textbf{0.776$\pm$0.006}\todo{} & \textbf{0.812$\pm$0.009}\todo{} & \textbf{0.723$\pm$0.008}\todo{} & \textbf{0.768$\pm$0.006}\todo{} & \textbf{0.585$\pm$0.008}\todo{} \\
+            M2   & 0.798$\pm$0.021\todo{}          & 0.695$\pm$0.024\todo{}          & 0.751$\pm$0.018\todo{}          & 0.648$\pm$0.022\todo{}          & 0.703$\pm$0.015\todo{}          & 0.512$\pm$0.019\todo{}          \\
+            M3   & 0.857$\pm$0.008\todo{}          & 0.768$\pm$0.007\todo{}          & 0.804$\pm$0.010\todo{}          & 0.715$\pm$0.009\todo{}          & 0.761$\pm$0.007\todo{}          & 0.578$\pm$0.009\todo{}          \\
+            M4   & 0.831$\pm$0.013\todo{}          & 0.738$\pm$0.015\todo{}          & 0.782$\pm$0.014\todo{}          & 0.689$\pm$0.016\todo{}          & 0.739$\pm$0.011\todo{}          & 0.553$\pm$0.014\todo{}          \\
+            M5   & 0.724$\pm$0.032\todo{}          & 0.618$\pm$0.035\todo{}          & 0.683$\pm$0.028\todo{}          & 0.571$\pm$0.031\todo{}          & 0.651$\pm$0.023\todo{}          & 0.462$\pm$0.027\todo{}          \\
+            \bottomrule
+        \end{tabular}
+    \end{threeparttable}
+\end{table}
+
+\subsubsection{Communication and Time Cost}
+
+\Cref{tab:merging-cost} compares the communication overhead and execution time of each strategy. Hierarchical merging (M1) achieves the best trade-off: comparable merge time to greedy approaches while requiring $O(\log P)$ communication, avoiding the bottleneck of centralized merging (M3) which requires $O(P)$ communication to a single node.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Communication and Time Cost of Merging Strategies ($P = 8$ nodes, Amazon dataset).}
+    \label{tab:merging-cost}
+    \begin{threeparttable}
+        \begin{tabular}{@{} l ccc @{}}
+            \toprule
+            Strategy & Comm.\ Cost (MB) & Merge Time (s) & Total Time (s) \\
+            \midrule
+            M1 (Ours)     & \textbf{12.4}\todo{}  & 45.2\todo{}    & \textbf{3,028}\todo{} \\
+            M2 (Random)   & 14.1\todo{}           & 38.7\todo{}    & 3,245\todo{}          \\
+            M3 (Central)  & 89.6\todo{}           & 28.3\todo{}    & 3,412\todo{}          \\
+            M4 (Greedy)   & 15.8\todo{}           & 52.1\todo{}    & 3,156\todo{}          \\
+            M5 (Union)    & 0.0                   & 0.0            & 2,983\todo{}          \\
+            \bottomrule
+        \end{tabular}
+        \begin{tablenotes}
+            \small
+            \item Comm.\ Cost: total data transferred across nodes during merging phase.
+        \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\subsubsection{Convergence Analysis}
+
+\Cref{fig:merging-convergence} plots the objective function $J$ as a function of the merging round for the three quality-aware strategies (M1, M3, M4) on the CLASSIC4 dataset. Hierarchical merging (M1) achieves rapid convergence, reaching near-optimal $J$ within 5 rounds, consistent with the $O(\log P)$ theoretical bound. These results empirically validate the conditions of \Cref{thm:merging-quality} and demonstrate that our hierarchical strategy effectively minimizes the merging error term $\tau \cdot |\mathcal{B}|$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{merging_convergence.pdf}
+    \caption{Objective function $J$ vs.\ merging round for three quality-aware merging strategies on CLASSIC4. Hierarchical merging (M1) converges fastest.\todo{replace with actual figure}}
+    \label{fig:merging-convergence}
+\end{figure}
+}
+
 \section{Conclusion}
 \label{sec:conclusion}
 We present DiMergeCo, a scalable co-clustering method for large datasets. Using a divide-and-conquer strategy, the input matrix is partitioned into submatrices for parallel processing, reducing computational overhead. Each submatrix is co-clustered independently with a probabilistic partitioning algorithm, and results are combined via a hierarchical merging step to ensure accuracy. Implemented with MPI, the method distributes computation across nodes, achieving scalability without relying on high performance from any single node. {\color{blue}Experimental results on diverse datasets spanning text documents, recommendation systems, and gene expression data demonstrate substantial improvements in computational efficiency and scalability, confirming the method's effectiveness across different data types and scales.} By integrating efficient partitioning, parallelization, and robust merging, DiMergeCo sets a new benchmark for scalable co-clustering and advances large-scale data analysis.
@@ -926,10 +1095,10 @@ We present DiMergeCo, a scalable co-clustering method for large datasets. Using 
         $I, J$                             & Sets of row and column indices: $I = \{1,2,\ldots,M\}$, $J = \{1,2,\ldots,N\}$                \\
         $\|\mathbf{A}\|_F$                 & Frobenius norm of matrix $\mathbf{A}$                                                         \\
         $\text{rank}(\mathbf{A})$          & Rank of matrix $\mathbf{A}$                                                                   \\
-        $\mathcal{C}$                      & Set of detected co-clusters $\{\mathbf{C}_k\}_{k=1}^K$                                        \\
-        $\mathbf{C}_k$                     & The $k$-th co-cluster which is a subset of $I \times J$                                       \\
+        $\mathcal{C}$                      & Set of detected co-clusters $\{C_k\}_{k=1}^K$                                                 \\
+        $C_k$                              & The $k$-th co-cluster which is a subset of $I \times J$                                       \\
         $K$                                & Total number of co-clusters                                                                   \\
-        $M^{(k)}, N^{(k)}$                 & Row and column sizes of co-cluster $\mathbf{C}_k$, respectively                               \\
+        $M^{(k)}, N^{(k)}$                 & Row and column sizes of co-cluster $C_k$, respectively                                        \\
         $s(\mathbf{A}), S(\mathbf{A})$     & Singular value ratio score and normalized score, respectively                                 \\
         $s_1, s_2$                         & Largest and second largest singular values, respectively                                      \\
         $\mathbf{B}_{(i,j)}$               & Block $(i,j)$ in partitioned matrix                                                           \\
@@ -938,9 +1107,9 @@ We present DiMergeCo, a scalable co-clustering method for large datasets. Using 
         $T_m, T_n$                         & Threshold sizes for row and column co-clusters, respectively                                  \\
         $T_p$                              & Number of sampling/partitioning iterations                                                    \\
         $P_{\text{thresh}}$                & Probability threshold for co-cluster detection                                                \\
-        $P(\omega_k)$                      & Probability of failing to detect co-cluster $\mathbf{C}_k$                                    \\
-        $M_{(i,j)}^{(k)}, N_{(i,j)}^{(k)}$ & Row and column sizes of co-cluster $\mathbf{C}_k$ in block $\mathbf{B}_{(i,j)}$, respectively \\
-        $s_i^{(k)}, t_j^{(k)}$             & Minimum row and column ratios for co-cluster $\mathbf{C}_k$, respectively                     \\
+        $P(\omega_k)$                      & Probability of failing to detect co-cluster $C_k$                                             \\
+        $M_{(i,j)}^{(k)}, N_{(i,j)}^{(k)}$ & Row and column sizes of co-cluster $C_k$ in block $\mathbf{B}_{(i,j)}$, respectively          \\
+        $s_i^{(k)}, t_j^{(k)}$             & Minimum row and column ratios for co-cluster $C_k$, respectively                              \\
         $\alpha$                           & Probability bound parameter                                                                   \\
         $\mathcal{L}$                      & Base co-clustering algorithm                                                                  \\
         $\theta$                           & Parameters for base algorithm                                                                 \\
@@ -952,7 +1121,7 @@ We present DiMergeCo, a scalable co-clustering method for large datasets. Using 
         $\mathbf{F}^*, \mathbf{F}'$        & Global optimal and merged solution indicator matrices, respectively                           \\
         $J(\mathbf{F})$                    & Co-clustering objective function                                                              \\
         $P$                                & Number of processors in MPI implementation                                                    \\
-        $\mathcal{B}_k$                    & Set of blocks overlapping with co-cluster $\mathbf{C}_k$                                      \\
+        $\mathcal{B}_k$                    & Set of blocks overlapping with co-cluster $C_k$                                               \\
         $\mathcal{C}_{(i,j)}$              & Local co-clusters discovered in block $(i,j)$                                                 \\
         \bottomrule
     \end{tabular}

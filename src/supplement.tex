@@ -237,4 +237,63 @@ We now present selected technical proofs referenced in the main text and earlier
     This inequality ensures that by selecting appropriate values for \(m, n, \phi_i, \psi_j,\) and \(T_p\), the probability \(P\) of detecting co-cluster \(C_k\) meets or exceeds a desired threshold \(P_{\text{thresh}}\).
 \end{IEEEproof}
 
+\subsection{Proof of Conditional Merging Quality Bound}
+\label{subsec:proof_merging_quality}
+
+\begin{theorem}[Conditional Merging Quality Bound, restated]
+    Let $\{\mathcal{C}^{(p)}\}_{p=1}^{P}$ be $P$ local co-clustering results,
+    $\mathcal{C}^*$ the global optimum, and $\mathcal{C}_{\mathrm{merge}}$ the hierarchical
+    merging output. Under the conditions:
+    \begin{enumerate}
+        \item Partition overlap: $\mathrm{overlap}(C_i^{(p)}, C_j^{(q)}) \leq \tau$ for $p \neq q$;
+        \item Local optimality: $J^{(p)}(\mathcal{C}^{(p)}) \leq J^{(p)}(\mathcal{C}^*|_{\mathbf{A}^{(p)}}) + \epsilon$ for each partition $p$;
+    \end{enumerate}
+    then:
+    \begin{equation}
+        J(\mathcal{C}_{\mathrm{merge}}) \leq J(\mathcal{C}^*) + P\epsilon + \tau \cdot |\mathcal{B}|
+    \end{equation}
+    where $|\mathcal{B}|$ is the number of cross-partition boundary elements.
+\end{theorem}
+
+\begin{IEEEproof}
+    We decompose the total objective into contributions from within-partition elements and cross-partition boundary elements.
+
+    \textbf{Step 1: Decomposition.}
+    Let $\mathcal{I} = \{(i,j) : (i,j) \text{ lies entirely within some partition } p\}$ denote the set of interior elements and $\mathcal{B} = \{(i,j) : (i,j) \text{ straddles partition boundaries}\}$ the boundary set, with $|\mathcal{B}|$ denoting its cardinality. The total objective decomposes as:
+    \begin{equation}
+        J(\mathcal{C}_{\mathrm{merge}}) = J_{\mathcal{I}}(\mathcal{C}_{\mathrm{merge}}) + J_{\mathcal{B}}(\mathcal{C}_{\mathrm{merge}})
+    \end{equation}
+
+    \textbf{Step 2: Interior elements bound.}
+    For interior elements, the merging algorithm preserves local co-cluster assignments. By the additivity of the objective over partitions and Condition~2 (local $\epsilon$-suboptimality):
+    \begin{equation}
+    \begin{aligned}
+        J_{\mathcal{I}}(\mathcal{C}_{\mathrm{merge}}) &= \sum_{p=1}^{P} J^{(p)}(\mathcal{C}^{(p)}) \\
+        &\leq \sum_{p=1}^{P} \left[ J^{(p)}(\mathcal{C}^*|_{\mathbf{A}^{(p)}}) + \epsilon \right] \\
+        &= \sum_{p=1}^{P} J^{(p)}(\mathcal{C}^*|_{\mathbf{A}^{(p)}}) + P\epsilon \\
+        &\leq J_{\mathcal{I}}(\mathcal{C}^*) + P\epsilon
+    \end{aligned}
+    \end{equation}
+    The last inequality follows from the same argument as in Theorem~5 (Global Solution Quality): the restriction of the global optimum to each partition is a feasible (but not necessarily optimal) local solution.
+
+    \textbf{Step 3: Boundary elements bound.}
+    For boundary elements, the merging algorithm assigns each element $(i,j) \in \mathcal{B}$ to a co-cluster based on overlap between local co-clusters from adjacent partitions. By Condition~1, the overlap between any two co-clusters from different partitions is at most $\tau$. For each boundary element, the worst-case assignment error is bounded by the overlap threshold $\tau$, since co-clusters sharing more than $\tau$ fraction of indices are merged (correctly resolving the boundary), while those sharing less are kept separate (with bounded error). This gives:
+    \begin{equation}
+        J_{\mathcal{B}}(\mathcal{C}_{\mathrm{merge}}) \leq J_{\mathcal{B}}(\mathcal{C}^*) + \tau \cdot |\mathcal{B}|
+    \end{equation}
+
+    \textbf{Step 4: Combining.}
+    Summing the interior and boundary contributions:
+    \begin{equation}
+    \begin{aligned}
+        J(\mathcal{C}_{\mathrm{merge}}) &= J_{\mathcal{I}}(\mathcal{C}_{\mathrm{merge}}) + J_{\mathcal{B}}(\mathcal{C}_{\mathrm{merge}}) \\
+        &\leq \left[ J_{\mathcal{I}}(\mathcal{C}^*) + P\epsilon \right] + \left[ J_{\mathcal{B}}(\mathcal{C}^*) + \tau \cdot |\mathcal{B}| \right] \\
+        &= J(\mathcal{C}^*) + P\epsilon + \tau \cdot |\mathcal{B}|
+    \end{aligned}
+    \end{equation}
+
+    \textbf{Connection to probabilistic partitioning.}
+    The probabilistic partitioning algorithm (Theorem~4) is designed to minimize $|\mathcal{B}|$ by ensuring that co-clusters are preserved within partitions with high probability. As the detection probability $P \to 1$, fewer co-clusters straddle boundaries, and $|\mathcal{B}| \to 0$, tightening the bound. This establishes the claimed result.
+\end{IEEEproof}
+
 \end{document}

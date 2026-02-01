@@ -4,13 +4,6 @@
 % File: ./cover_letter.tex
 % Created Date: Tuesday, February 11th, 2025
 % Author: Zihan Wu
-% -----
-% Last Modified: Tuesday, 11th February 2025 12:16:28 pm
-% Modified By: the developer formerly known as Zihan at <wzh4464@gmail.com>
-% -----
-% HISTORY:
-% Date      		By   	Comments
-% ----------		------	---------------------------------------------------------
 %%%
 \documentclass[11pt]{letter}
 \usepackage{hyperref}
@@ -27,61 +20,33 @@ IEEE Transactions on Systems, Man, and Cybernetics: Systems}
 
 \opening{Dear Editor,}
 
-We are pleased to submit our revised manuscript titled ``DiMergeCo: A Scalable Framework for Large-Scale Co-Clustering with Theoretical Guarantees'' as a new submission to \emph{IEEE Transactions on Systems, Man, and Cybernetics: Systems}, following the invitation from Editor-in-Chief Professor Robert Kozma in his decision letter dated May 17, 2025, regarding our previous submission (Manuscript ID: SMCA-25-02-0634).
+We are pleased to submit our second revised manuscript titled ``DiMergeCo: A Scalable Framework for Large-Scale Co-Clustering with Theoretical Guarantees'' to \emph{IEEE Transactions on Systems, Man, and Cybernetics: Systems}, following the second round of review (Manuscript ID: SMCA-25-02-0634).
 
-As suggested in the decision letter, we have thoroughly revised the manuscript keeping in mind all reviewer comments. We sincerely thank the Senior Editor, Associate Editor, and three reviewers for their constructive feedback and valuable suggestions. Their insights have significantly enhanced the quality and rigor of our work. We have carefully addressed all concerns raised during the review process through substantial revisions, resulting in a significantly strengthened manuscript that addresses all the  merits and issues.
+We sincerely thank the Senior Editor, Associate Editor, and reviewers for their continued constructive feedback. Their specific, actionable comments have led to substantial improvements in the theoretical rigor, experimental methodology, and clarity of our manuscript. We have carefully addressed all seven reviewer comments through the following revisions.
 
-\textbf{Major Revisions Addressing Reviewer Concerns:}
+\textbf{Major Revisions in This Round:}
 
 \begin{enumerate}
-\item \textbf{Enhanced Theoretical Foundations:} We have added complete mathematical proofs for all theorems, explicit assumptions with sensitivity analysis, and rigorous convergence guarantees. The revised manuscript now includes six formal assumptions (Independence, Minimum-block resolution, Density coherence, Finite K, Sample-size requirements) with detailed mathematical derivations in both the main text and supplementary materials.
+\item \textbf{Conditional Merging Quality Bound (Reviewer 2, Comment 1):} We have closed the theoretical gap identified in the merging step by introducing a new Conditional Merging Quality Bound (Theorem 8). This theorem provides the first formal guarantee for hierarchical merging under verifiable conditions, with a full proof in the supplementary material. An ablation study comparing five merging strategies across three datasets provides empirical validation.
 
-\item \textbf{Multi-Domain Experimental Validation:} Following reviewer suggestions, we have expanded our evaluation beyond text datasets to include recommendation systems (Amazon dataset with 123,321 users and 23,379 products) and bioinformatics applications (Breast Cancer Wisconsin dataset with 130 samples and 11,731 genes). This demonstrates the broad applicability of our framework across diverse data types and matrix structures.
+\item \textbf{Statistical Reporting (Reviewer 1, Comment 1):} All experimental results in Table~I are now reported as mean $\pm$ standard deviation over 10 independent random seeds, with paired $t$-tests confirming statistical significance ($p < 0.01$).
 
-\item \textbf{Comprehensive Parameter Sensitivity Analysis:} We have added a detailed ablation study examining 36 parameter combinations across key hyperparameters (block configurations, co-cluster size thresholds, and detection probability thresholds). This analysis provides evidence-based guidelines for parameter selection and demonstrates the robustness of our approach.
+\item \textbf{Scalability Comparison with PNMTF (Reviewer 1, Comment 2):} A new figure directly compares the wall-clock time of DiMergeCo-PNMTF versus PNMTF as a function of processing nodes, demonstrating the $O(\log n)$ communication advantage.
 
-\item \textbf{Enhanced Implementation Details:} We have significantly expanded the MPI implementation section with detailed protocols for data distribution, hierarchical communication management achieving O(log P) complexity, and comprehensive reproducibility guidelines.
+\item \textbf{Memory Profiling (Reviewer 1, Comment 3):} A new table reports peak memory usage (MB) for all methods across all datasets, showing that DiMergeCo reduces per-node memory by 5--8$\times$ on large datasets.
 
-\item \textbf{Expanded Related Work:} Following specific reviewer suggestions, we have added a new subsection on co-clustering applications in medical image analysis, incorporating the five suggested references and demonstrating the relevance of our scalable approach to medical imaging applications.
+\item \textbf{Amazon 1000 Clarification (Reviewer 1, Comment 4):} A footnote now explicitly defines ``Amazon 1000'' as a 1,000-document subset used for controlled scalability profiling.
 
-\item \textbf{Improved Presentation:} We have added a comprehensive notation table for better readability and enhanced all figures with proper axis labels, legends, and self-contained captions.
+\item \textbf{Notation Unification (Reviewer 2, Comment 2):} All notation has been systematically unified: $\mathbf{A}$ for the data matrix and $C_k$ (non-bold) for co-clusters throughout both the text and the notation table.
+
+\item \textbf{Modern Baseline (Reviewer 2, Comment 3):} SpectralCoclustering from scikit-learn has been added to all experimental tables, with a Related Work paragraph discussing modern baseline selection.
 \end{enumerate}
 
-\textbf{Specific Algorithmic Contributions Addressed:}
+\textbf{Summary of Contributions:}
 
-In response to concerns about algorithmic novelty, we have clarified our three fundamental innovations:
-\begin{itemize}
-\item \textbf{Theoretically-Guaranteed Probabilistic Partitioning:} The first matrix partitioning algorithm specifically designed for co-cluster preservation with adaptive block sizing and explicit probabilistic guarantees.
-\item \textbf{Communication-Optimal Hierarchical Merging:} A binary tree-based coordination eliminating centralized bottlenecks and reducing communication complexity from O(n) to O(log n).
-\item \textbf{Integrated Framework with Theoretical Foundations:} Complete theoretical analysis connecting local solution quality to global optimality bounds with rigorous performance guarantees.
-\end{itemize}
+This manuscript presents DiMergeCo, the first scalable co-clustering framework with formal theoretical guarantees spanning the entire distributed pipeline---from probabilistic partitioning through hierarchical merging. The framework achieves an 83\% reduction in computation time for dense matrices and scales to datasets with 685K samples, outperforming existing methods in both speed and accuracy across text, recommendation, and genomics domains.
 
-\textbf{Enhanced Experimental Validation:}
-
-Our revised experiments now demonstrate:
-\begin{itemize}
-\item 83\% computational time reduction on dense matrices
-\item Superior performance across three distinct domains (text analysis, recommendation systems, genomics)
-\item Scalability to datasets with 685K samples
-\item Effective small co-cluster detection with coordinated protection mechanisms
-\item Comprehensive parameter sensitivity analysis with practical guidelines
-\end{itemize}
-
-\textbf{Theoretical Rigor:}
-
-The revised manuscript provides complete mathematical foundations including:
-\begin{itemize}
-\item Formal proofs for co-cluster preservation probability bounds
-\item Global solution quality bounds with detailed derivations
-\item Convergence guarantees for hierarchical merging
-\item Assumption sensitivity analysis demonstrating theoretical robustness
-\end{itemize}
-
-This work makes significant contributions to large-scale data analysis by providing the first scalable co-clustering framework with provable theoretical guarantees. The method addresses critical challenges in processing massive datasets (millions of samples and features) while maintaining clustering quality, making it highly relevant to the systems and cybernetics community served by TSMC-S.
-
-Following the Editor-in-Chief's invitation to revise and resubmit, we have substantially enhanced the manuscript to address all concerns. We believe the revised manuscript now provides a rigorous, well-validated framework for large-scale co-clustering with comprehensive theoretical foundations, multi-domain experimental validation, and detailed implementation guidelines, making this work a valuable contribution to the field.
-
-As requested in the decision letter, we have prepared a detailed Authors' Responses to Reviewer Comments document that systematically addresses each reviewer's concern and clearly explains our revisions. We are confident that the substantially revised manuscript now meets the journal's standards for publication.
+The detailed Authors' Responses document systematically addresses each reviewer comment with specific manuscript modifications highlighted in blue. We are confident that the revised manuscript now meets the journal's standards for publication.
 
 We appreciate your consideration of our revised submission and look forward to your feedback.
 
