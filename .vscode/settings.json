@@ -7,7 +7,6 @@
     // pick first recipe
     "latex-workshop.latex.recipe.default": "first",
     "latex-workshop.view.autoFocus.enabled": true,
-    // pdf recipe
     // no auto save
     "files.autoSave": "off",
     // latex build on save
@@ -21,19 +20,9 @@
             ]
         },
         {
-            "name": "pdf-biber-pdf-pdf",
+            "name": "latexmk-cd",
             "tools": [
-                "pdflatex",
-                "biber",
-                "pdflatex",
-                "pdflatex"
-            ]
-        },
-        {
-            "name": "pdf-pdflatex",
-            "tools": [
-                "pdflatex",
-                "pdflatex"
+                "latexmk-cd"
             ]
         }
     ],
@@ -47,21 +36,15 @@
             ]
         },
         {
-            "name": "biber",
-            "command": "biber",
+            "name": "latexmk-cd",
+            "command": "latexmk",
             "args": [
-                "%DOCFILE%"
-            ]
-        },
-        {
-            "name": "pdflatex",
-            "command": "pdflatex",
-            "args": [
-                "-synctex=1",
+                "-cd",
+                "-pdf",
                 "-interaction=nonstopmode",
                 "-file-line-error",
-                "-shell-escape",
-                "%DOCFILE%"
+                "-outdir=../build/%DOCFILE%",
+                "%DOC%"
             ]
         }
     ],
@@ -72,4 +55,6 @@
         "subsection|RC",
         "subsubsection"
     ],
+    // Search for PDFs in build directory
+    "latex-workshop.latex.outDir": "%DIR%/../build/%DOCFILE%"
 }

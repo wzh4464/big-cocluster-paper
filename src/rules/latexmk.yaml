@@ -1,0 +1,28 @@
+!config
+identifier: latexmk
+name: latexmk
+authors:
+  - Zihan Wu
+commands:
+  - name: latexmk
+    command: >
+      @{
+        return getCommand('latexmk', '-pdf', '-interaction=nonstopmode',
+               '-file-line-error', options, file);
+      }
+arguments:
+  - identifier: options
+    flag: >
+      @{
+        if (isList(parameters.options)) {
+          return parameters.options;
+        } else {
+          return [];
+        }
+      }
+  - identifier: file
+    flag: >
+      @{
+        return currentFile.toString();
+      }
+    default: '@{currentFile}'

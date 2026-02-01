@@ -1,7 +1,4 @@
-% arara: pdflatex: { options: ["--synctex=1", "-interaction=nonstopmode"] }
-% arara: biber
-% arara: pdflatex: { options: ['-synctex=1', '-interaction=nonstopmode'] }
-% arara: pdflatex: { options: ['-synctex=1', '-interaction=nonstopmode'] }
+% arara: latexmk: { options: ["-cd", "-outdir=../build/response"] }
 
 
 % Reviewer Response Letter for DiMergeCo Paper
@@ -42,7 +39,7 @@
 %   \addFileDependency{#1.aux}%
 % }
 % \myexternaldocument{root}
-\externaldocument{root}
+\externaldocument{../build/root/root}
 \usepackage{hyperref}
 \usepackage{cleveref}
 \usepackage{longtable}

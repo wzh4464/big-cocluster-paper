@@ -6,4 +6,4 @@ repos:
         entry: /Library/TeX/texbin/latexindent
         language: system
         types: [tex]
-        files: \.tex$ 
+        files: ^src/.*\.tex$

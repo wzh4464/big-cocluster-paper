@@ -1,25 +1,44 @@
-# Name of the main LaTeX file without the extension
-MAIN = root
+# DiMergeCo paper – build system
+# All LaTeX sources live under src/; output goes to build/<target>/
 
-# Detect the operating system
+SRC_DIR   := src
+BUILD_DIR := build
+
+# Detect OS for rm command
 ifeq ($(OS),Windows_NT)
 	RM = del /Q
 else
-	RM = rm -f
+	RM = rm -rf
 endif
 
-# Directories to watch
-TEX_DIRS = sections/
-IMG_DIRS = images/
-BIB_FILES = *.bib
+# ---------- individual targets ----------
 
-# Rule to compile the LaTeX document
-all: $(MAIN).pdf
+.PHONY: all root response supplement cover_letter clean
 
-# Rule to compile the LaTeX document (biber support)
-$(MAIN).pdf: $(MAIN).tex $(foreach dir,$(TEX_DIRS),$(wildcard $(dir)*.tex)) $(foreach dir,$(IMG_DIRS),$(wildcard $(dir)*)) $(BIB_FILES)
-	latexmk -synctex=1 -interaction=nonstopmode -file-line-error -pdf -use-make $(MAIN).tex
-	latexmk -c
+all: root response supplement cover_letter
+
+root:
+	@mkdir -p $(BUILD_DIR)/root
+	cd $(SRC_DIR) && latexmk -cd -pdf -interaction=nonstopmode -file-line-error \
+		-outdir=../$(BUILD_DIR)/root root.tex
+
+# response depends on root (needs root.aux for \externaldocument)
+response: root
+	@mkdir -p $(BUILD_DIR)/response
+	cd $(SRC_DIR) && latexmk -cd -pdf -interaction=nonstopmode -file-line-error \
+		-outdir=../$(BUILD_DIR)/response response.tex
+
+supplement:
+	@mkdir -p $(BUILD_DIR)/supplement
+	cd $(SRC_DIR) && latexmk -cd -pdf -interaction=nonstopmode -file-line-error \
+		-outdir=../$(BUILD_DIR)/supplement supplement.tex
+
+cover_letter:
+	@mkdir -p $(BUILD_DIR)/cover_letter
+	cd $(SRC_DIR) && latexmk -cd -pdf -interaction=nonstopmode -file-line-error \
+		-outdir=../$(BUILD_DIR)/cover_letter cover_letter.tex
+
+# ---------- clean ----------
+
 clean:
-	latexmk -CA
-	$(RM) *.bbl *.run.xml
+	$(RM) $(BUILD_DIR)

@@ -243,5 +243,7 @@ TSWLatexianTemp*
 *.spl
 
 root.pdf
-
 response.pdf
+
+# Build output directory
+build/

@@ -1,7 +1,4 @@
-% arara: pdflatex: { options: ["--synctex=1", "-interaction=nonstopmode"] }
-% arara: biber
-% arara: pdflatex: { options: ['-synctex=1', '-interaction=nonstopmode'] }
-% arara: pdflatex: { options: ['-synctex=1', '-interaction=nonstopmode'] }
+% arara: latexmk: { options: ["-cd", "-outdir=../build/root"] }
 
 \documentclass[journal]{IEEEtran}
 \usepackage{amsmath,amsfonts}

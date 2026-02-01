@@ -4,74 +4,107 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a LaTeX-based academic paper repository for "DiMergeCo", presenting an efficient framework for large-scale matrix co-clustering. The main document is `root.tex` with supporting files including bibliography, images, and supplementary materials.
+This is a LaTeX-based academic paper repository for "DiMergeCo", presenting an efficient framework for large-scale matrix co-clustering. Source files live in `src/`, build output goes to `build/`.
+
+## Repository Structure
+
+```
+.
+├── src/                          # All LaTeX source files
+│   ├── root.tex                  # Main paper
+│   ├── response.tex              # Reviewer response
+│   ├── supplement.tex            # Supplementary material
+│   ├── cover_letter.tex          # Cover letter
+│   ├── references.bib            # Bibliography
+│   ├── ar2rc.cls                 # Custom class for response
+│   ├── ieeeconf.cls              # IEEE conf class
+│   ├── sn-mathphys.bst           # BST style
+│   ├── .latexmkrc                # latexmk config
+│   ├── arararc.yaml              # arara config (for CWD=src/)
+│   ├── rules/                    # Custom arara rules
+│   │   └── latexmk.yaml
+│   └── images/                   # All figures
+│       └── *.png, *.pdf
+├── build/                        # Build output (gitignored)
+│   ├── root/
+│   ├── response/
+│   ├── supplement/
+│   └── cover_letter/
+├── docs/                         # Notes and documentation
+│   ├── abstract.md
+│   ├── Parameter Sensitivity.md
+│   ├── cover_letter_and_diff.md
+│   ├── Diff_statement.md
+│   └── comments.docx
+├── scripts/                      # Utility scripts
+│   └── update_bib_subdoi.py
+├── arararc.yaml                  # arara config (project root)
+├── Makefile
+├── .gitignore
+├── .pre-commit-config.yaml
+├── .github/workflows/
+├── README.md, CLAUDE.md, License.txt
+```
 
 ## Build System
 
 ### Primary Build Commands
 
-- **Build main document**: `make` or `make all` - Compiles `root.tex` to PDF using latexmk with biber for bibliography
-- **Clean build artifacts**: `make clean` - Removes all intermediate LaTeX files
-- **Full clean**: `latexmk -CA` - Complete cleanup including PDFs
+- **Build everything**: `make` or `make all` - Builds all documents in correct order
+- **Build individual documents**:
+  - `make root` - Compiles main paper to `build/root/root.pdf`
+  - `make response` - Compiles reviewer response (depends on root) to `build/response/response.pdf`
+  - `make supplement` - Compiles supplement to `build/supplement/supplement.pdf`
+  - `make cover_letter` - Compiles cover letter to `build/cover_letter/cover_letter.pdf`
+- **Clean build artifacts**: `make clean` - Removes the entire `build/` directory
 
-### Alternative Compilation Methods
+### Using arara (from project root)
 
-1. **Using arara (recommended)**: `arara root.tex` - Uses arara directives in the document header
-2. **Manual compilation**:
-   ```bash
-   pdflatex --synctex=1 root.tex
-   biber root
-   pdflatex --synctex=1 root.tex
-   pdflatex --synctex=1 root.tex
-   ```
+```bash
+arara -v src/root.tex          # -> build/root/root.pdf
+arara -v src/response.tex      # -> build/response/response.pdf (build root first!)
+arara -v src/supplement.tex    # -> build/supplement/supplement.pdf
+arara -v src/cover_letter.tex  # -> build/cover_letter/cover_letter.pdf
+```
 
 ### Build Configuration
 
-- **Main LaTeX file**: `root.tex`
-- **Bibliography system**: Uses biber (not bibtex) as configured in `.latexmkrc`
-- **Watched directories**: `sections/` (though this directory doesn't currently exist), `images/`
-- **Bibliography files**: `*.bib` (primarily `references.bib`)
+- **Source directory**: `src/`
+- **Build output**: `build/<target>/`
+- **Bibliography system**: Uses biber (not bibtex) as configured in `src/.latexmkrc`
+- **Build engine**: latexmk with `-cd` flag (changes to source directory before compiling)
+- **Build order**: `response.tex` depends on `root.tex` (uses `\externaldocument`)
 
-## Repository Structure
+## Document Class and Style
 
-### Core Files
-- `root.tex` - Main LaTeX document with all content inline
-- `references.bib` - Bibliography database
-- `supplement.tex` - Supplementary material document
-- `response.tex` - Response to reviewers document
-- `cover_letter.tex` - Cover letter for journal submission
-
-### Document Class and Style
-- Uses IEEE Transactions journal format (`IEEEtran` class)
-- Includes comprehensive LaTeX packages for algorithms, mathematics, graphics, and citations
+- Main paper uses IEEE Transactions journal format (`IEEEtran` class)
+- Response letter uses custom `ar2rc` class
 - Configured for hyperlinks, cross-references, and theorem environments
 
-### Development Tools
-- **Pre-commit hooks**: Configured to run `latexindent` on all `.tex` files for formatting
-- **Git integration**: Repository is version controlled with GitHub Actions for LaTeX builds
-- **IDE configuration**: `.vscode/` directory contains VS Code settings
+## Development Tools
 
-### Generated Files
-The build process creates various intermediate files:
-- `.aux`, `.bbl`, `.bcf`, `.log`, `.out`, `.synctex.gz` - LaTeX compilation artifacts
-- `root.pdf` - Final compiled document
+- **Pre-commit hooks**: Configured to run `latexindent` on `src/*.tex` files for formatting
+- **Git integration**: Repository is version controlled with GitHub Actions for LaTeX builds
+- **IDE configuration**: `.vscode/` directory contains VS Code / LaTeX Workshop settings
 
 ## Development Workflow
 
-1. Edit LaTeX source files directly (content is primarily in `root.tex`)
-2. Use `make` to build and test changes
-3. Pre-commit hooks will automatically format `.tex` files with `latexindent`
-4. Clean intermediate files with `make clean` when needed
+1. Edit LaTeX source files in `src/`
+2. Use `make` to build (or `make root` for just the main paper)
+3. PDFs appear in `build/<target>/`
+4. Pre-commit hooks automatically format `.tex` files with `latexindent`
+5. Clean build output with `make clean`
 
 ## Bibliography Management
 
-- Bibliography entries are stored in `references.bib`
-- Uses biblatex with biber backend (configured in `.latexmkrc`)
-- Python script `update_bib_subdoi.py` available for bibliography maintenance
+- Bibliography entries are stored in `src/references.bib`
+- Uses biblatex with biber backend (configured in `src/.latexmkrc`)
+- Python script `scripts/update_bib_subdoi.py` available for bibliography maintenance
 
 ## Requirements
 
 - TeX Live 2021 or higher
 - BibLaTeX + Biber
 - IEEE Transactions LaTeX template
+- arara (optional, for directive-based builds)
 - `latexindent` for code formatting (used by pre-commit hooks)

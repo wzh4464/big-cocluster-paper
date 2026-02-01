@@ -1,4 +1,4 @@
 !config
 paths:
-  - src/rules
+  - rules
 loops: 3

@@ -9,9 +9,13 @@ jobs:
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: root.tex
+          root_file: src/root.tex
+          work_in_root_file_dir: true
+          latexmk_use_lualatex: false
+          extra_system_packages: biber
+          args: -cd -pdf -interaction=nonstopmode -file-line-error -outdir=../build/root
       - name: Upload PDF file
         uses: actions/upload-artifact@v4
         with:
           name: PDF
-          path: root.pdf
+          path: build/root/root.pdf

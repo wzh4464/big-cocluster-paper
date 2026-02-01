@@ -12,10 +12,14 @@ jobs:
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
-          root_file: root.tex
+          root_file: src/root.tex
+          work_in_root_file_dir: true
+          latexmk_use_lualatex: false
+          extra_system_packages: biber
+          args: -cd -pdf -interaction=nonstopmode -file-line-error -outdir=../build/root
       - name: Release PDF
         uses: softprops/action-gh-release@v1
         with:
-          files: root.pdf
+          files: build/root/root.pdf
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
