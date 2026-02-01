@@ -720,17 +720,17 @@ We revised \Cref{subsec:large-matrix-partitioning} to include the following proo
   \end{theorem*}
   \begin{proof}
     The global objective function for a set of disjoint co-clusters is additive over the partitions. Therefore, the objective value for the combined local solutions $\mathcal{C}_{union}$ is the sum of the local objective values:
-    \begin{equation}
+    \begin{equation}\label{eq:proof_qual1}
       J(\mathcal{C}_{union}) = \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)})
     \end{equation}
     By the assumption of $\epsilon_{(i,j)}$-suboptimality for each local solution:
-    \begin{equation}
+    \begin{equation}\label{eq:proof_qual2}
       \sum_{i,j} J_{(i,j)}(\mathcal{C}_{(i,j)}) \le \sum_{i,j} \left( J_{(i,j)}(\mathcal{C}_{(i,j)}^*) + \epsilon_{(i,j)} \right)
     \end{equation}
     where $\mathcal{C}_{(i,j)}^*$ is the optimal solution for block $(i,j)$.
 
     Now, consider the globally optimal solution $\mathcal{C}^*$. Its restriction to block $(i,j)$, denoted $\mathcal{C}^*|_{(i,j)}$, is a valid (but not necessarily optimal) co-clustering for that block. Therefore, the optimal local objective $J_{(i,j)}(\mathcal{C}_{(i,j)}^*)$ must be less than or equal to the objective for this restricted global solution:
-    \begin{equation}
+    \begin{equation}\label{eq:proof_qual4}
       J_{(i,j)}(\mathcal{C}_{(i,j)}^*) \le J_{(i,j)}(\mathcal{C}^*|_{(i,j)})
     \end{equation}
     Summing over all blocks, we have:
