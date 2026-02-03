@@ -225,6 +225,11 @@ class DiMergeCo:
         print(f"    DiMergeCo: {n_coclusters} local co-clusters from "
               f"{self.t_p} iters x {self.m_blocks}x{self.n_blocks} blocks x {self.k} clusters")
 
+        if n_coclusters == 0:
+            print("    [warn] no co-clusters produced, returning all-zeros labels")
+            elapsed = time.time() - t0
+            return np.zeros(n_rows, dtype=int), elapsed
+
         # Build membership matrix: n_rows x n_coclusters (sparse for memory)
         rows_list, cols_list = [], []
         for c, indices in enumerate(all_coclusters):
@@ -295,11 +300,6 @@ def atom_spectralcc(X_sub, k, seed=0):
     from scipy.sparse import csr_matrix
 
     X_sp = csr_matrix(X_sub) if not sparse.issparse(X_sub) else csr_matrix(X_sub)
-
-    # Remove all-zero columns to avoid NaN in SVD normalization
-    col_nnz = np.diff(X_sp.indptr) if X_sp.format == 'csc' else np.asarray(X_sp.sum(axis=0)).ravel()
-    if hasattr(col_nnz, 'A1'):
-        col_nnz = col_nnz.A1
 
     model = SpectralCoclustering(n_clusters=k, random_state=seed,
                                  svd_method='arpack')
