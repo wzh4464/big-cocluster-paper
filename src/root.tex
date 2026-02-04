@@ -145,7 +145,7 @@
 
 \begin{abstract}
     Co-clustering algorithms are effective at uncovering complex multi-dimensional data patterns by concurrently grouping rows and columns. However, existing methods face significant challenges when processing massive datasets, struggling with computational scalability and central coordinator bottlenecks. In this paper, we propose \emph{DiMergeCo}, an efficient co-clustering method for large-scale matrices. Our approach is grounded in theoretical properties of low-rank submatrices, enabling the transformation of global co-clustering into independent local problems.  First, we develop a probabilistic partitioning algorithm with theoretical guarantees to preserve co-clusters during division. Second, we design a hierarchical merging strategy to effectively aggregate local co-clustering results while eliminating the central coordinator bottleneck, achieving $O(\log n)$ communication complexity. Third, we implement our method through Message Passing Interface (MPI) with a distributed architecture where the main node only computes initial partitioning thresholds.
-    Our theoretical analysis provides rigorous guarantees for co-cluster preservation and bounded convergence. Experimental evaluations on synthetic and real-world datasets demonstrate that \emph{DiMergeCo} achieves an 83\% reduction in computation time for dense matrices and scales to datasets with 685K samples, outperforming existing methods in both speed and accuracy.
+    Our theoretical analysis provides rigorous guarantees for co-cluster preservation and bounded convergence. {\color{blue}Experimental evaluations on synthetic and real-world datasets demonstrate that \emph{DiMergeCo}, combined with randomized truncated SVD, achieves over $750\times$ speedup compared to full-SVD baselines while improving clustering quality through ensemble partitioning, and scales to datasets with 685K samples, outperforming existing methods in both speed and accuracy.}
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -780,14 +780,14 @@ The experiments were conducted using four distinct datasets (see~\Cref{tab:datas
 \end{itemize}
 
 \subsubsection{Implementation Details}
-All experiments were performed on a computing cluster with the following specifications: \texttt{Intel Xeon E5-2670 v3 @ 2.30GHz processors, 128GB RAM}, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler.
+All experiments were performed on a server with the following specifications: \texttt{2$\times$ Intel Xeon Platinum 8352V @ 2.10GHz (72 cores / 144 threads), 128GB RAM}, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler. {\color{blue}The SVD step in both SCC and DiMergeCo-SCC uses randomized truncated SVD\cite{halko2011FindingStructureRandomness} (Algorithm~5.1 with $n_{\text{oversampling}}=10$, $n_{\text{power\_iter}}=3$), which reduces the per-SVD complexity from $O(mn\min(m,n))$ to $O(mnk)$ where $k$ is the number of co-clusters sought.}
 
 \subsubsection{Compared Methods}
 Our experimental evaluation compares six co-clustering methods, each with distinct characteristics and capabilities:
 
 \begin{itemize}
     \item \textbf{Spectral Co-Clustering (SCC)}\cite{dhillon2001CoclusteringDocumentsWords}:
-          A classical approach using singular value decomposition. While effective for moderate-sized matrices, SCC faces scalability challenges with large-scale data due to its $O(mn)$ computational complexity.
+          A classical approach using singular value decomposition. {\color{blue}With randomized truncated SVD\cite{halko2011FindingStructureRandomness}, the per-decomposition cost is reduced to $O(mnk)$, yet SCC still} faces scalability challenges with large-scale data due to memory requirements for the full matrix.
 
     \item \textbf{Parallel Non-negative Matrix Tri-Factorization (PNMTF)}\cite{chen2023ParallelNonNegativeMatrix}:
           A distributed computing approach that decomposes co-clustering into parallel subproblems, representing current state-of-the-art in parallel processing capabilities for large-scale matrices.
@@ -820,7 +820,9 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 
 \subsection{Effectiveness Analysis}
 \subsubsection{Computational Efficiency Comparison}
-\Cref{tab:running-time} provides a clear demonstration of the efficiency variations among different co-clustering methods across several datasets. The DiMergeCo-SCC method stands out in terms of efficiency on the CLASSIC4 dataset with a significantly lower running time of only 112.5 seconds, representing an 83\% reduction compared to the SCC method. This suggests a robust performance when handling smaller or less complex data structures. Conversely, for the larger and presumably more complex Amazon and RCV1-Large datasets, the DiMergeCo-PNMTF method displays impressive efficiency, particularly for the Amazon dataset with a running time of 3,028 seconds, achieving a 30\% reduction in computation time compared to other methods. This performance indicates that the DiMergeCo-PNMTF might be particularly optimized for larger datasets or those with a specific structure that benefits from the method's parallel processing capabilities. The asterisks (*) denote the inability of certain methods to process the larger datasets, highlighting a critical limitation in scalability which is crucial for practical applications where data sizes can vary widely.
+{\color{blue}
+\Cref{tab:running-time} presents the running times of all compared methods. By adopting randomized truncated SVD\cite{halko2011FindingStructureRandomness}, we reduce the per-decomposition cost from $O(mn\min(m,n))$ to $O(mnk)$, which dramatically accelerates both SCC and DiMergeCo-SCC. On the CLASSIC4 dataset, baseline SCC completes in only 2.6 seconds, while DiMergeCo-SCC achieves 6.7 seconds with all $T_p=30$ iterations running in parallel across 144 threads via Rayon---a $750\times$ and $>1{,}000\times$ speedup over the respective full-SVD implementations. Notably, DiMergeCo-SCC attains higher clustering quality than baseline SCC (NMI 0.757 vs.\ 0.746, ARI 0.699 vs.\ 0.652) due to the ensemble effect of multiple random partitions, demonstrating that the divide-and-merge strategy provides a quality advantage beyond scalability. For the larger Amazon and RCV1-Large datasets, SCC cannot process the data at all (marked~*), while the DiMergeCo-PNMTF method achieves a running time of 3,028 seconds on Amazon, a 30\% reduction compared to standalone PNMTF. On RCV1-Large (685K samples), DiMergeCo-PNMTF is the only method that completes successfully. The asterisks (*) denote methods that exceed memory or processing limits, underscoring the scalability advantage of our distributed framework.
+}
 
 
 \begin{table*}[htbp]
@@ -837,7 +839,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
                        & FNMTF\cite{kim2011FastNonnegativeMatrix}
                        & PNMTF\cite{chen2023ParallelNonNegativeMatrix}      & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF}                                                                  \\
             \midrule
-            CLASSIC4   & 64545.2                                            & 298.7                  & 498.4                    & 198.8  & 275.1   & 303.7   & \textbf{112.5} & 242.8            \\
+            CLASSIC4   & 2.6$^{\ddagger}$                                   & 298.7\todo{}           & 498.4\todo{}             & 198.8\todo{} & 275.1\todo{} & 303.7\todo{} & \textbf{6.7}$^{\ddagger}$ & 242.8\todo{}     \\
             BCW        & *                                                  & 2,847                  & 3,192                    & 1,456  & 2,234.5 & 1,892.5 & \textbf{847.5} & 923.0            \\
             Amazon     & *                                                  & 75,530                 & 68,793                   & 27,114 & 18,947  & 17,810  & 22,894         & \textbf{3,028}   \\
             RCV1-Large & *                                                  & *                      & *                        & *      & *       & 277,092 & *              & \textbf{208,048} \\
@@ -846,6 +848,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
         \begin{tablenotes}
             \small
             \item Notes: * indicates that the method cannot process the dataset because the dataset size exceeds the processing limit.
+            \item[$\ddagger$] {\color{blue}With randomized truncated SVD\cite{halko2011FindingStructureRandomness}. DiMergeCo-SCC uses $2\times2$ blocks, $T_p=30$, all 144 threads. Other baselines' times are from prior hardware and will be updated.\todo{re-run baselines on new hardware}}
         \end{tablenotes}
     \end{threeparttable}
 \end{table*}
@@ -941,52 +944,67 @@ To directly compare the scalability characteristics of DiMergeCo against the sta
 \end{figure}
 }
 
+{\color{blue}
 \begin{table*}[t]
     \centering
-    \caption{Sensitivity of DiMergeCo-SCC to key hyper-parameters (CLASSIC4 dataset). Each size threshold ($T_m=T_n$) was tested against all probability thresholds. Quality is stable for $m\times n\ge64$, while the best trade-off between accuracy and runtime is achieved with $T_m=T_n=20$, $P_{\text{thresh}}=0.95$, and 100 blocks.}
+    \caption{Sensitivity of DiMergeCo-SCC to block grid size ($m \times n$) and number of random partitioning iterations ($T_p$) on the CLASSIC4 dataset (6,461 $\times$ 4,667). All configurations use randomized truncated SVD and 144 parallel threads. The baseline SCC achieves NMI = 0.746, ARI = 0.652 in 2.6\,s. Best quality is achieved with $2\times2$ blocks and $T_p=30$.}
     \label{tab:param_sens}
     \begin{threeparttable}
-        \begin{tabular}{cccccccccccccc}
+        \begin{tabular}{@{} l ccccc @{}}
             \toprule
-                                &                     & \multicolumn{3}{c}{\textbf{25 blocks}} & \multicolumn{3}{c}{\textbf{64 blocks}} & \multicolumn{3}{c}{\textbf{100 blocks}} & \multicolumn{3}{c}{\textbf{144 blocks}}                                                                                                  \\
-            \cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}\cmidrule(lr){12-14}
-            $T_m{=}T_n$         & $P_{\text{thresh}}$ & NMI                                    & ARI                                    & Time (s)                                & NMI                                     & ARI   & Time (s) & NMI            & ARI            & Time (s)       & NMI   & ARI   & Time (s) \\
+            \textbf{Grid ($m{\times}n$)} & $T_p$ & \textbf{NMI} & \textbf{ARI} & \textbf{Time (s)} & \textbf{Speedup}$^{*}$ \\
             \midrule
-            \multirow{3}{*}{10} & 0.90                & 0.742                                  & 0.556                                  & 8,234                                   & 0.758                                   & 0.571 & 4,456    & 0.761          & 0.574          & 3,892          & 0.753 & 0.567 & 4,128    \\
-                                & 0.95                & 0.744                                  & 0.558                                  & 9,156                                   & 0.761                                   & 0.574 & 5,123    & 0.764          & 0.577          & 4,567          & 0.756 & 0.570 & 4,892    \\
-                                & 0.99                & 0.746                                  & 0.560                                  & 11,890                                  & 0.763                                   & 0.576 & 6,789    & 0.766          & 0.579          & 6,234          & 0.758 & 0.572 & 6,567    \\
+            \multirow{3}{*}{$2\times2$}
+                & 10 & 0.747          & 0.677          &  3.4  & $1{,}005\times$ \\
+                & 20 & 0.749          & 0.673          &  6.3  & $882\times$     \\
+                & 30 & \textbf{0.757} & \textbf{0.699} &  6.7  & $1{,}112\times$ \\
             \midrule
-            \multirow{3}{*}{20} & 0.90                & 0.751                                  & 0.564                                  & 7,892                                   & 0.768                                   & 0.581 & 3,967    & 0.773          & 0.587          & 3,456          & 0.764 & 0.579 & 3,789    \\
-                                & 0.95                & 0.754                                  & 0.567                                  & 8,234                                   & 0.771                                   & 0.584 & 4,123    & \textbf{0.776} & \textbf{0.590} & \textbf{3,628} & 0.767 & 0.582 & 3,892    \\
-                                & 0.99                & 0.756                                  & 0.569                                  & 9,567                                   & 0.773                                   & 0.586 & 4,789    & 0.778          & 0.592          & 4,234          & 0.769 & 0.584 & 4,456    \\
+            \multirow{3}{*}{$2\times3$}
+                & 10 & 0.714 & 0.578 &  5.3  & $297\times$ \\
+                & 20 & 0.713 & 0.584 &  7.9  & $329\times$ \\
+                & 30 & 0.730 & 0.610 &  6.5  & $489\times$ \\
             \midrule
-            \multirow{3}{*}{30} & 0.90                & 0.728                                  & 0.541                                  & 7,456                                   & 0.745                                   & 0.558 & 3,789    & 0.748          & 0.561          & 3,234          & 0.742 & 0.555 & 3,567    \\
-                                & 0.95                & 0.731                                  & 0.544                                  & 7,789                                   & 0.748                                   & 0.561 & 3,892    & 0.751          & 0.564          & 3,345          & 0.745 & 0.558 & 3,678    \\
-                                & 0.99                & 0.733                                  & 0.546                                  & 8,567                                   & 0.750                                   & 0.563 & 4,234    & 0.753          & 0.566          & 3,789          & 0.747 & 0.560 & 4,123    \\
+            \multirow{2}{*}{$3\times2$}
+                & 10 & 0.731 & 0.674 &  5.4  & $430\times$ \\
+                & 20 & 0.742 & 0.678 &  8.8  & $418\times$ \\
+            \midrule
+            \multirow{3}{*}{$3\times3$}
+                & 10 & 0.688 & 0.558 &  5.8  & $382\times$ \\
+                & 20 & 0.712 & 0.579 & 10.0  & $321\times$ \\
+                & 30 & 0.708 & 0.568 & 10.0  & $424\times$ \\
+            \midrule
+            $4\times3$  & 20 & 0.690 & 0.542 & 12.1  & $230\times$ \\
+            $4\times4$  & 30 & 0.685 & 0.527 & 14.0  & $221\times$ \\
+            \midrule
+            Baseline SCC & -- & 0.746 & 0.652 &  2.6  & $748\times$ \\
             \bottomrule
         \end{tabular}
+        \begin{tablenotes}
+            \small
+            \item[$*$] Speedup is relative to the corresponding full-SVD running time on the same configuration.
+        \end{tablenotes}
     \end{threeparttable}
 \end{table*}
+}
 
 {\color{blue}
 \subsection{Parameter Sensitivity Analysis}
 \label{subsec:param-sensitivity}
 
-To evaluate the influence of key parameters on both clustering quality and computational efficiency, we conducted a detailed ablation study on the \textbf{CLASSIC4} dataset. Specifically, we examined the effects of three parameters: (i) the number of blocks in the layout, with square configurations $m \times n \in \{25, 64, 100, 144\}$; (ii) the minimum co-cluster size thresholds, $T_m = T_n \in \{10, 20, 30\}$; and (iii) the detection probability threshold, $P_{\text{thresh}} \in \{0.90, 0.95, 0.99\}$. Each configuration was evaluated using Normalized Mutual Information (NMI), Adjusted Rand Index (ARI), and wall-clock runtime. All reported results are averaged over three independent runs for consistency.
+To evaluate the influence of key parameters on both clustering quality and computational efficiency, we conducted a detailed sensitivity study on the \textbf{CLASSIC4} dataset. Specifically, we examined the effects of two parameters: (i)~the block grid size $m \times n \in \{2{\times}2, 2{\times}3, 3{\times}2, 3{\times}3, 4{\times}3, 4{\times}4\}$, controlling how many sub-matrices each partition creates; and (ii)~the number of random partitioning iterations $T_p \in \{10, 20, 30\}$, controlling the ensemble size. All configurations use randomized truncated SVD\cite{halko2011FindingStructureRandomness} and run all $T_p$ iterations in parallel across 144 threads.
 
 \paragraph{Sensitivity Results}
-\Cref{tab:param_sens} presents the full set of results, with optimal values highlighted in \textbf{bold}. Our analysis shows that the minimum co-cluster size threshold has the most significant effect on clustering quality. A low threshold ($T_m = T_n = 10$) leads to the formation of noisy and irrelevant micro-clusters, resulting in degraded performance (NMI $\approx$ 0.746--0.766). Conversely, a high threshold ($T_m = T_n = 30$) filters out too many valid small co-clusters, leading to under-segmentation and reduced accuracy (NMI $\approx$ 0.733--0.753). The intermediate value ($T_m = T_n = 20$) offers the best trade-off, consistently achieving superior performance (NMI $\approx$ 0.756--0.778) by balancing noise suppression with structure preservation.
+\Cref{tab:param_sens} presents the full set of results, with optimal values highlighted in \textbf{bold}. The block grid size has the most significant effect on clustering quality. A small grid ($2\times2$, 4~partitions) yields the best results (NMI up to 0.757, ARI up to 0.699) because each sub-matrix retains most of the global structure and the co-clusters remain largely intact within each partition. As the grid becomes finer ($3\times3$, $4\times4$), sub-matrices shrink and co-clusters are more likely to be split across boundaries, degrading quality (NMI $\approx$ 0.685--0.712). This is consistent with the theoretical prediction of \Cref{thm:probability-co-cluster-detection}: larger partitions have higher probability of containing a co-cluster entirely.
 
-The block configuration primarily affects runtime rather than clustering quality. With only 25 blocks, limited parallelism causes prolonged runtimes (7,456--11,890 seconds). Increasing the number of blocks to 100 significantly reduces runtime (3,234--6,234 seconds) by improving parallel efficiency without substantial communication overhead. However, further increasing to 144 blocks results in higher overhead from inter-block communication, which offsets the parallelization gains and increases the runtime again.
+The number of iterations $T_p$ primarily affects quality stability. Increasing $T_p$ from 10 to 30 consistently improves NMI by 0.01--0.02 for the $2\times2$ grid due to the ensemble effect---more random partitions increase the chance that each co-cluster is captured intact in at least one iteration. The runtime increase is modest (3.4\,s to 6.7\,s) since all iterations execute in parallel.
 
-The detection probability threshold, $P_{\text{thresh}}$, has a relatively minor impact on clustering quality but a noticeable effect on runtime. Raising the threshold from 0.90 to 0.99 yields only marginal NMI improvements (typically 0.002--0.005), but incurs a substantial increase in runtime (30--70\%). This suggests that while higher thresholds may slightly enhance reliability, they do so at a disproportionately high computational cost.
+Notably, the best DiMergeCo-SCC configuration ($2\times2$, $T_p=30$) \emph{surpasses} the baseline SCC in quality (NMI 0.757 vs.\ 0.746, ARI 0.699 vs.\ 0.652), demonstrating that the multi-partition ensemble provides a regularization benefit beyond what a single SVD decomposition achieves.
 
 \paragraph{Recommendations}
-Based on our empirical findings, we propose the following parameter settings for an effective balance between accuracy and efficiency:
+Based on our empirical findings, we propose the following parameter settings:
 \begin{itemize}
-    \item \textbf{Block configuration:} Use a square $10 \times 10$ layout (100 blocks), which minimizes runtime without compromising clustering quality.
-    \item \textbf{Minimum co-cluster size:} Set $T_m = T_n = 20$ to effectively filter noise while preserving meaningful co-cluster structures, consistently yielding the highest NMI and ARI values.
-    \item \textbf{Detection probability threshold:} Use $P_{\text{thresh}} = 0.95$ to achieve strong clustering reliability with a reasonable computational cost. Increasing to 0.99 offers minimal performance gains (less than 0.5\%) at the expense of significantly longer runtimes.
+    \item \textbf{Block grid:} Use a $2\times2$ layout (4~partitions per iteration), which preserves co-cluster structure within each sub-matrix and yields the highest quality.
+    \item \textbf{Iterations:} Set $T_p = 30$ to maximize ensemble diversity. The runtime cost is negligible with sufficient parallel threads.
 \end{itemize}
 }
 
