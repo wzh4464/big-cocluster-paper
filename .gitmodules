@@ -1,6 +1,0 @@
-[submodule "baselines/NMTFcoclust"]
-	path = baselines/NMTFcoclust
-	url = https://github.com/Saeidhoseinipour/NMTFcoclust.git
-[submodule "baselines/nonnegfac-python"]
-	path = baselines/nonnegfac-python
-	url = https://github.com/kimjingu/nonnegfac-python.git
