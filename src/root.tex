@@ -348,7 +348,7 @@ The primary challenge in co-clustering large matrices is the risk of losing mean
 
 Our probabilistic model serves as the cornerstone of the partitioning algorithm. It assures all co-clusters above a demarcated size threshold are identified with a high probability, guiding the partitioning process to minimize the risk of losing critical co-cluster relationships. The model is based on the following assumptions:
 
-In the scenario where the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the joint probability of $M_{(i,j)}^{(k)}$ and $N_{(i,j)}^{(k)}$ is given by~\Cref{thm:joint-probability}:
+In the scenario where the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each block has size $\phi_i \times \psi_j$, that is, $M=\sum_{i=1}^m \phi_i$ and $N=\sum_{j=1}^n \psi_j$, the hypergeometric tail bounds for row and column hits are given by~\Cref{lem:hyp-tail}:
 \begin{equation}
     \begin{split}
         P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                                                           \\
@@ -624,9 +624,9 @@ and Theorem~\ref{thm:probability-co-cluster-detection}.
 \end{proof}
 }
 
-Building on \Cref{thm:joint-probability}, this theorem provides a robust framework for estimating the probability of successfully detecting all significant co-clusters across multiple partitioning iterations. It enables us to set partitioning parameters that achieve a desired success rate, thereby ensuring that the co-clustering process remains both reliable and efficient.
+Building on \Cref{lem:hyp-tail,lem:block-fail,lem:trial-equivalence}, \Cref{thm:probability-co-cluster-detection} provides a robust framework for estimating the probability of successfully detecting all significant co-clusters across multiple partitioning iterations. It enables us to set partitioning parameters that achieve a desired success rate, thereby ensuring that the co-clustering process remains both reliable and efficient.
 
-These theoretical results form the basis of our partitioning strategy by providing a mathematical foundation for selecting block sizes and determining the number of required partitioning iterations. As guaranteed by \Cref{thm:rank-monotonicity}, this partitioning strategy preserves the essential low-rank structures within the data, while the probabilistic bounds derived from \Cref{thm:probability-co-cluster-detection} ensure that co-clusters are detected with high probability.
+These theoretical results form the basis of our partitioning strategy by providing a mathematical foundation for selecting block sizes and determining the number of required partitioning iterations. The partitioning strategy preserves the essential low-rank structures within the data (supported by \Cref{thm:rank-monotonicity}), while the probabilistic bounds derived from \Cref{thm:probability-co-cluster-detection,cor:uniform} ensure that co-clusters are detected with high probability.
 
 With these theoretical guarantees in place, we now turn to the practical implementation of our partitioning strategy.
 
@@ -651,7 +651,7 @@ where $\epsilon = 0.01$ prevents degenerate blocks, $\phi = \frac{1}{m}\sum \phi
         \ENSURE $\{\phi_i\}, \{\psi_j\}, T_p$
         \STATE Initialize $m \gets \lceil M / T_m \rceil$, $n \gets \lceil N / T_n \rceil$ \COMMENT{Minimum blocks to avoid fragmentation}
         \STATE $\phi_i \gets \lceil M/m \rceil$, $\psi_j \gets \lceil N/n \rceil$ $\forall i,j$ \COMMENT{Uniform initialization}
-        \STATE Compute $s^{(k)}, t^{(k)}$ via~\Cref{thm:joint-probability} for all $C_k$
+        \STATE Compute $s^{(k)}, t^{(k)}$ via~\Cref{lem:hyp-tail} for all $C_k$
         \STATE Calculate $P \gets 1 - \exp\left( -2 T_p \left[ \phi m (s^{(k)})^2 + \psi n (t^{(k)})^2 \right] \right)$
         \WHILE{$P < P_{\text{thresh}}$ \AND $T_p \leq T_{\text{max}}$}
         \FOR{each $C_k$ where $M^{(k)} \geq T_m$ \AND $N^{(k)} \geq T_n$}
@@ -729,6 +729,13 @@ As established in \Cref{subsec:merging-theory}, the merging process optimizes th
     \Delta J(C_a, C_b) \le \lambda,
 \end{equation}
 where $\Delta J(C_a, C_b)$ is computed using \Cref{lem:merge-cost}. This criterion ensures that merging improves (or does not worsen) the trade-off between reconstruction accuracy and model complexity.
+
+\paragraph{Disjointness Convention}
+Throughout the merging analysis, $\Cset$ is assumed to be a partition of matrix entries,
+i.e., each $(i,j)$ belongs to exactly one co-cluster. Overlap-based heuristics (e.g., Jaccard similarity) are used only
+to generate candidate pairs for merging; before evaluating $\Delta J$, overlapping entries are assigned
+to a unique cluster to maintain the partition property. This ensures that the merge cost formula in
+\Cref{lem:merge-cost} and the reconstruction error objective in \eqref{eq:objective-J} remain well-defined.
 
 \paragraph{Implementation via Priority Queue}
 The merging process is implemented using a priority queue that prioritizes candidate merge pairs by their potential gain:
