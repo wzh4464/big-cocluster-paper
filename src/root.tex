@@ -533,25 +533,94 @@ Taking complements yields the stated miss event.
 \end{proof}
 }
 
-\begin{theorem}[Probability of Co-cluster Detection]
-    \label{thm:probability-co-cluster-detection}
-    If the matrix $\mathbf{A}$ is partitioned into $m \times n$ blocks, each with sizes $\phi_i \times \psi_j$, the probability $P$ of detecting all $K$ significant co-clusters over $T_p$ independent partitioning trials satisfies:
-    \begin{equation}
-        \begin{aligned}
-            P & \geq 1 - K \cdot \left(\prod_{i=1}^m \prod_{j=1}^n P_\text{fail}^{(i,j,k)}\right)^{T_p}                             \\
-              & \approx 1 - K \cdot \exp\left( -2 T_p \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
-        \end{aligned}
-    \end{equation}
-    Under the simplifying assumption of uniform block sizes $\phi = M/m, \psi=N/n$, this becomes:
-    \begin{equation}
-        P \geq 1 - K \cdot \exp \left\{ -2 T_p \left[ M (s^{(k)})^2 + N (t^{(k)})^2 \right] \right\}
-        \label{eq:prob-of-identifying-all-co-clusters}
-    \end{equation}
+\begin{assumption}[Negative association across blocks]
+\label{assump:NA}
+The vector $(X_{1,t}^{(k)},\dots,X_{m,t}^{(k)})$ induced by random permutation partitioning
+is negatively associated. Hence for decreasing events $E_i$ depending on $X_{i,t}^{(k)}$,
+\[
+\Pr\Big(\bigcap_{i=1}^m E_i\Big)\le \prod_{i=1}^m \Pr(E_i).
+\]
+The same holds for $(Y_{1,t}^{(k)},\dots,Y_{n,t}^{(k)})$.
+This is a standard property of multivariate hypergeometric distributions.
+\end{assumption}
+
+\begin{theorem}[Single-trial miss bound]
+\label{thm:single-trial-miss}
+Under Assumptions~\ref{assump:perm-partition}--\ref{assump:NA}, for each co-cluster $k$ and trial $t$, define
+\[
+\bar p_{\mathrm{row}}^{(k)} := \exp\!\left(-2\sum_{i=1}^m \phi_i (s_i^{(k)})^2\right),
+\qquad
+\bar p_{\mathrm{col}}^{(k)} := \exp\!\left(-2\sum_{j=1}^n \psi_j (t_j^{(k)})^2\right).
+\]
+Then the probability that co-cluster $k$ is missed in a single trial satisfies
+\begin{equation}
+\Pr(F_{k,t})
+\le \bar p_{\mathrm{row}}^{(k)} + \bar p_{\mathrm{col}}^{(k)}.
+\label{eq:single-trial-miss}
+\end{equation}
 \end{theorem}
 
 {\color{blue}
 \begin{proof}
-    The proof uses independence assumptions across multiple partitioning trials and applies the union bound over all co-clusters. See \Cref{appendix:proofs} in the appendix for the detailed proof.
+By Lemma~\ref{lem:trial-equivalence}, the miss event is
+$F_{k,t} = \{\forall i: X_{i,t}^{(k)}<T_m\} \cup \{\forall j: Y_{j,t}^{(k)}<T_n\}$.
+Using the union bound and Assumption~\ref{assump:NA} on the row and column events separately,
+we obtain \eqref{eq:single-trial-miss}.
+See \Cref{appendix:proof-single-trial-miss} in the appendix for the detailed derivation.
+\end{proof}
+}
+
+\begin{theorem}[Probability of detecting all co-clusters over $T_p$ trials]
+\label{thm:probability-co-cluster-detection}
+Assume trials are independent (Assumption~\ref{assump:trial-indep}).
+For each co-cluster $k$, let $q_k := \Pr(F_{k,t})$ be the single-trial miss probability
+(which is trial-invariant by identical distribution).
+Then the probability of detecting all $K$ co-clusters in at least one of the $T_p$ trials satisfies
+\begin{equation}
+p_{\mathrm{det}}(\text{all}) \ge 1 - \sum_{k=1}^K q_k^{T_p}
+\ge 1 - K\cdot q_{\max}^{T_p},
+\qquad q_{\max}:=\max_{k\in[K]} q_k.
+\label{eq:detect-all-general}
+\end{equation}
+Equivalently, letting $\gamma_k := -\log q_k$ and $\gamma_{\min}:=\min_k \gamma_k$,
+\begin{equation}
+p_{\mathrm{det}}(\text{all}) \ge 1 - K \exp(-\gamma_{\min} T_p).
+\label{eq:detect-all-exp}
+\end{equation}
+Moreover, plugging Theorem~\ref{thm:single-trial-miss} yields
+$q_k \le \bar p_{\mathrm{row}}^{(k)} + \bar p_{\mathrm{col}}^{(k)}$,
+providing explicit computable bounds.
+\end{theorem}
+
+{\color{blue}
+\begin{proof}
+For each $k$, by trial independence,
+$\Pr(\text{miss }k\text{ in all }T_p\text{ trials}) = q_k^{T_p}$.
+Applying the union bound over all $K$ co-clusters gives \eqref{eq:detect-all-general}.
+The exponential form \eqref{eq:detect-all-exp} follows by writing $q_{\max}^{T_p} = \exp(-\gamma_{\min} T_p)$.
+See \Cref{appendix:proof-detect-all} in the appendix for the complete proof.
+\end{proof}
+}
+
+\begin{corollary}[Uniform block sizes]
+\label{cor:uniform}
+Under uniform block sizes $\phi=M/m$, $\psi=N/n$, Theorem~\ref{thm:single-trial-miss} gives
+\[
+q_k \le \exp(-2M(s^{(k)})^2) + \exp(-2N(t^{(k)})^2),
+\]
+where $s^{(k)}$ and $t^{(k)}$ are the row and column gap parameters (averaged over blocks).
+Thus Theorem~\ref{thm:probability-co-cluster-detection} yields
+\begin{equation}
+p_{\mathrm{det}}(\text{all}) \ge 1 - K\left[\exp(-2M(s^{(k)})^2)+\exp(-2N(t^{(k)})^2)\right]^{T_p}.
+\label{eq:prob-of-identifying-all-co-clusters}
+\end{equation}
+\end{corollary}
+
+{\color{blue}
+\begin{proof}
+When blocks are uniform, $\sum_i \phi_i (s_i^{(k)})^2 = m \phi (s^{(k)})^2 = M(s^{(k)})^2$,
+and similarly for columns. The bound follows immediately from Theorem~\ref{thm:single-trial-miss}
+and Theorem~\ref{thm:probability-co-cluster-detection}.
 \end{proof}
 }
 
