@@ -671,7 +671,7 @@ where $\epsilon = 0.01$ prevents degenerate blocks, $\phi = \frac{1}{m}\sum \phi
     \label{alg:partitioning}
 \end{algorithm}
 
-To solve this optimization problem efficiently, we propose an adaptive matrix partitioning algorithm that iteratively refines the partition parameters. Algorithm \ref{alg:partitioning} begins with an initialization phase where we initialize the minimum number of blocks ($m,n$) required to prevent co-cluster fragmentation below size $T_m \times T_n$ (Line 1). Uniform block sizes are set as $\lceil M/m \rceil \times \lceil N/n \rceil$ (Line 2). Detectability parameters $s^{(k)}, t^{(k)}$ are computed for each co-cluster using~\Cref{thm:joint-probability} (Line 3), and the initial detection probability $P$ is calculated (Line 4).
+To solve this optimization problem efficiently, we propose an adaptive matrix partitioning algorithm that iteratively refines the partition parameters. Algorithm \ref{alg:partitioning} begins with an initialization phase where we initialize the minimum number of blocks ($m,n$) required to prevent co-cluster fragmentation below size $T_m \times T_n$ (Line 1). Uniform block sizes are set as $\lceil M/m \rceil \times \lceil N/n \rceil$ (Line 2). Detectability parameters $s^{(k)}, t^{(k)}$ are computed for each co-cluster using~\Cref{lem:hyp-tail} (Line 3), and the initial detection probability $P$ is calculated (Line 4).
     {\color{blue}For each co-cluster $C_k$ exceeding the minimum size threshold, the algorithm identifies overlapping blocks and expands their dimensions proportionally to reduce fragmentation risk. This targeted adjustment ensures structural integrity while preserving computational scalability (Lines 6--10).}
 
 During the main optimization phase, the core loop iteratively adjusts block sizes to meet the success probability threshold $P_{\text{thresh}}$. For each co-cluster $C_k$ exceeding size $T_m \times T_n$, overlapping blocks $\mathcal{B}_k$ are identified (Line 7), and their dimensions are expanded proportionally to $C_k$'s size relative to the full matrix (Lines 8--9).
@@ -1388,9 +1388,16 @@ We present DiMergeCo, a scalable co-clustering method for large datasets. Using 
         $T_m, T_n$                         & Threshold sizes for row and column co-clusters, respectively                                  \\
         $T_p$                              & Number of sampling/partitioning iterations                                                    \\
         $P_{\text{thresh}}$                & Probability threshold for co-cluster detection                                                \\
-        $P(\omega_k)$                      & Probability of failing to detect co-cluster $C_k$                                             \\
+        $I_i^{(t)}, J_j^{(t)}$             & Row and column blocks in trial $t$ with sizes $\phi_i$ and $\psi_j$, respectively             \\
+        $R_k, C_k^{\mathrm{col}}$          & Row and column index sets for co-cluster $C_k$, respectively                                  \\
+        $X_{i,t}^{(k)}, Y_{j,t}^{(k)}$     & Row/column hit counts: $|R_k \cap I_i^{(t)}|$ and $|C_k^{\mathrm{col}} \cap J_j^{(t)}|$      \\
         $M_{(i,j)}^{(k)}, N_{(i,j)}^{(k)}$ & Row and column sizes of co-cluster $C_k$ in block $\mathbf{B}_{(i,j)}$, respectively          \\
-        $s_i^{(k)}, t_j^{(k)}$             & Minimum row and column ratios for co-cluster $C_k$, respectively                              \\
+        $s_i^{(k)}, t_j^{(k)}$             & Row/column gap parameters with positive part for Hoeffding bound                              \\
+        $F_{k,t}$                          & Miss event for co-cluster $k$ in trial $t$                                                    \\
+        $q_k, q_{\max}$                    & Single-trial miss probability for co-cluster $k$ and maximum over all co-clusters             \\
+        $\bar p_{\mathrm{row}}^{(k)}, \bar p_{\mathrm{col}}^{(k)}$ & Row/column failure probability products over blocks                           \\
+        $\gamma_k, \gamma_{\min}$          & Decay rates: $\gamma_k = -\log q_k$, $\gamma_{\min} = \min_k \gamma_k$                        \\
+        $p_{\mathrm{det}}(\text{all})$     & Probability of detecting all $K$ co-clusters over $T_p$ trials                                \\
         $\alpha$                           & Probability bound parameter                                                                   \\
         $\mathcal{L}$                      & Base co-clustering algorithm                                                                  \\
         $\theta$                           & Parameters for base algorithm                                                                 \\
@@ -1418,70 +1425,120 @@ We present DiMergeCo, a scalable co-clustering method for large datasets. Using 
 \section{Detailed Proofs}
 \label{appendix:proofs}
 
-\subsection{Proof of Joint Probability Theorem}
-\label{appendix:proof-joint-probability}
+\subsection{Proof of Hypergeometric Lower-Tail Bound}
+\label{appendix:proof-hyp-tail}
 
-\begin{proof}[Proof of \Cref{thm:joint-probability}]
-    Let $M_{(i,j)}^{(k)}$ be the number of rows of co-cluster $C_k$ that fall into the $i$-th row partition of size $\phi_i$. Under the random partitioning model (\Cref{assumption:random-partitioning}), this count follows a hypergeometric or multinomial distribution (depending on the sampling procedure). The expected number of rows is $E[M_{(i,j)}^{(k)}] = M^{(k)} \phi_i / M$.
+\begin{proof}[Proof of \Cref{lem:hyp-tail}]
+We prove \eqref{eq:row-tail}; the proof of \eqref{eq:col-tail} is identical.
 
-    For concentration bounds, we note that hypergeometric random variables exhibit negative correlation, which makes them ``more concentrated'' than independent Bernoulli variables. Consequently, concentration inequalities like Hoeffding's or Serfling's inequality provide valid (and often conservative) bounds. We apply a Hoeffding-type bound for sampling without replacement:
-    \begin{equation}
-        \begin{aligned}
-            P(M_{(i,j)}^{(k)} & < T_m) = P\left(\frac{M_{(i,j)}^{(k)}}{M^{(k)}} < \frac{T_m}{M^{(k)}}\right)              \\
-                              & \le \exp\left(-2 M^{(k)2} \left(\frac{\phi_i}{M} - \frac{T_m-1}{M^{(k)}}\right)^2 \right)
-        \end{aligned}
-    \end{equation}
-    For simplicity in the main text, we use a slightly different formulation. Let $M_{(i,j)}^{(k)}$ be the sum of $\phi_i$ indicator variables (one for each row in the block), where the probability of a row being in $C_k$ is $M^{(k)}/M$. The expected value is $E[M_{(i,j)}^{(k)}] = \phi_i M^{(k)}/M$. The event of failure is $M_{(i,j)}^{(k)} < T_m$. By Hoeffding's inequality:
-    \begin{equation}
-        P(M_{(i,j)}^{(k)} < T_m) = P(\phi_i \frac{M^{(k)}}{M} - M_{(i,j)}^{(k)} > \phi_i \frac{M^{(k)}}{M} - T_m
-    \end{equation}
-    A symmetric argument holds for the columns:
-    \begin{equation}
-        P(N_{(i,j)}^{(k)} < T_n) \le \exp(-2 \psi_j (t_j^{(k)})^2)
-    \end{equation}
-    By \Cref{assumption:independence}, the row and column partitioning events are independent. Therefore, the joint probability is the product of the individual probabilities:
-    \begin{equation}
-        \begin{aligned}
-            P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                      \\
-                              & = P(M_{(i,j)}^{(k)} < T_m) \cdot P(N_{(i,j)}^{(k)} < T_n)          \\
-                              & = \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
-        \end{aligned}
-    \end{equation}
-    which yields the stated bound by multiplying the exponential terms.
+Let the population values be $Z_1,\dots,Z_M\in\{0,1\}$ where
+$Z_r=1$ if and only if $r\in R_k$. Then $\frac{1}{M}\sum_{r=1}^M Z_r = \frac{M^{(k)}}{M}$.
+In trial $t$, the row block $I_i^{(t)}$ is a uniformly random subset of $[M]$
+of size $\phi_i$ (obtained by random permutation and cutting, per Assumption~\ref{assump:perm-partition}), hence
+\[
+X_{i,t}^{(k)}=\sum_{r\in I_i^{(t)}} Z_r
+\]
+is a sum of $\phi_i$ samples \emph{without replacement} from a bounded population.
+
+A standard Hoeffding--Serfling inequality for sampling without replacement states that for any
+$\varepsilon>0$,
+\[
+\Pr\!\left(\frac{1}{\phi_i}\sum_{r\in I_i^{(t)}} Z_r
+\le \frac{1}{M}\sum_{r=1}^M Z_r - \varepsilon \right)
+\le \exp(-2\phi_i\varepsilon^2).
+\]
+This bound holds because sampling without replacement exhibits \emph{negative correlation},
+making the tail lighter than the corresponding with-replacement (Bernoulli) case.
+
+Set $\varepsilon = s_i^{(k)} = \left(\frac{M^{(k)}}{M}-\frac{T_m-1}{\phi_i}\right)_+$.
+Note that:
+\begin{itemize}[leftmargin=*]
+    \item If $\mu_i^{(k)} = \phi_i \cdot \frac{M^{(k)}}{M} \le T_m-1$, then $s_i^{(k)}=0$ and
+    the bound $\exp(-2\phi_i(s_i^{(k)})^2)=1$ is trivial (but valid).
+    \item If $\mu_i^{(k)} > T_m-1$, then $s_i^{(k)}>0$ and we have a non-trivial exponential bound.
+\end{itemize}
+In either case, we obtain
+\[
+\Pr(X_{i,t}^{(k)}\le T_m-1)
+=\Pr\!\left(\frac{X_{i,t}^{(k)}}{\phi_i}\le \frac{T_m-1}{\phi_i}\right)
+\le \exp\!\left(-2\phi_i (s_i^{(k)})^2\right),
+\]
+which proves \eqref{eq:row-tail}.
 \end{proof}
 
-\subsection{Proof of Co-Cluster Detection Probability Theorem}
-\label{appendix:proof-co-cluster-detection}
+\subsection{Proof of Single-Trial Miss Bound}
+\label{appendix:proof-single-trial-miss}
+
+\begin{proof}[Proof of \Cref{thm:single-trial-miss}]
+By Lemma~\ref{lem:trial-equivalence}, the miss event in a single trial is
+\[
+F_{k,t} = \Big(\bigcap_{i=1}^m \{X_{i,t}^{(k)}<T_m\}\Big)\ \cup\
+\Big(\bigcap_{j=1}^n \{Y_{j,t}^{(k)}<T_n\}\Big).
+\]
+Using the union bound,
+\[
+\Pr(F_{k,t})\le
+\Pr\Big(\bigcap_i \{X_{i,t}^{(k)}<T_m\}\Big)+
+\Pr\Big(\bigcap_j \{Y_{j,t}^{(k)}<T_n\}\Big).
+\]
+
+For the first term, under Assumption~\ref{assump:NA} (negative association), and since $\{X_{i,t}^{(k)}<T_m\}$ are decreasing events,
+\[
+\Pr\Big(\bigcap_{i=1}^m \{X_{i,t}^{(k)}<T_m\}\Big)
+\le \prod_{i=1}^m \Pr(X_{i,t}^{(k)}<T_m).
+\]
+By Lemma~\ref{lem:hyp-tail}, each term satisfies
+$\Pr(X_{i,t}^{(k)}<T_m) \le \exp(-2\phi_i(s_i^{(k)})^2)$,
+hence
+\[
+\Pr\Big(\bigcap_i \{X_{i,t}^{(k)}<T_m\}\Big)
+\le \prod_{i=1}^m \exp\!\left(-2\phi_i (s_i^{(k)})^2\right)
+= \exp\!\left(-2\sum_{i=1}^m \phi_i (s_i^{(k)})^2\right)
+= \bar p_{\mathrm{row}}^{(k)}.
+\]
+
+Similarly for the column term,
+\[
+\Pr\Big(\bigcap_j \{Y_{j,t}^{(k)}<T_n\}\Big)
+\le \bar p_{\mathrm{col}}^{(k)}.
+\]
+
+Combining gives \eqref{eq:single-trial-miss}.
+\end{proof}
+
+\subsection{Proof of Detecting All Co-Clusters Over $T_p$ Trials}
+\label{appendix:proof-detect-all}
 
 \begin{proof}[Proof of \Cref{thm:probability-co-cluster-detection}]
-    Let $\mathcal{F}_{k,t}$ be the event that co-cluster $C_k$ is missed in partition trial $t$. A co-cluster is missed if it is not detected in \textbf{any} of the $m \times n$ blocks. Detection in a block $(i,j)$ fails if $M_{(i,j)}^{(k)} < T_m$ \emph{or} $N_{(i,j)}^{(k)} < T_n$. To obtain a tractable upper bound, we use the stricter (hence more probable) event where \emph{both} dimensions are below the threshold simultaneously: $M_{(i,j)}^{(k)} < T_m$ \emph{and} $N_{(i,j)}^{(k)} < T_n$. This gives us a conservative bound. The event $\mathcal{F}_{k,t}$ occurs if this holds for all blocks: $\mathcal{F}_{k,t} \supseteq \bigcap_{i=1}^m \bigcap_{j=1}^n \{M_{(i,j)}^{(k)} < T_m \text{ and } N_{(i,j)}^{(k)} < T_n\}$.
+For a fixed co-cluster $k$, define the event $A_{k,t}:=\{\text{co-cluster }k\text{ is missed in trial }t\}=F_{k,t}$.
+Then $\Pr(A_{k,t})=q_k$, where $q_k$ is the single-trial miss probability (trial-invariant by identical distribution).
 
-    Assuming independence of row/column placement across different block boundaries, the probability of this event is:
-    \begin{equation}
-        \begin{aligned}
-            P(\mathcal{F}_{k,t}) & \le \prod_{i=1}^m \prod_{j=1}^n \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right] \\
-                                 & = \exp\left( -2 \sum_{i,j} \left[ (s_i^{(k)})^2 \phi_i + (t_j^{(k)})^2 \psi_j \right] \right)
-        \end{aligned}
-    \end{equation}
-    Let the exponent term be $\gamma_k$. Then $P(\mathcal{F}_{k,t}) \le \exp(-\gamma_k)$. Since each of the $T_p$ partitioning trials is independent, the probability of missing co-cluster $C_k$ in all $T_p$ trials is:
-    \begin{equation}
-        \begin{aligned}
-            P(\text{miss } C_k \text{ in all } & T_p \text{ trials}) = (P(\mathcal{F}_{k,t}))^{T_p} \\
-                                               & \le (\exp(-\gamma_k))^{T_p} = \exp(-\gamma_k T_p)
-        \end{aligned}
-    \end{equation}
-    The probability of missing at least one of the $K$ co-clusters is found using the union bound (\Cref{assumption:finite-co-cluster-set}):
-    \begin{equation}
-        \begin{aligned}
-            P( & \text{miss any co-cluster}) = P\left(\bigcup_{k=1}^K \{\text{miss } C_k\}\right) \\
-               & \le \sum_{k=1}^K P(\text{miss } C_k) \le \sum_{k=1}^K \exp(-\gamma_k T_p)
-        \end{aligned}
-    \end{equation}
-    Assuming a minimum $\gamma = \min_k \gamma_k$, this is bounded by $K \exp(-\gamma T_p)$. The probability of success (detecting all co-clusters) is therefore:
-    \begin{equation}
-        P = 1 - P(\text{miss any co-cluster}) \ge 1 - K \exp(-\gamma T_p)
-    \end{equation}
-    Under the simplifying assumption of uniform block sizes $\phi=M/m, \psi=N/n$, and nearly constant $s_i^{(k)} \approx s^{(k)}, t_j^{(k)} \approx t^{(k)}$, the sum becomes $\sum_{i,j} \approx mn \left( (s^{(k)})^2 \phi + (t^{(k)})^2 \psi \right) = M (s^{(k)})^2 + N (t^{(k)})^2$, yielding the simplified bound in \Cref{eq:prob-of-identifying-all-co-clusters}.
+By trial independence (Assumption~\ref{assump:trial-indep}),
+\[
+\Pr(\text{miss }k\text{ in all }T_p\text{ trials})
+=\Pr\Big(\bigcap_{t=1}^{T_p} A_{k,t}\Big)=\prod_{t=1}^{T_p}\Pr(A_{k,t})=q_k^{T_p}.
+\]
+
+Let $B$ be the event ``miss at least one co-cluster over all trials''. Then
+\[
+B=\bigcup_{k=1}^K \{\text{miss }k\text{ in all }T_p\text{ trials}\}.
+\]
+Applying the union bound,
+\[
+\Pr(B)\le \sum_{k=1}^K q_k^{T_p}\le K q_{\max}^{T_p},
+\quad\text{where}\quad q_{\max}:=\max_{k\in[K]} q_k.
+\]
+
+Therefore,
+\[
+p_{\mathrm{det}}(\text{all}) = 1-\Pr(B)\ge 1-\sum_{k=1}^K q_k^{T_p}\ge 1-Kq_{\max}^{T_p}.
+\]
+
+Writing $q_{\max}^{T_p}=\exp(-(-\log q_{\max})T_p)$ and letting $\gamma_{\min}=-\log q_{\max}=\min_k(-\log q_k)$ gives \eqref{eq:detect-all-exp}.
+
+Finally, Theorem~\ref{thm:single-trial-miss} provides the explicit upper bound
+$q_k \le \bar p_{\mathrm{row}}^{(k)} + \bar p_{\mathrm{col}}^{(k)}$,
+making all quantities computable.
 \end{proof}
 
 \subsection{Proof of Global Solution Quality Theorem}
