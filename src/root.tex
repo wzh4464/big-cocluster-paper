@@ -378,56 +378,158 @@ Having established the basic probability bounds, we now present the theoretical 
 
 {\color{blue}
 
+\subsubsection{Probabilistic Model for Partitioning (Revised)}
+\label{subsec:probabilistic-model-revised}
 
-    To ensure theoretical rigor and facilitate reproducibility, we make the following assumptions underlying our probabilistic partitioning framework:
+To ensure theoretical rigor and facilitate reproducibility, we analyze partitioning under the following randomized block model.
 
-    \begin{assumption}[Random Partitioning]
-        \label{assumption:random-partitioning}
-        Partition boundaries are chosen uniformly at random, ensuring $E[X_{i,r}] = \phi_i/M$ for any row $r \in C_k$, where $X_{i,r}$ is the indicator that row $r$ falls in block $i$.
-    \end{assumption}
+\begin{assumption}[Random permutation partitioning]
+\label{assump:perm-partition}
+In each trial $t=1,\dots,T_p$, we generate an independent random permutation of rows
+and split the permuted indices into $m$ disjoint row blocks
+$I_1^{(t)},\dots,I_m^{(t)}$ with fixed sizes $|I_i^{(t)}|=\phi_i$.
+Similarly, we generate an independent random permutation of columns and split them into
+$n$ disjoint column blocks $J_1^{(t)},\dots,J_n^{(t)}$ with $|J_j^{(t)}|=\psi_j$.
+\end{assumption}
 
-    \begin{assumption}[Independence]
-        \label{assumption:independence}
-        Row and column partitioning processes are independent, allowing factorization of joint probabilities as shown in Equation~\eqref{eq:joint-probability}: $P(A \cap B) = P(A) \cdot P(B)$ for partition events.
-    \end{assumption}
+\begin{assumption}[Row/column independence across trials]
+\label{assump:trial-indep}
+Row permutations are independent of column permutations, and different trials are independent.
+Hence, events determined only by row partitioning are independent from those determined only by
+column partitioning, and are i.i.d. across trials.
+\end{assumption}
 
-    \begin{assumption}[Co-cluster Coherence]
-        \label{assumption:co-cluster-coherence}
-        Each co-cluster $C_k$ exhibits uniform density within its support region, with density variation bounded by constant factor $\rho \leq 2$, justifying the low-rank approximation in Theorem~\ref{thm:low-rank-approximation}.
-    \end{assumption}
+\begin{assumption}[Rectangular co-cluster support]
+\label{assump:rectangular}
+Each co-cluster $C_k$ corresponds to a row index set $R_k\subseteq[M]$ and a column index set
+$C_k^{\mathrm{col}}\subseteq[N]$, such that its support is $R_k\times C_k^{\mathrm{col}}$.
+Let $|R_k|=M^{(k)}$ and $|C_k^{\mathrm{col}}|=N^{(k)}$.
+\end{assumption}
 
-    \begin{assumption}[Finite Co-cluster Set]
-        \label{assumption:finite-co-cluster-set}
-        The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$, ensuring algorithmic termination.
-    \end{assumption}
+\begin{assumption}[Significant co-clusters and thresholds]
+\label{assump:thresholds}
+A co-cluster is called \emph{significant} if $M^{(k)}\ge T_m$ and $N^{(k)}\ge T_n$.
+The number of significant co-clusters $K$ is finite and bounded by $O(\min(M,N))$.
+\end{assumption}
 
-    \begin{assumption}[Minimum Size Constraint]
-        \label{assumption:minimum-size-constraint}
-        All significant co-clusters satisfy $M^{(k)} \geq T_m$ and $N^{(k)} \geq T_n$ for meaningful detection thresholds.
-    \end{assumption}
-
-    \begin{assumption}[Sample Size Requirements]
-        \label{assumption:sample-size-requirements}
-        Our concentration inequalities require $\min(\phi_i, \psi_j) \geq \log^2(mn)$ for proper convergence, which is automatically satisfied in our experimental settings.
-    \end{assumption}
+\paragraph{Row/column hits in blocks.}
+Fix a co-cluster $k$ and a trial $t$.
+Define the row hit count in row block $i$:
+\[
+X_{i,t}^{(k)} := |R_k \cap I_i^{(t)}|,
+\]
+and the column hit count in column block $j$:
+\[
+Y_{j,t}^{(k)} := |C_k^{\mathrm{col}} \cap J_j^{(t)}|.
+\]
+For any block $(i,j)$, the co-cluster portion inside the block has size
+$X_{i,t}^{(k)}\times Y_{j,t}^{(k)}$.
 }
 
-\begin{lemma}[Joint Probability of Co-cluster Size]
-    \label{thm:joint-probability}
-    Let $C_k$ be a co-cluster and $B_{(i,j)}$ be a block in the partitioned matrix. The probability that the size of the co-cluster $C_k$ within block $B_{(i,j)}$ is less than $T_m$ rows and $T_n$ columns is given by:
-    \begin{equation}
-        \begin{aligned}
-            P(M_{(i,j)}^{(k)} & < T_m, N_{(i,j)}^{(k)} < T_n)                                         \\
-                              & \leq \exp\left[-2 (s_i^{(k)})^2 \phi_i -2 (t_j^{(k)})^2 \psi_j\right]
-        \end{aligned}
-        \label{eq:joint-probability}
-    \end{equation}
-    where $s_i^{(k)} = \cfrac{M^{(k)}}{M} - \cfrac{T_m-1}{\phi_i}$ and $t_j^{(k)} = \cfrac{N^{(k)}}{N} - \cfrac{T_n-1}{\psi_j}$.
+\begin{lemma}[Hypergeometric lower-tail bound for block hits]
+\label{lem:hyp-tail}
+Under Assumption~\ref{assump:perm-partition}, for each fixed $k,i,t$,
+$X_{i,t}^{(k)}$ follows a hypergeometric law with mean
+$\mu_i^{(k)} = \mathbb{E}[X_{i,t}^{(k)}]=\phi_i\cdot \frac{M^{(k)}}{M}$.
+Define
+\[
+\Delta_{i}^{(k)} := \mu_i^{(k)}-(T_m-1),
+\qquad
+s_i^{(k)} := \left(\frac{\Delta_i^{(k)}}{\phi_i}\right)_+
+= \left(\frac{M^{(k)}}{M}-\frac{T_m-1}{\phi_i}\right)_+.
+\]
+Then
+\begin{equation}
+\Pr\!\left(X_{i,t}^{(k)} < T_m\right)
+=\Pr\!\left(X_{i,t}^{(k)} \le T_m-1\right)
+\le \exp\!\left(-2\phi_i (s_i^{(k)})^2\right).
+\label{eq:row-tail}
+\end{equation}
+Similarly, for columns, letting
+\[
+\nu_j^{(k)}=\mathbb{E}[Y_{j,t}^{(k)}]=\psi_j\cdot \frac{N^{(k)}}{N},
+\quad
+t_j^{(k)} := \left(\frac{N^{(k)}}{N}-\frac{T_n-1}{\psi_j}\right)_+,
+\]
+we have
+\begin{equation}
+\Pr\!\left(Y_{j,t}^{(k)} < T_n\right)\le \exp\!\left(-2\psi_j (t_j^{(k)})^2\right).
+\label{eq:col-tail}
+\end{equation}
 \end{lemma}
 
 {\color{blue}
 \begin{proof}
-    The proof follows from applying Hoeffding's inequality to the binomial distribution of co-cluster elements across partitions, treating row and column distributions independently. See \Cref{appendix:proofs} in the appendix for the detailed proof.
+We prove \eqref{eq:row-tail}; \eqref{eq:col-tail} is identical.
+Since row partitioning is obtained by random permutation (Assumption~\ref{assump:perm-partition}),
+$X_{i,t}^{(k)}$ is a hypergeometric random variable corresponding to sampling $\phi_i$ items
+without replacement from a population of size $M$ containing $M^{(k)}$ successes.
+A standard Hoeffding--Serfling inequality for sampling without replacement states that for any
+$\varepsilon>0$,
+\[
+\Pr\!\left(\frac{X_{i,t}^{(k)}}{\phi_i}
+\le \frac{M^{(k)}}{M} - \varepsilon \right)
+\le \exp(-2\phi_i\varepsilon^2).
+\]
+Setting $\varepsilon = s_i^{(k)} = \left(\frac{M^{(k)}}{M}-\frac{T_m-1}{\phi_i}\right)_+$
+(which is non-negative by the positive part) yields \eqref{eq:row-tail}.
+See \Cref{appendix:proof-hyp-tail} in the appendix for the detailed derivation.
+\end{proof}
+}
+
+\begin{lemma}[Within-block failure bounds (AND vs OR)]
+\label{lem:block-fail}
+Fix $k,i,j,t$. Under Assumption~\ref{assump:trial-indep}, $X_{i,t}^{(k)}$ and $Y_{j,t}^{(k)}$
+are independent. Hence
+\begin{align}
+\Pr\!\left(X_{i,t}^{(k)}<T_m,\ Y_{j,t}^{(k)}<T_n\right)
+&=\Pr(X_{i,t}^{(k)}<T_m)\Pr(Y_{j,t}^{(k)}<T_n) \nonumber\\
+&\le \exp\!\left(-2\phi_i (s_i^{(k)})^2 -2\psi_j (t_j^{(k)})^2\right).
+\label{eq:and-bound}
+\end{align}
+Moreover, the true block failure event is
+$\{X_{i,t}^{(k)}<T_m \ \text{or}\ Y_{j,t}^{(k)}<T_n\}$, for which
+\begin{equation}
+\Pr\!\left(X_{i,t}^{(k)}<T_m \ \text{or}\ Y_{j,t}^{(k)}<T_n\right)
+\le \exp\!\left(-2\phi_i (s_i^{(k)})^2\right)+\exp\!\left(-2\psi_j (t_j^{(k)})^2\right).
+\label{eq:or-bound}
+\end{equation}
+\end{lemma}
+
+{\color{blue}
+\begin{proof}
+\eqref{eq:and-bound} follows from independence and Lemma~\ref{lem:hyp-tail}.
+For \eqref{eq:or-bound}, apply the union bound:
+$\Pr(A\cup B)\le \Pr(A)+\Pr(B)$,
+with $A=\{X_{i,t}^{(k)}<T_m\}$ and $B=\{Y_{j,t}^{(k)}<T_n\}$, then use
+Lemma~\ref{lem:hyp-tail}.
+\end{proof}
+}
+
+\begin{lemma}[Trial-level detection equivalence]
+\label{lem:trial-equivalence}
+Fix a co-cluster $k$ and a trial $t$.
+Define the row-success event $S_{\mathrm{row}}^{(k,t)}:=\{\exists i:\ X_{i,t}^{(k)}\ge T_m\}$
+and the column-success event $S_{\mathrm{col}}^{(k,t)}:=\{\exists j:\ Y_{j,t}^{(k)}\ge T_n\}$.
+Then co-cluster $k$ is captured in trial $t$ (i.e., there exists a block $(i,j)$ such that
+$X_{i,t}^{(k)}\ge T_m$ and $Y_{j,t}^{(k)}\ge T_n$) if and only if
+\[
+S_{\mathrm{row}}^{(k,t)} \ \land\ S_{\mathrm{col}}^{(k,t)}.
+\]
+Equivalently, the miss event in a trial is
+\[
+F_{k,t} = \left(\forall i,\ X_{i,t}^{(k)}<T_m\right)\ \cup\ \left(\forall j,\ Y_{j,t}^{(k)}<T_n\right).
+\]
+\end{lemma}
+
+{\color{blue}
+\begin{proof}
+($\Rightarrow$) If there exists a block $(i,j)$ such that $X_{i,t}^{(k)}\ge T_m$ and
+$Y_{j,t}^{(k)}\ge T_n$, then clearly $\exists i$ and $\exists j$ satisfying the row/col conditions.
+($\Leftarrow$) If $\exists i^\star$ with $X_{i^\star,t}^{(k)}\ge T_m$ and $\exists j^\star$ with
+$Y_{j^\star,t}^{(k)}\ge T_n$, then in block $(i^\star,j^\star)$, the co-cluster portion has
+at least $T_m$ rows and $T_n$ columns, hence co-cluster $k$ is captured.
+Taking complements yields the stated miss event.
 \end{proof}
 }
 
