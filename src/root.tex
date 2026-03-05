@@ -737,7 +737,7 @@ In summary, these theoretical results establish that DiMergeCo is a principled f
             \small
             \item Notes: * indicates that the method cannot process the dataset because the dataset size exceeds the processing limit.
             Results report mean $\pm$ standard deviation over 10 independent runs with different random seeds.
-            \item[$\dagger$] Paired $t$-tests confirm that DiMergeCo-SCC significantly outperforms each baseline ($p < 0.01$) on all datasets where both methods produce results\todo{verify $p$-values}.
+            \item[$\dagger$] Paired $t$-tests confirm that DiMergeCo-SCC significantly outperforms PNMTF, ONMTF, FNMTF, and SpectralCC ($p < 0.01$). On small datasets (CLASSIC4, BCW), SCC achieves higher NMI; DiMergeCo's primary advantage is scalability to large matrices where SCC cannot run.
         \end{tablenotes}
     \end{threeparttable}
 \end{table*}
