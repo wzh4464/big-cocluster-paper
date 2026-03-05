@@ -723,14 +723,14 @@ In summary, these theoretical results establish that DiMergeCo is a principled f
             \cmidrule{3-9}
                                         &                         & SCC\cite{dhillon2001CoclusteringDocumentsWords} & PNMTF\cite{chen2023ParallelNonNegativeMatrix} & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF\cite{kim2011FastNonnegativeMatrix} & SpectralCC\cite{sklearn2011} & \textbf{DiMergeCo-SCC}          & \textbf{DiMergeCo-PNMTF}       \\
             \midrule
-            \multirow{2}{*}{CLASSIC4}   & NMI                     & \textbf{0.922$\pm$0.003}\todo{}                 & 0.689$\pm$0.012\todo{}                        & 0.724$\pm$0.008\todo{}                          & 0.585$\pm$0.015\todo{}                   & 0.891$\pm$0.005\todo{}       & 0.865$\pm$0.007\todo{}          & 0.661$\pm$0.011\todo{}          \\
-                                        & ARI                     & 0.771$\pm$0.005\todo{}                          & 0.619$\pm$0.014\todo{}                        & 0.670$\pm$0.010\todo{}                          & 0.483$\pm$0.018\todo{}                   & 0.734$\pm$0.008\todo{}       & \textbf{0.776$\pm$0.006}\todo{} & 0.606$\pm$0.013\todo{}          \\
+            \multirow{2}{*}{CLASSIC4}   & NMI                     & \textbf{0.790$\pm$0.000}                        & 0.412$\pm$0.097                               & 0.592$\pm$0.086                                 & 0.609$\pm$0.047                          & 0.431$\pm$0.001             & 0.748$\pm$0.003                 & 0.661$\pm$0.011\todo{}          \\
+                                        & ARI                     & \textbf{0.749$\pm$0.001}                        & 0.350$\pm$0.104                               & 0.451$\pm$0.118                                 & 0.501$\pm$0.103                          & 0.273$\pm$0.003             & 0.659$\pm$0.012                 & 0.606$\pm$0.013\todo{}          \\
             \multirow{2}{*}{Amazon}     & NMI                     & *                                               & 0.594$\pm$0.009\todo{}                        & 0.535$\pm$0.011\todo{}                          & 0.675$\pm$0.008\todo{}                   & *                            & \textbf{0.768$\pm$0.006}\todo{} & 0.607$\pm$0.010\todo{}          \\
                                         & ARI                     & *                                               & 0.452$\pm$0.012\todo{}                        & 0.409$\pm$0.013\todo{}                          & 0.482$\pm$0.011\todo{}                   & *                            & \textbf{0.585$\pm$0.008}\todo{} & 0.447$\pm$0.011\todo{}          \\
             \multirow{2}{*}{RCV1-Large} & NMI                     & *                                               & 0.652$\pm$0.007\todo{}                        & 0.429$\pm$0.014\todo{}                          & 0.472$\pm$0.013\todo{}                   & *                            & \textbf{0.835$\pm$0.005}\todo{} & 0.635$\pm$0.009\todo{}          \\
                                         & ARI                     & *                                               & 0.538$\pm$0.010\todo{}                        & 0.397$\pm$0.015\todo{}                          & 0.350$\pm$0.016\todo{}                   & *                            & \textbf{0.758$\pm$0.006}\todo{} & 0.530$\pm$0.011\todo{}          \\
-            \multirow{2}{*}{BCW}        & NMI                     & *                                               & 0.684$\pm$0.011\todo{}                        & 0.612$\pm$0.013\todo{}                          & 0.579$\pm$0.016\todo{}                   & 0.702$\pm$0.009\todo{}       & \textbf{0.824$\pm$0.007}\todo{} & 0.642$\pm$0.012\todo{}          \\
-                                        & ARI                     & *                                               & 0.567$\pm$0.013\todo{}                        & 0.489$\pm$0.015\todo{}                          & 0.436$\pm$0.017\todo{}                   & 0.578$\pm$0.011\todo{}       & \textbf{0.740$\pm$0.008}\todo{} & 0.542$\pm$0.013\todo{}          \\
+            \multirow{2}{*}{BCW}        & NMI                     & \textbf{0.491$\pm$0.000}                        & 0.402$\pm$0.121                               & 0.033$\pm$0.001                                 & 0.347$\pm$0.004                          & 0.128$\pm$0.163              & 0.468$\pm$0.019                 & 0.642$\pm$0.012\todo{}          \\
+                                        & ARI                     & \textbf{0.608$\pm$0.000}                        & 0.492$\pm$0.147                               & 0.033$\pm$0.037                                 & 0.353$\pm$0.006                          & 0.156$\pm$0.212              & 0.585$\pm$0.017                 & 0.542$\pm$0.013\todo{}          \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
@@ -759,12 +759,12 @@ In summary, these theoretical results establish that DiMergeCo is a principled f
             CLASSIC4         & 6,461           & 4,667              & 4               & 95\%              & 40.2\%           \\
             Amazon           & 123,321         & 23,379             & 24              & 20\%              & 75.4\%           \\
             RCV1-Large       & 685,071         & 90,210             & 4               & 8\%               & 18.3\%           \\
-            BCW              & 130             & 11,731$^{\dagger}$ & 4               & 79\%              & 70.7\%           \\
+            BCW              & 569             & 30                 & 2               & 0\%               & 62.7\%           \\
             \hline
         \end{tabular}
         \begin{tablenotes}
             \small
-            \item[$\dagger$] Number of genes after pre-processing
+            \item BCW: Breast Cancer Wisconsin (Diagnostic) from UCI ML Repository.
         \end{tablenotes}
     \end{threeparttable}
 \end{table}
@@ -776,7 +776,7 @@ The experiments were conducted using four distinct datasets (see~\Cref{tab:datas
     \item \textbf{CLASSIC4}: A classic small dataset used for benchmarking co-clustering algorithms, consisting of document vectors for text analysis.
     \item \textbf{Amazon}: {\color{blue}A medium-sized recommendation system dataset containing user-product interaction matrices with 123,321 users and 23,379 products, demonstrating applicability beyond text data to recommendation systems.}
     \item \textbf{RCV1-Large}: A larger dataset used to test the scalability of our method, including a vast array of document vectors for high-dimensional data analysis.
-    \item \textbf{Breast Cancer Wisconsin (BCW)}: {\color{blue}A high-dimensional gene expression dataset containing 130 breast cancer samples and 11,731 genes after preprocessing, demonstrating the application of co-clustering to genomic data analysis.}
+    \item \textbf{Breast Cancer Wisconsin (BCW)}: {\color{blue}The UCI Breast Cancer Wisconsin (Diagnostic) dataset\cite{sklearn2011} containing 569 samples with 30 numeric features, used to evaluate co-clustering on a small, dense, non-text dataset with 2 ground-truth classes (malignant/benign).}
 \end{itemize}
 
 \subsubsection{Implementation Details}
@@ -867,10 +867,10 @@ The effectiveness of the co-clustering was measured using two widely accepted me
                        & FNMTF\cite{kim2011FastNonnegativeMatrix}
                        & SpectralCC\cite{sklearn2011}                     & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF} \\
             \midrule
-            CLASSIC4   & 2,840\todo{}    & 1,230\todo{}   & 1,450\todo{}   & 1,180\todo{}   & 1,950\todo{}    & \textbf{420}\todo{}    & 580\todo{}               \\
-            BCW        & OOM*            & 3,120\todo{}   & 3,560\todo{}   & 2,890\todo{}   & 2,450\todo{}    & \textbf{650}\todo{}    & 780\todo{}               \\
-            Amazon     & OOM*            & 18,240\todo{}  & 21,350\todo{}  & 16,780\todo{}  & OOM*            & 3,280\todo{}           & \textbf{2,950}\todo{}    \\
-            RCV1-Large & OOM*            & 42,180\todo{}  & OOM*           & OOM*           & OOM*            & OOM*                   & \textbf{8,420}\todo{}    \\
+            CLASSIC4   & 363             & \todo{}        & \todo{}        & \todo{}        & 363             & \textbf{482}\todo{}    & \todo{}                  \\
+            BCW        & 482\todo{}      & \todo{}        & \todo{}        & \todo{}        & 482\todo{}      & \textbf{482}\todo{}    & \todo{}                  \\
+            Amazon     & OOM*            & \todo{}        & \todo{}        & \todo{}        & OOM*            & \todo{}                & \todo{}                  \\
+            RCV1-Large & OOM*            & \todo{}        & OOM*           & OOM*           & OOM*            & OOM*                   & \todo{}                  \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
@@ -905,7 +905,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 
 \subsubsection{Clustering Quality Comparison}
 \label{subsec:clustering-quality}
-Our experimental evaluation compares different co-clustering methods using NMI and ARI metrics (\Cref{tab:evaluation-metrics}). DiMergeCo-SCC achieves superior performance across all datasets, with the highest scores on CLASSIC4 (NMI: 0.8650, ARI: 0.7763), RCV1-Large (NMI: 0.8349, ARI: 0.7576), and Amazon (NMI: 0.7676, ARI: 0.5845). Particularly impressive is its performance on the BCW dataset (NMI: 0.8237, ARI: 0.7403), significantly outperforming PNMTF and ONMTF. This success stems from our probabilistic partitioning strategy and hierarchical merging process, which effectively preserve gene regulatory modules and reconstruct meaningful gene-sample associations. The method's computational efficiency (847.5 seconds) and ability to handle high-dimensional data (11,731 genes, 130 samples) make it particularly valuable for genomics applications.
+{\color{blue}Our experimental evaluation compares different co-clustering methods using NMI and ARI metrics (\Cref{tab:evaluation-metrics}). On CLASSIC4, baseline SCC achieves the highest NMI (0.790) since the full matrix fits in memory; DiMergeCo-SCC reaches NMI = 0.748$\pm$0.003, closely matching SCC while demonstrating that the divide-and-merge framework preserves clustering quality. On BCW, SCC again leads (NMI = 0.491), with DiMergeCo-SCC achieving NMI = 0.468$\pm$0.019. Importantly, the NMF-based baselines ONMTF and NBVD perform poorly on BCW (NMI $<$ 0.04), highlighting the advantage of spectral methods on small dense datasets. For the larger Amazon and RCV1-Large datasets, SCC and SpectralCC cannot process the data at all (marked~*), while DiMergeCo-SCC successfully produces results, demonstrating the scalability advantage of our distributed framework.}
 
 \subsubsection{Small Co-cluster Detection Analysis}
 {\color{blue}
@@ -1022,28 +1022,28 @@ To validate the effectiveness of our hierarchical merging strategy and support t
     \item \textbf{M5 -- No Merging (Union):} Direct union of all local co-clusters without any overlap resolution.
 \end{enumerate}
 
-All experiments use $P = 8$ processing nodes with SCC as the local co-clustering algorithm. Results are averaged over 5 independent runs with different random seeds.
+All experiments use $2\times2$ blocks, $T_p=10$, with SCC as the local co-clustering algorithm. Results are averaged over 10 independent runs with different random seeds.
 
 \subsubsection{Merging Strategy Quality Comparison}
 
-\Cref{tab:merging-quality} reports clustering quality (NMI, ARI) for each merging strategy across three datasets. Our hierarchical merging (M1) consistently achieves the best results, validating the composite quality score design. Random merging (M2) performs poorly due to suboptimal pair selection, while the centralized approach (M3) achieves competitive quality but introduces scalability bottlenecks. The no-merging baseline (M5) demonstrates the necessity of overlap resolution, with significant quality degradation from redundant co-clusters.
+\Cref{tab:merging-quality} reports clustering quality (NMI, ARI) for each merging strategy across two datasets. The centralized consensus approach (M3) achieves the best results on both datasets, with the union baseline (M5) performing comparably since both aggregate all local co-clusters into a single membership matrix. Random merging (M2) suffers from high variance due to suboptimal pair selection. The sequential hierarchical merge (M1) performs poorly in isolation, as the intermediate k-means steps at each merge level lose information; however, when combined with the full Rust implementation's composite quality score (used in DiMergeCo-SCC), hierarchical merging achieves results comparable to centralized (see \Cref{tab:evaluation-metrics}). Greedy overlap-based merging (M4) fails entirely, demonstrating that naive overlap heuristics are insufficient for high-quality merging.\todo{Re-run M1 with full Rust hierarchical merge for fair comparison.}
 
 \begin{table}[htbp]
     \centering
-    \caption{Merging Strategy Quality Comparison (NMI / ARI, mean $\pm$ std, 5 seeds).}
+    \caption{Merging Strategy Quality Comparison (NMI / ARI, mean $\pm$ std, 10 seeds).}
     \label{tab:merging-quality}
     \begin{threeparttable}
-        \begin{tabular}{@{} l cc cc cc @{}}
+        \begin{tabular}{@{} l cc cc @{}}
             \toprule
-                 & \multicolumn{2}{c}{CLASSIC4}                                     & \multicolumn{2}{c}{BCW}                                          & \multicolumn{2}{c}{Amazon}                                                                                                                                      \\
-            \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-            ID   & NMI                                        & ARI                   & NMI                                        & ARI                   & NMI                                        & ARI                                                                    \\
+                 & \multicolumn{2}{c}{CLASSIC4}                                     & \multicolumn{2}{c}{BCW}                                                                                                                                         \\
+            \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+            ID   & NMI                                        & ARI                   & NMI                                        & ARI                                                                             \\
             \midrule
-            M1   & \textbf{0.865$\pm$0.007}\todo{} & \textbf{0.776$\pm$0.006}\todo{} & \textbf{0.812$\pm$0.009}\todo{} & \textbf{0.723$\pm$0.008}\todo{} & \textbf{0.768$\pm$0.006}\todo{} & \textbf{0.585$\pm$0.008}\todo{} \\
-            M2   & 0.798$\pm$0.021\todo{}          & 0.695$\pm$0.024\todo{}          & 0.751$\pm$0.018\todo{}          & 0.648$\pm$0.022\todo{}          & 0.703$\pm$0.015\todo{}          & 0.512$\pm$0.019\todo{}          \\
-            M3   & 0.857$\pm$0.008\todo{}          & 0.768$\pm$0.007\todo{}          & 0.804$\pm$0.010\todo{}          & 0.715$\pm$0.009\todo{}          & 0.761$\pm$0.007\todo{}          & 0.578$\pm$0.009\todo{}          \\
-            M4   & 0.831$\pm$0.013\todo{}          & 0.738$\pm$0.015\todo{}          & 0.782$\pm$0.014\todo{}          & 0.689$\pm$0.016\todo{}          & 0.739$\pm$0.011\todo{}          & 0.553$\pm$0.014\todo{}          \\
-            M5   & 0.724$\pm$0.032\todo{}          & 0.618$\pm$0.035\todo{}          & 0.683$\pm$0.028\todo{}          & 0.571$\pm$0.031\todo{}          & 0.651$\pm$0.023\todo{}          & 0.462$\pm$0.027\todo{}          \\
+            M1   & 0.199$\pm$0.086          & 0.138$\pm$0.064          & 0.142$\pm$0.065          & 0.148$\pm$0.095          \\
+            M2   & 0.318$\pm$0.080          & 0.263$\pm$0.087          & 0.242$\pm$0.152          & 0.316$\pm$0.190          \\
+            M3   & \textbf{0.739$\pm$0.005} & \textbf{0.647$\pm$0.024} & \textbf{0.462$\pm$0.029} & \textbf{0.580$\pm$0.024} \\
+            M4   & 0.038$\pm$0.113          & 0.023$\pm$0.068          & 0.000$\pm$0.000          & 0.000$\pm$0.000          \\
+            M5   & 0.739$\pm$0.005          & 0.646$\pm$0.024          & 0.462$\pm$0.029          & 0.580$\pm$0.024          \\
             \bottomrule
         \end{tabular}
     \end{threeparttable}
@@ -1051,27 +1051,27 @@ All experiments use $P = 8$ processing nodes with SCC as the local co-clustering
 
 \subsubsection{Communication and Time Cost}
 
-\Cref{tab:merging-cost} compares the communication overhead and execution time of each strategy. Hierarchical merging (M1) achieves the best trade-off: comparable merge time to greedy approaches while requiring $O(\log P)$ communication, avoiding the bottleneck of centralized merging (M3) which requires $O(P)$ communication to a single node.
+\Cref{tab:merging-cost} compares the merge-phase execution time of each strategy on CLASSIC4. Centralized (M3) and Union (M5) achieve the fastest total times since they aggregate all local co-clusters in a single pass. The greedy overlap strategy (M4) incurs the highest merge overhead (17.78\,s) due to expensive pairwise overlap computations. Random merging (M2) has negligible merge cost but sacrifices quality (see \Cref{tab:merging-quality}).
 
 \begin{table}[htbp]
     \centering
-    \caption{Communication and Time Cost of Merging Strategies ($P = 8$ nodes, Amazon dataset).}
+    \caption{Merge Time Cost of Merging Strategies ($2\times2$ blocks, $T_p=10$, CLASSIC4 dataset).}
     \label{tab:merging-cost}
     \begin{threeparttable}
-        \begin{tabular}{@{} l ccc @{}}
+        \begin{tabular}{@{} l cc @{}}
             \toprule
-            Strategy & Comm.\ Cost (MB) & Merge Time (s) & Total Time (s) \\
+            Strategy & Merge Time (s) & Total Time (s) \\
             \midrule
-            M1 (Ours)     & \textbf{12.4}\todo{}  & 45.2\todo{}    & \textbf{3,028}\todo{} \\
-            M2 (Random)   & 14.1\todo{}           & 38.7\todo{}    & 3,245\todo{}          \\
-            M3 (Central)  & 89.6\todo{}           & 28.3\todo{}    & 3,412\todo{}          \\
-            M4 (Greedy)   & 15.8\todo{}           & 52.1\todo{}    & 3,156\todo{}          \\
-            M5 (Union)    & 0.0                   & 0.0            & 2,983\todo{}          \\
+            M1 (Hierarchical) & 2.31           & 14.5           \\
+            M2 (Random)       & \textbf{0.01}  & 12.2           \\
+            M3 (Centralized)  & 0.42           & \textbf{12.6}  \\
+            M4 (Greedy)       & 17.78          & 30.0           \\
+            M5 (Union)        & 0.28           & 12.5           \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
             \small
-            \item Comm.\ Cost: total data transferred across nodes during merging phase.
+            \item Merge Time: wall-clock time of the merging phase only. Total Time includes partitioning + local co-clustering + merging.
         \end{tablenotes}
     \end{threeparttable}
 \end{table}

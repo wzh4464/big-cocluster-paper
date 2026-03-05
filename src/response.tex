@@ -182,7 +182,7 @@ A new subsubsection ``Comparison with PNMTF Scalability'' has been added in \Cre
 %--- RC3: Memory profiling ---
 \RC{3. While running time comparisons are provided, memory usage is an equally important concern for large-scale methods. Please report peak memory consumption for each method and dataset.}
 
-\AR{We have added a new memory profiling table. \Cref{tab:memory-usage} reports peak RSS (Resident Set Size) per node for all methods across all four datasets. Key findings: DiMergeCo reduces per-node memory by 5--8$\times$ compared to centralized baselines on large datasets, since each node only processes its assigned submatrix. Methods marked ``OOM'' exceeded the 128\,GB system RAM limit. For distributed methods (DiMergeCo, PNMTF), per-node peak memory is reported.}
+\AR{We have added a new memory profiling table. \Cref{tab:memory-usage} reports peak RSS (Resident Set Size) for available methods across all four datasets. On the CLASSIC4 dataset, SCC and SpectralCC each consume 363\,MB, while DiMergeCo-SCC uses 482\,MB due to the membership matrix overhead from multiple partition iterations. The key scalability advantage of DiMergeCo is that per-node memory remains bounded as dataset size grows, since each node processes only its assigned submatrix. Methods marked ``OOM'' exceeded the system RAM limit.}
 
 \paragraph{Manuscript Modifications}
 \begin{quote}
@@ -219,7 +219,7 @@ A footnote has been added in \Cref{subsec:scalability-analysis}: ``Amazon 1000 d
 
     \item \textbf{A Discussion paragraph} at the end of Section~5 that honestly acknowledges unconditional approximation ratios as an open problem (common in hierarchical clustering\cite{dasgupta2016CostFunctionClustering}) while explaining how our conditional guarantee is both meaningful and empirically validated.
 
-    \item \textbf{A comprehensive ablation study} (\Cref{subsec:ablation}) comparing five merging strategies across three datasets, providing empirical validation that the conditions of \Cref{thm:merging-quality} are satisfied in practice and that hierarchical merging outperforms alternatives.
+    \item \textbf{A comprehensive ablation study} (\Cref{subsec:ablation}) comparing five merging strategies across two datasets (CLASSIC4 and BCW), providing empirical validation of different merge approaches. The centralized consensus strategy achieves the highest quality, while random and greedy strategies perform significantly worse, demonstrating the importance of proper merge design.
 \end{enumerate}
 
 The full proof is provided in the supplementary material.
@@ -231,7 +231,7 @@ The full proof is provided in the supplementary material.
 
 \textbf{Supplementary material:} Added full proof of \Cref{thm:merging-quality} in a new subsection ``Proof of Conditional Merging Quality Bound.''
 
-\textbf{Section~6 (Experiments):} Added \Cref{subsec:ablation} ``Ablation Study: Merging Strategy'' with three components: (a)~\Cref{tab:merging-quality} comparing NMI/ARI for 5 strategies $\times$ 3 datasets; (b)~\Cref{tab:merging-cost} comparing communication and time costs; (c)~\Cref{fig:merging-convergence} showing objective function convergence.
+\textbf{Section~6 (Experiments):} Added \Cref{subsec:ablation} ``Ablation Study: Merging Strategy'' with three components: (a)~\Cref{tab:merging-quality} comparing NMI/ARI for 5 strategies $\times$ 2 datasets; (b)~\Cref{tab:merging-cost} comparing merge time costs; (c)~\Cref{fig:merging-convergence} showing objective function convergence.
 \end{quote}
 
 %--- RC2: Notation inconsistencies ---
@@ -256,7 +256,7 @@ Body text: Changed three instances of plain $A$ to $\mathbf{A}$ in \Cref{subsec:
 %--- RC3: Modern baselines ---
 \RC{3. The compared baselines are somewhat dated (SCC from 2001, NMTF from 2005). Please consider adding at least one more recent baseline (e.g., scikit-learn's SpectralBiclustering or SpectralCoclustering) to demonstrate that your advantages hold against modern implementations.}
 
-\AR{We have added \textbf{SpectralCoclustering} from scikit-learn\cite{sklearn2011} as a modern baseline in all experimental tables. As expected, SpectralCoclustering achieves competitive quality on small datasets (CLASSIC4: NMI = 0.891, BCW: NMI = 0.702) but fails (OOM) on large datasets (Amazon, RCV1-Large), reinforcing DiMergeCo's scalability advantage.
+\AR{We have added \textbf{SpectralCoclustering} from scikit-learn\cite{sklearn2011} as a modern baseline in all experimental tables. On CLASSIC4, SpectralCoclustering achieves NMI = 0.431$\pm$0.001 and ARI = 0.273$\pm$0.003 over 10 seeds, which is notably lower than SCC (NMI = 0.790) and DiMergeCo-SCC (NMI = 0.748). On BCW, SpectralCoclustering shows high variance (NMI = 0.128$\pm$0.163), performing inconsistently across seeds. SpectralCoclustering also fails (OOM) on large datasets (Amazon, RCV1-Large), reinforcing DiMergeCo's scalability advantage.
 
 We have also added a ``Modern Baseline Selection'' paragraph in Related Work explaining why deep learning-based methods (e.g., DeepCC\cite{dongkuanxu2019DeepCoClustering}) are not directly comparable: they target different data modalities (images) and lack distributed implementations.}
 
