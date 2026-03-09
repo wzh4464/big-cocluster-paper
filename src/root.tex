@@ -723,21 +723,22 @@ In summary, these theoretical results establish that DiMergeCo is a principled f
             \cmidrule{3-9}
                                         &                         & SCC\cite{dhillon2001CoclusteringDocumentsWords} & PNMTF\cite{chen2023ParallelNonNegativeMatrix} & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix} & FNMTF\cite{kim2011FastNonnegativeMatrix} & SpectralCC\cite{sklearn2011} & \textbf{DiMergeCo-SCC}          & \textbf{DiMergeCo-PNMTF}       \\
             \midrule
-            \multirow{2}{*}{CLASSIC4}   & NMI                     & \textbf{0.790$\pm$0.000}                        & 0.412$\pm$0.097                               & 0.592$\pm$0.086                                 & 0.609$\pm$0.047                          & 0.431$\pm$0.001             & 0.748$\pm$0.003                 & 0.661$\pm$0.011\todo{}          \\
-                                        & ARI                     & \textbf{0.749$\pm$0.001}                        & 0.350$\pm$0.104                               & 0.451$\pm$0.118                                 & 0.501$\pm$0.103                          & 0.273$\pm$0.003             & 0.659$\pm$0.012                 & 0.606$\pm$0.013\todo{}          \\
-            \multirow{2}{*}{Amazon}     & NMI                     & *                                               & 0.594$\pm$0.009\todo{}                        & 0.535$\pm$0.011\todo{}                          & 0.675$\pm$0.008\todo{}                   & *                            & \textbf{0.768$\pm$0.006}\todo{} & 0.607$\pm$0.010\todo{}          \\
-                                        & ARI                     & *                                               & 0.452$\pm$0.012\todo{}                        & 0.409$\pm$0.013\todo{}                          & 0.482$\pm$0.011\todo{}                   & *                            & \textbf{0.585$\pm$0.008}\todo{} & 0.447$\pm$0.011\todo{}          \\
-            \multirow{2}{*}{RCV1-Large} & NMI                     & *                                               & 0.652$\pm$0.007\todo{}                        & 0.429$\pm$0.014\todo{}                          & 0.472$\pm$0.013\todo{}                   & *                            & \textbf{0.835$\pm$0.005}\todo{} & 0.635$\pm$0.009\todo{}          \\
-                                        & ARI                     & *                                               & 0.538$\pm$0.010\todo{}                        & 0.397$\pm$0.015\todo{}                          & 0.350$\pm$0.016\todo{}                   & *                            & \textbf{0.758$\pm$0.006}\todo{} & 0.530$\pm$0.011\todo{}          \\
-            \multirow{2}{*}{BCW}        & NMI                     & \textbf{0.491$\pm$0.000}                        & 0.402$\pm$0.121                               & 0.033$\pm$0.001                                 & 0.347$\pm$0.004                          & 0.128$\pm$0.163              & 0.468$\pm$0.019                 & 0.642$\pm$0.012\todo{}          \\
-                                        & ARI                     & \textbf{0.608$\pm$0.000}                        & 0.492$\pm$0.147                               & 0.033$\pm$0.037                                 & 0.353$\pm$0.006                          & 0.156$\pm$0.212              & 0.585$\pm$0.017                 & 0.542$\pm$0.013\todo{}          \\
+            \multirow{2}{*}{CLASSIC4}   & NMI                     & \textbf{0.790$\pm$0.000}                        & 0.579$\pm$0.067                               & 0.636$\pm$0.104                                     & 0.609$\pm$0.047                          & 0.431$\pm$0.001             & 0.748$\pm$0.003                 & 0.669$\pm$0.016                 \\
+                                        & ARI                     & \textbf{0.749$\pm$0.000}                        & 0.485$\pm$0.123                               & 0.462$\pm$0.158                                     & 0.521$\pm$0.101                          & 0.273$\pm$0.003             & 0.659$\pm$0.012                 & 0.649$\pm$0.039                 \\
+            \multirow{2}{*}{Amazon}     & NMI                     & 0.135$\pm$0.188$^{\|}$                          & *                                             & *                                               & \textbf{0.427$\pm$0.003}                 & $^{\|}$                      & $^{\|}$                         & *                               \\
+                                        & ARI                     & 0.143$\pm$0.203$^{\|}$                          & *                                             & *                                               & \textbf{0.119$\pm$0.018}                 & $^{\|}$                      & $^{\|}$                         & *                               \\
+            \multirow{2}{*}{RCV1}       & NMI                     & $^{\|}$                                         & *                                             & *                                               & \textbf{0.294$\pm$0.000}                 & $^{\|}$                      & $^{\|}$                         & *                               \\
+                                        & ARI                     & $^{\|}$                                         & *                                             & *                                               & \textbf{0.154$\pm$0.000}                 & $^{\|}$                      & $^{\|}$                         & *                               \\
+            \multirow{2}{*}{BCW}        & NMI                     & \textbf{0.491$\pm$0.000}                        & 0.402$\pm$0.121                               & 0.033$\pm$0.001                                 & 0.347$\pm$0.004                          & 0.128$\pm$0.163              & 0.468$\pm$0.020                 & 0.477$\pm$0.048                 \\
+                                        & ARI                     & \textbf{0.608$\pm$0.000}                        & 0.492$\pm$0.147                               & 0.033$\pm$0.037                                 & 0.353$\pm$0.006                          & 0.156$\pm$0.212              & 0.586$\pm$0.017                 & 0.586$\pm$0.053                 \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
             \small
-            \item Notes: * indicates that the method cannot process the dataset because the dataset size exceeds the processing limit.
-            Results report mean $\pm$ standard deviation over 10 independent runs with different random seeds.
-            \item[$\dagger$] Paired $t$-tests confirm that DiMergeCo-SCC significantly outperforms PNMTF, ONMTF, FNMTF, and SpectralCC ($p < 0.01$). On small datasets (CLASSIC4, BCW), SCC achieves higher NMI; DiMergeCo's primary advantage is scalability to large matrices where SCC cannot run.
+            \item Notes: * indicates that the method requires dense matrix representation and cannot process the dataset at this scale (out of memory).
+            Results report mean $\pm$ standard deviation over 10 independent runs (3 runs for Amazon, RCV1 standalone baselines, and ONMTF on CLASSIC4 due to computational cost; ONMTF requires ${\sim}$17{,}700\,s per run).
+            \item[$\|$] Spectral methods (SCC, SpectralCC, DiMergeCo-SCC) produce near-random or highly unstable results on Amazon and RCV1 due to extreme sparsity ($>$99\% zeros per column), which causes zero-sum columns and numerical instability in bi-normalization.
+            \item[$\dagger$] Independent $t$-tests confirm that DiMergeCo-SCC significantly outperforms PNMTF, ONMTF, FNMTF, and SpectralCC ($p < 0.01$) on CLASSIC4. On BCW, DiMergeCo-SCC significantly outperforms ONMTF, FNMTF, and SpectralCC ($p < 0.01$); the difference vs PNMTF is not significant ($p = 0.12$). SCC achieves higher NMI on these small datasets; DiMergeCo's primary advantage is scalability.
         \end{tablenotes}
     \end{threeparttable}
 \end{table*}
@@ -757,13 +758,15 @@ In summary, these theoretical results establish that DiMergeCo is a principled f
             \textbf{Dataset} & \textbf{\#Docs} & \textbf{\#Words}   & \textbf{\#Clus} & \textbf{Sparsity} & \textbf{Balance} \\
             \hline
             CLASSIC4         & 6,461           & 4,667              & 4               & 95\%              & 40.2\%           \\
-            Amazon           & 123,321         & 23,379             & 24              & 20\%              & 75.4\%           \\
-            RCV1-Large       & 685,071         & 90,210             & 4               & 8\%               & 18.3\%           \\
+            Amazon           & 1,116,318       & 731,283            & 24              & $>$99\%           & 50.4\%           \\
+            RCV1             & 804,414         & 47,236             & 4               & $>$99\%           & 24.0\%           \\
             BCW              & 569             & 30                 & 2               & 0\%               & 62.7\%           \\
             \hline
         \end{tabular}
         \begin{tablenotes}
             \small
+            \item Amazon: 5-core reviews across 24 product categories from SNAP Stanford\cite{ni2019JustifyingRecommendationsUsing}; user--product rating matrix with product category labels.
+            \item RCV1: Reuters Corpus Volume I (full corpus, 804K documents)\cite{lewis2004RCV1NewBenchmark}; top-level categories CCAT/ECAT/GCAT/MCAT ($k{=}4$).
             \item BCW: Breast Cancer Wisconsin (Diagnostic) from UCI ML Repository.
         \end{tablenotes}
     \end{threeparttable}
@@ -774,13 +777,13 @@ In summary, these theoretical results establish that DiMergeCo is a principled f
 The experiments were conducted using four distinct datasets (see~\Cref{tab:dataset-statistics}) to demonstrate the versatility and robustness of our method:
 \begin{itemize}
     \item \textbf{CLASSIC4}: A classic small dataset used for benchmarking co-clustering algorithms, consisting of document vectors for text analysis.
-    \item \textbf{Amazon}: {\color{blue}A medium-sized recommendation system dataset containing user-product interaction matrices with 123,321 users and 23,379 products, demonstrating applicability beyond text data to recommendation systems.}
-    \item \textbf{RCV1-Large}: A larger dataset used to test the scalability of our method, including a vast array of document vectors for high-dimensional data analysis.
+    \item \textbf{Amazon}: {\color{blue}A large-scale recommendation dataset built from Amazon 5-core product reviews\cite{ni2019JustifyingRecommendationsUsing} across all 24 product categories, containing 1,116,318 users and 731,283 products (17.1\,M ratings). Product category provides ground-truth column labels ($k{=}24$); row labels are assigned by majority category per user.}
+    \item \textbf{RCV1}: {\color{blue}The full Reuters Corpus Volume I\cite{lewis2004RCV1NewBenchmark} TF-IDF document-term matrix containing 804,414 documents and 47,236 features ($>$99\% sparse), classified into 4 top-level categories (CCAT, ECAT, GCAT, MCAT). This large-scale text dataset tests scalability: standalone NMF methods (dense matrix required, $\sim$304\,GB) and spectral methods (numerical instability from extreme sparsity) struggle, while DiMergeCo can divide the matrix into manageable subblocks.}
     \item \textbf{Breast Cancer Wisconsin (BCW)}: {\color{blue}The UCI Breast Cancer Wisconsin (Diagnostic) dataset\cite{sklearn2011} containing 569 samples with 30 numeric features, used to evaluate co-clustering on a small, dense, non-text dataset with 2 ground-truth classes (malignant/benign).}
 \end{itemize}
 
 \subsubsection{Implementation Details}
-All experiments were performed on a server with the following specifications: \texttt{2$\times$ Intel Xeon Platinum 8352V @ 2.10GHz (72 cores / 144 threads), 128GB RAM}, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler. {\color{blue}The SVD step in both SCC and DiMergeCo-SCC uses randomized truncated SVD\cite{halko2011FindingStructureRandomness} (Algorithm~5.1 with $n_{\text{oversampling}}=10$, $n_{\text{power\_iter}}=3$), which reduces the per-SVD complexity from $O(mn\min(m,n))$ to $O(mnk)$ where $k$ is the number of co-clusters sought.}
+All experiments were performed on a server with the following specifications: \texttt{2$\times$ Intel Xeon Platinum 8352V @ 2.10GHz (72 cores / 144 threads), 1\,TB RAM}, and Ubuntu 20.04 LTS operating system. The algorithms were implemented in Rust and compiled with the latest stable version of the Rust compiler. {\color{blue}The SVD step in both SCC and DiMergeCo-SCC uses randomized truncated SVD\cite{halko2011FindingStructureRandomness} (Algorithm~5.1 with $n_{\text{oversampling}}=10$, $n_{\text{power\_iter}}=3$), which reduces the per-SVD complexity from $O(mn\min(m,n))$ to $O(mnk)$ where $k$ is the number of co-clusters sought.}
 
 \subsubsection{Compared Methods}
 Our experimental evaluation compares six co-clustering methods, each with distinct characteristics and capabilities:
@@ -808,6 +811,11 @@ Our experimental evaluation compares six co-clustering methods, each with distin
 
     \item \textbf{DiMergeCo-PNMTF}:
           Our proposed method DiMergeCo combining with PNMTF. It achieves enhanced parallelization through two-level distribution, particularly effective for large-scale datasets.
+
+    {\color{blue}
+    \item \textbf{DiMergeCo-FNMF}:
+          Our proposed method DiMergeCo using FNMF as the atom co-clusterer. Unlike SCC and PNMTF atoms, FNMF supports sparse matrix input natively, enabling DiMergeCo to scale to very large sparse datasets (e.g., RCV1 with 804K rows) where spectral methods fail and dense NMF methods are infeasible.
+    }
 \end{itemize}
 
 \subsubsection{Evaluation Metrics}
@@ -821,7 +829,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 \subsection{Effectiveness Analysis}
 \subsubsection{Computational Efficiency Comparison}
 {\color{blue}
-\Cref{tab:running-time} presents the running times of all compared methods. By adopting randomized truncated SVD\cite{halko2011FindingStructureRandomness}, we reduce the per-decomposition cost from $O(mn\min(m,n))$ to $O(mnk)$, which dramatically accelerates both SCC and DiMergeCo-SCC. On the CLASSIC4 dataset, baseline SCC completes in only 2.6 seconds, while DiMergeCo-SCC achieves 6.7 seconds with all $T_p=30$ iterations running in parallel across 144 threads via Rayon---a $750\times$ and $>1{,}000\times$ speedup over the respective full-SVD implementations. Notably, DiMergeCo-SCC attains higher clustering quality than baseline SCC (NMI 0.757 vs.\ 0.746, ARI 0.699 vs.\ 0.652) due to the ensemble effect of multiple random partitions, demonstrating that the divide-and-merge strategy provides a quality advantage beyond scalability. For the larger Amazon and RCV1-Large datasets, SCC cannot process the data at all (marked~*), while the DiMergeCo-PNMTF method achieves a running time of 3,028 seconds on Amazon, a 30\% reduction compared to standalone PNMTF. On RCV1-Large (685K samples), DiMergeCo-PNMTF is the only method that completes successfully. The asterisks (*) denote methods that exceed memory or processing limits, underscoring the scalability advantage of our distributed framework.
+\Cref{tab:running-time} presents the running times of all compared methods on the CLASSIC4 and BCW datasets. By adopting randomized truncated SVD\cite{halko2011FindingStructureRandomness}, we reduce the per-decomposition cost from $O(mn\min(m,n))$ to $O(mnk)$, which dramatically accelerates both SCC and DiMergeCo-SCC. On the CLASSIC4 dataset, baseline SCC completes in only 2.3 seconds, while DiMergeCo-SCC achieves 10.2 seconds with $T_p=30$ iterations running in parallel across 144 threads via Rayon. Among non-spectral baselines, FNMTF is the fastest (4.1\,s) while ONMTF is the slowest (3{,}883\,s). DiMergeCo-SCC provides competitive timing while achieving higher quality than all non-spectral baselines. On the smaller BCW dataset, all methods complete quickly; the overhead of DiMergeCo's partitioning framework (8.5\,s for DiMergeCo-SCC vs.\ 0.5\,s for SCC) is more pronounced on small datasets but becomes advantageous as data size grows. The asterisks (*) denote methods that exceed memory or processing limits on larger datasets (Amazon, RCV1), underscoring DiMergeCo's scalability advantage.
 }
 
 
@@ -830,25 +838,26 @@ The effectiveness of the co-clustering was measured using two widely accepted me
     \caption{Comparison of Running Times (in seconds) for Various Co-clustering Methods on Selected Datasets.}
     \label{tab:running-time}
     \begin{threeparttable}
-        \begin{tabular}{@{} l cccccccc @{}}
+        \begin{tabular}{@{} l ccccccc @{}}
             \toprule
             Dataset    & SCC\cite{dhillon2001CoclusteringDocumentsWords}
-                       & NMTF\cite{long2005CoclusteringBlockValue}
+                       & PNMTF\cite{chen2023ParallelNonNegativeMatrix}
                        & ONMTF\cite{ding2006OrthogonalNonnegativeMatrix}
-                       & WC-NMTF\cite{salah2018WordCooccurrenceRegularized}
                        & FNMTF\cite{kim2011FastNonnegativeMatrix}
-                       & PNMTF\cite{chen2023ParallelNonNegativeMatrix}      & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF}                                                                  \\
+                       & SpectralCC\cite{sklearn2011}
+                       & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF}                         \\
             \midrule
-            CLASSIC4   & 2.6$^{\ddagger}$                                   & 298.7\todo{}           & 498.4\todo{}             & 198.8\todo{} & 275.1\todo{} & 303.7\todo{} & \textbf{6.7}$^{\ddagger}$ & 242.8\todo{}     \\
-            BCW        & *                                                  & 2,847                  & 3,192                    & 1,456  & 2,234.5 & 1,892.5 & \textbf{847.5} & 923.0            \\
-            Amazon     & *                                                  & 75,530                 & 68,793                   & 27,114 & 18,947  & 17,810  & 22,894         & \textbf{3,028}   \\
-            RCV1-Large & *                                                  & *                      & *                        & *      & *       & 277,092 & *              & \textbf{208,048} \\
+            CLASSIC4   & \textbf{2.3}$^{\ddagger}$ & 72.9  & 3,882.9 & 4.1   & 0.3$^{\S}$ & 10.2$^{\ddagger}$ & 97.1$^{\ddagger}$ \\
+            BCW        & 0.5                       & 2.1   & 7.3     & 0.04  & 0.2$^{\S}$ & 8.5               & 60.8$^{\S}$    \\
+            Amazon     & 39.5$^{\S}$               & *     & *       & 175.9$^{\S}$ & $^{\|}$  & $^{\|}$           & *              \\
+            RCV1       & $^{\|}$                   & *     & *       & 27.1$^{\S}$  & $^{\|}$  & $^{\|}$           & *              \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
             \small
-            \item Notes: * indicates that the method cannot process the dataset because the dataset size exceeds the processing limit.
-            \item[$\ddagger$] {\color{blue}With randomized truncated SVD\cite{halko2011FindingStructureRandomness}. DiMergeCo-SCC uses $2\times2$ blocks, $T_p=30$, all 144 threads. Other baselines' times are from prior hardware and will be updated.\todo{re-run baselines on new hardware}}
+            \item Notes: * indicates out-of-memory failure (dense representation required). $^{\|}$~Spectral instability on highly sparse data (see \Cref{tab:evaluation-metrics}).
+            \item[$\ddagger$] With randomized truncated SVD\cite{halko2011FindingStructureRandomness}. All Rust implementations use 144 threads. DiMergeCo-SCC uses $2\times2$ blocks, $T_p=30$.
+            \item[$\S$] Python/scikit-learn implementation. All other methods use Rust.
         \end{tablenotes}
     \end{threeparttable}
 \end{table*}
@@ -867,17 +876,17 @@ The effectiveness of the co-clustering was measured using two widely accepted me
                        & FNMTF\cite{kim2011FastNonnegativeMatrix}
                        & SpectralCC\cite{sklearn2011}                     & \textbf{DiMergeCo-SCC} & \textbf{DiMergeCo-PNMTF} \\
             \midrule
-            CLASSIC4   & 363             & \todo{}        & \todo{}        & \todo{}        & 363             & \textbf{482}\todo{}    & \todo{}                  \\
-            BCW        & 482\todo{}      & \todo{}        & \todo{}        & \todo{}        & 482\todo{}      & \textbf{482}\todo{}    & \todo{}                  \\
-            Amazon     & OOM*            & \todo{}        & \todo{}        & \todo{}        & OOM*            & \todo{}                & \todo{}                  \\
-            RCV1-Large & OOM*            & \todo{}        & OOM*           & OOM*           & OOM*            & OOM*                   & \todo{}                  \\
+            CLASSIC4   & 370             & 1,631$^\dagger$ & 1,601$^\dagger$ & 351            & 374              & \textbf{496}           & 777$^\dagger$            \\
+            BCW        & 128             & 117             & 117             & 116            & 132              & 176                    & \textbf{131}             \\
+            Amazon     & $^{\|}$         & OOM*            & OOM*            & 1,147          & $^{\|}$          & $^{\|}$                & OOM*                     \\
+            RCV1       & $^{\|}$         & OOM*            & OOM*            & 1,718          & $^{\|}$          & $^{\|}$                & OOM*                     \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
             \small
-            \item Notes: OOM* indicates out-of-memory failure (exceeded 128\,GB system RAM).
-            Memory measured as peak RSS (Resident Set Size) per node using \texttt{/usr/bin/time -v}.
-            For distributed methods, per-node peak memory is reported.
+            \item Notes: OOM* indicates that the method requires dense matrix representation, which is infeasible at this scale ($>$6\,TB for Amazon). $^{\|}$~Spectral instability (see \Cref{tab:evaluation-metrics}).
+            Memory measured as peak RSS (Resident Set Size) via \texttt{/proc/pid/status} VmHWM. FNMF on RCV1 and Amazon operates on sparse matrices directly, requiring only 1.7\,GB and 1.1\,GB respectively.
+            \item[$\dagger$] Peak RSS captured via \texttt{/proc/pid/status} VmHWM before process was terminated due to excessive runtime. NMF-based methods allocate dense intermediate matrices, resulting in $\sim$1.6\,GB on CLASSIC4 (242\,MB dense $\times$ multiple factor copies).
         \end{tablenotes}
     \end{threeparttable}
 \end{table*}
@@ -905,7 +914,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 
 \subsubsection{Clustering Quality Comparison}
 \label{subsec:clustering-quality}
-{\color{blue}Our experimental evaluation compares different co-clustering methods using NMI and ARI metrics (\Cref{tab:evaluation-metrics}). On CLASSIC4, baseline SCC achieves the highest NMI (0.790) since the full matrix fits in memory; DiMergeCo-SCC reaches NMI = 0.748$\pm$0.003, closely matching SCC while demonstrating that the divide-and-merge framework preserves clustering quality. On BCW, SCC again leads (NMI = 0.491), with DiMergeCo-SCC achieving NMI = 0.468$\pm$0.019. Importantly, the NMF-based baselines ONMTF and NBVD perform poorly on BCW (NMI $<$ 0.04), highlighting the advantage of spectral methods on small dense datasets. For the larger Amazon and RCV1-Large datasets, SCC and SpectralCC cannot process the data at all (marked~*), while DiMergeCo-SCC successfully produces results, demonstrating the scalability advantage of our distributed framework.}
+{\color{blue}Our experimental evaluation compares different co-clustering methods using NMI and ARI metrics (\Cref{tab:evaluation-metrics}). On CLASSIC4, baseline SCC achieves the highest NMI (0.790) since the full matrix fits in memory; DiMergeCo-SCC reaches NMI = 0.748$\pm$0.003, closely matching SCC while demonstrating that the divide-and-merge framework preserves clustering quality. On BCW, SCC again leads (NMI = 0.491), with DiMergeCo-SCC achieving NMI = 0.468$\pm$0.020. Importantly, the NMF-based baseline ONMTF performs poorly on BCW (NMI $<$ 0.04), highlighting the advantage of spectral methods on small dense datasets. On the large-scale Amazon dataset (1.1M $\times$ 731K), NMF baselines requiring dense representation are infeasible ($>$6\,TB memory). FNMF, which supports sparse input, achieves NMI = 0.427$\pm$0.003. SCC shows high variance on Amazon due to numerical instability from zero-sum columns in the extremely sparse user--product matrix. DiMergeCo-FNMF ($4{\times}1$ row-only partitioning) achieves NMI = 0.361$\pm$0.005 on Amazon---85\% of standalone FNMF quality---demonstrating that the framework scales to million-row matrices. On the full RCV1 corpus (804K $\times$ 47K), dense methods are infeasible ($\sim$304\,GB), spectral methods fail due to extreme sparsity, and only FNMF produces meaningful results (NMI = 0.294$\pm$0.000). Notably, DiMergeCo-FNMF ($2{\times}1$ row-only partitioning, $T_p{=}10$) achieves NMI = 0.272$\pm$0.012 over 10 seeds on RCV1---92\% of standalone FNMF quality---while enabling distributed processing: each of the two subblocks ($\sim$402K rows) can be processed independently, halving per-node memory requirements and enabling linear speedup with the number of workers. This demonstrates DiMergeCo's key practical advantage: on datasets where global methods are infeasible or produce unreliable results, DiMergeCo can partition the problem and apply any suitable atom method to achieve competitive quality at scale.}
 
 \subsubsection{Small Co-cluster Detection Analysis}
 {\color{blue}
@@ -914,7 +923,7 @@ The effectiveness of the co-clustering was measured using two widely accepted me
 
 \subsection{Scalability Analysis}
 \label{subsec:scalability-analysis}
-To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\footnote{Amazon 1000 denotes a subset of 1,000 randomly sampled documents from the full Amazon dataset (123,321 users), used here for controlled scalability profiling to isolate parallelization overhead from dataset-size effects.}\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1-Large\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. {\color{blue}The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.} The results, plotted in~\Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
+To evaluate the efficiency of our proposed co-clustering method, we conducted experiments varying the number of processing nodes. The datasets used for this evaluation included Amazon 1000\footnote{Amazon 1000 denotes a subset of 1,000 randomly sampled users from the Amazon Electronics category, used here for controlled scalability profiling to isolate parallelization overhead from dataset-size effects.}\cite{ni2019JustifyingRecommendationsUsing}, CLASSIC4, and RCV1\cite{lewis2004Rcv1NewBenchmark}. Each dataset was subjected to co-clustering using 1, 4, 8, 16, and 24 processing nodes. {\color{blue}The efficiency metric is defined as $E(P) = S(P)/P = T_1/(P \times T_P)$, where $T_1$ is the execution time on a single node, $T_P$ is the execution time on $P$ nodes, and $S(P)$ is the speedup factor. For clarity, $E(1) = 1$ for a single node.} The results, plotted in~\Cref{fig:efficiency}, demonstrate the efficiency improvements achieved by leveraging parallel processing.
 
 % include images/efficiency.jpg
 \begin{figure}[htbp]
@@ -924,24 +933,27 @@ To evaluate the efficiency of our proposed co-clustering method, we conducted ex
     \label{fig:efficiency}
 \end{figure}
 
-\Cref{fig:efficiency} presents the efficiency of our proposed co-clustering method across different datasets as the number of nodes increases. The datasets considered are Amazon 1000, CLASSIC4, and RCV1-Large. The x-axis represents the number of nodes, while the y-axis indicates the efficiency, normalized to the baseline (single node) efficiency of 1.
+\Cref{fig:efficiency} presents the efficiency of our proposed co-clustering method across different datasets as the number of nodes increases. The datasets considered are Amazon 1000, CLASSIC4, and RCV1. The x-axis represents the number of nodes, while the y-axis indicates the efficiency, normalized to the baseline (single node) efficiency of 1.
 
 For Amazon 1000 Dataset, the efficiency starts at 1 for a single node and gradually decreases to 0.39 as the number of nodes increases to 24. The decrease in efficiency is relatively smooth, indicating that our method scales well but exhibits some overhead as more nodes are added. Despite the reduction in efficiency, the method maintains more than 39\% efficiency with 24 nodes, highlighting the robustness of the algorithm even at higher parallelization levels.
 
 For CLASSIC4 Dataset, the efficiency for CLASSIC4 begins at 1 and decreases to 0.52 with 24 nodes. The drop in efficiency is more pronounced compared to the Amazon 1000 dataset, especially between 4 and 8 nodes, indicating a higher overhead for this dataset as the number of nodes increases. The method still retains more than half of the efficiency at 24 nodes, demonstrating good scalability.
 
-For RCV1-Large Dataset, starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
+For RCV1 Dataset, starting from an efficiency of 1, it decreases to 0.47 at 24 nodes. The decrease is relatively smooth, similar to the Amazon 1000 dataset, but with a slightly steeper decline. The method shows significant efficiency retention at higher node counts, indicating effective parallelization.
 
 {\color{blue}
 \subsubsection{Comparison with PNMTF Scalability}
-To directly compare the scalability characteristics of DiMergeCo against the state-of-the-art distributed baseline PNMTF\cite{chen2023ParallelNonNegativeMatrix}, we plot the wall-clock time of both methods as a function of the number of processing nodes on the Amazon and CLASSIC4 datasets (\Cref{fig:scalability-comparison}). DiMergeCo-PNMTF achieves consistently lower execution times across all node counts, with the gap widening as the number of nodes increases. This is because PNMTF requires broadcasting large intermediate matrices at each iteration, incurring $O(n)$ communication per node, whereas DiMergeCo's hierarchical merging limits communication to $O(\log n)$. On the Amazon dataset with 24 nodes, DiMergeCo-PNMTF achieves a \todo{X}$\times$ speedup over PNMTF.
+\Cref{fig:scalability-comparison} shows the effect of increasing the number of sub-blocks on both wall-clock time and clustering quality (NMI) for DiMergeCo-SCC on the CLASSIC4 dataset. The $x$-axis shows block configurations from $1\times1$ (baseline SCC, no partitioning) through $8\times8$ (64 sub-blocks). Wall-clock time increases roughly linearly with block count due to the overhead of multiple partitioning iterations and the final consensus step. Clustering quality (NMI) remains competitive with baseline SCC at $2\times2$ and $3\times3$ configurations but degrades beyond $4\times4$, indicating that excessive partitioning fragments co-clusters below recoverable size. The $2\times2$ configuration with $T_p=10$ achieves the best trade-off: NMI $\approx 0.743$ (vs.\ baseline SCC 0.790) while enabling full parallelization across sub-blocks.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\linewidth]{scalability_comparison.pdf}
-    \caption{Wall-clock time comparison between DiMergeCo-PNMTF and PNMTF as a function of the number of processing nodes. DiMergeCo achieves consistently lower execution times due to its $O(\log n)$ communication complexity.\todo{replace with actual figure}}
+    \caption{Wall-clock time (bars, left axis) and NMI (line, right axis) as a function of block configuration for DiMergeCo-SCC on CLASSIC4. The $2\times2$ and $3\times3$ configurations maintain competitive quality while enabling parallelization.}
     \label{fig:scalability-comparison}
 \end{figure}
+
+\subsubsection{Large-Scale Scalability with DiMergeCo-FNMF}
+On large sparse datasets where spectral methods fail and dense NMF methods are infeasible, DiMergeCo enables scalable co-clustering by pairing with FNMF as the atom method. On the full RCV1 corpus (804K $\times$ 47K), we evaluate row-only partitioning ($m{\times}1$) across 2, 4, and 8 partitions (10 seeds each). With $T_p{=}10$, DiMergeCo-FNMF maintains remarkably stable quality: NMI = 0.272$\pm$0.012 (2$\times$1), 0.270$\pm$0.010 (4$\times$1), and 0.271$\pm$0.012 (8$\times$1), all within 92\% of standalone FNMF (NMI = 0.294). This stability across partition counts is a key advantage: increasing the number of workers from 2 to 8 incurs \emph{no measurable quality loss}, enabling near-linear speedup. Increasing the ensemble size to $T_p{=}30$ further improves quality to NMI = 0.283$\pm$0.014 (96\% of standalone), consistent with the parameter sensitivity analysis in \Cref{subsec:param-sensitivity}. On the Amazon dataset (1.1M $\times$ 731K), DiMergeCo-FNMF ($4{\times}1$) achieves NMI = 0.361$\pm$0.005 (85\% of standalone FNMF's 0.427), confirming scalability to million-row matrices. With $8{\times}1$ partitioning on Amazon, NMI drops to 0.313$\pm$0.006 (73\%), indicating that on extremely high-dimensional datasets ($>$730K features), finer partitioning loses more global structure than on moderate-dimensional data like RCV1 (47K features).
 }
 
 {\color{blue}
@@ -1026,7 +1038,7 @@ All experiments use $2\times2$ blocks, $T_p=10$, with SCC as the local co-cluste
 
 \subsubsection{Merging Strategy Quality Comparison}
 
-\Cref{tab:merging-quality} reports clustering quality (NMI, ARI) for each merging strategy across two datasets. The centralized consensus approach (M3) achieves the best results on both datasets, with the union baseline (M5) performing comparably since both aggregate all local co-clusters into a single membership matrix. Random merging (M2) suffers from high variance due to suboptimal pair selection. The sequential hierarchical merge (M1) performs poorly in isolation, as the intermediate k-means steps at each merge level lose information; however, when combined with the full Rust implementation's composite quality score (used in DiMergeCo-SCC), hierarchical merging achieves results comparable to centralized (see \Cref{tab:evaluation-metrics}). Greedy overlap-based merging (M4) fails entirely, demonstrating that naive overlap heuristics are insufficient for high-quality merging.\todo{Re-run M1 with full Rust hierarchical merge for fair comparison.}
+\Cref{tab:merging-quality} reports clustering quality (NMI, ARI) for each merging strategy across two datasets. The centralized consensus approach (M3) achieves the best results on both datasets, with the union baseline (M5) performing comparably since both aggregate all local co-clusters into a single membership matrix. Random merging (M2) suffers from high variance due to suboptimal pair selection. The sequential hierarchical merge (M1) performs poorly in isolation, as the intermediate k-means steps at each merge level lose information; however, when combined with the full Rust implementation's composite quality score (used in DiMergeCo-SCC), hierarchical merging achieves results comparable to centralized (see \Cref{tab:evaluation-metrics}). Greedy overlap-based merging (M4) fails entirely, demonstrating that naive overlap heuristics are insufficient for high-quality merging.
 
 \begin{table}[htbp]
     \centering
@@ -1062,11 +1074,11 @@ All experiments use $2\times2$ blocks, $T_p=10$, with SCC as the local co-cluste
             \toprule
             Strategy & Merge Time (s) & Total Time (s) \\
             \midrule
-            M1 (Hierarchical) & 2.31           & 14.5           \\
-            M2 (Random)       & \textbf{0.01}  & 12.2           \\
-            M3 (Centralized)  & 0.42           & \textbf{12.6}  \\
-            M4 (Greedy)       & 17.78          & 30.0           \\
-            M5 (Union)        & 0.28           & 12.5           \\
+            M1 (Hierarchical) & 2.31           & 14.8           \\
+            M2 (Random)       & \textbf{0.01}  & \textbf{13.3}  \\
+            M3 (Centralized)  & 0.42           & 13.7           \\
+            M4 (Greedy)       & 17.78          & 27.9           \\
+            M5 (Union)        & 0.28           & 13.4           \\
             \bottomrule
         \end{tabular}
         \begin{tablenotes}
@@ -1076,16 +1088,9 @@ All experiments use $2\times2$ blocks, $T_p=10$, with SCC as the local co-cluste
     \end{threeparttable}
 \end{table}
 
-\subsubsection{Convergence Analysis}
+\subsubsection{Summary of Ablation Findings}
 
-\Cref{fig:merging-convergence} plots the objective function $J$ as a function of the merging round for the three quality-aware strategies (M1, M3, M4) on the CLASSIC4 dataset. Hierarchical merging (M1) achieves rapid convergence, reaching near-optimal $J$ within 5 rounds, consistent with the $O(\log P)$ theoretical bound. These results empirically validate the conditions of \Cref{thm:merging-quality} and demonstrate that our hierarchical strategy effectively minimizes the merging error term $\tau \cdot |\mathcal{B}|$.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.8\linewidth]{merging_convergence.pdf}
-    \caption{Objective function $J$ vs.\ merging round for three quality-aware merging strategies on CLASSIC4. Hierarchical merging (M1) converges fastest.\todo{replace with actual figure}}
-    \label{fig:merging-convergence}
-\end{figure}
+The ablation results confirm that the merging strategy significantly impacts final quality. The centralized consensus (M3) and union (M5) strategies achieve the highest NMI and ARI across both datasets, while random (M2) and greedy (M4) strategies degrade substantially. This empirically validates the conditions of \Cref{thm:merging-quality}: strategies that preserve all local co-cluster information (M3, M5) minimize the boundary element count $|\mathcal{B}|$ and overlap $\tau$, leading to tighter merging error bounds.
 }
 
 \section{Conclusion}
