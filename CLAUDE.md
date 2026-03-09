@@ -101,6 +101,28 @@ arara -v src/cover_letter.tex  # -> build/cover_letter/cover_letter.pdf
 - Uses biblatex with biber backend (configured in `src/.latexmkrc`)
 - Python script `scripts/update_bib_subdoi.py` available for bibliography maintenance
 
+## Python Environment
+
+Use `uv` for all Python dependency and environment management. The venv lives at `.venv/`.
+
+```bash
+# Initialize (first time)
+uv venv
+uv add numpy scipy scikit-learn
+
+# Add a new dependency
+uv add <package>
+
+# Run a Python script (always use the venv Python)
+uv run python baselines/run_rcv1_baselines.py
+
+# Or activate manually
+source .venv/bin/activate
+python baselines/run_rcv1_baselines.py
+```
+
+**Important:** Do NOT use the system `python3` directly — it has no scientific packages. Always use `uv run python` or the `.venv/bin/python`.
+
 ## Requirements
 
 - TeX Live 2021 or higher
@@ -108,3 +130,4 @@ arara -v src/cover_letter.tex  # -> build/cover_letter/cover_letter.pdf
 - IEEE Transactions LaTeX template
 - arara (optional, for directive-based builds)
 - `latexindent` for code formatting (used by pre-commit hooks)
+- `uv` for Python environment management
